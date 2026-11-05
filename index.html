@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goozy.co - Official Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-stone-50 text-stone-800 font-sans min-h-screen flex flex-col justify-between">
+
+    <!-- Header / Navbar -->
+    <nav class="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
+        <h1 class="text-xl font-bold tracking-tight text-stone-900">GOOZY.CO</h1>
+        <button onclick="alert('Halaman Login Kasir & Stok segera hadir di update berikutnya!')" class="text-xs bg-stone-900 text-white px-3 py-2 rounded-lg hover:bg-stone-700 transition">
+            Login Staff / POS
+        </button>
+    </nav>
+
+    <!-- Konten Utama -->
+    <main class="max-w-md mx-auto w-full px-6 py-8">
+        <!-- Hero Section -->
+        <div class="text-center mb-8">
+            <span class="bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1 rounded-full">Specialty Beverage & Bakery</span>
+            <h2 class="text-2xl font-bold mt-3">Selamat Datang di Goozy!</h2>
+            <p class="text-sm text-stone-500 mt-1">Punya masukan soal rasa minuman, bakery, atau pelayanan kami? Tulis langsung di bawah ya.</p>
+        </div>
+
+        <!-- Form Keluhan & Masukan -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-200">
+            <h3 class="font-semibold text-lg mb-4">Kotak Suara Pelanggan</h3>
+            <form id="feedbackForm" onsubmit="kirimMasukan(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-stone-600 mb-1">Nama (Opsional)</label>
+                    <input type="text" id="nama" placeholder="Boleh dikosongkan" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm focus:outline-none focus:border-stone-800">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-stone-600 mb-1">Kategori Produk</label>
+                    <select id="kategori" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm bg-white focus:outline-none focus:border-stone-800">
+                        <option value="Coffee & Matcha">Coffee & Matcha</option>
+                        <option value="Bakery & Pastry">Bakery & Pastry</option>
+                        <option value="Pelayanan / Booth">Pelayanan / Booth</option>
+                        <option value="Lainnya">Lainnya</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-stone-600 mb-1">Kritik / Masukan / Request Menu</label>
+                    <textarea id="pesan" rows="3" required placeholder="Ceritakan pengalamanmu..." class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm focus:outline-none focus:border-stone-800"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2.5 rounded-lg text-sm transition">
+                    Kirim Masukan
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-6 text-xs text-stone-400">
+        &copy; 2026 Goozy.co. All rights reserved.
+    </footer>
+
+    <script>
+        function kirimMasukan(e) {
+            e.preventDefault();
+            alert("Terima kasih! Masukanmu sudah tercatat di sistem Goozy.");
+            document.getElementById("feedbackForm").reset();
+        }
+    </script>
+</body>
+</html>
