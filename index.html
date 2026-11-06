@@ -783,7 +783,8 @@
             t += `*SISA KAS BERSIH: Rp ${bersih.toLocaleString('id-ID')}*\n`;
             t += `\nTerima kasih! Laporan shift harian Goozy.co 🚀`;
 
-            window.open(`https://wa.me/${noOwner}?text=${encodeURIComponent(t)}`, '_blank');
+            const waUrl = `https://api.whatsapp.com/send?phone=${noOwner}&text=${encodeURIComponent(t)}`;
+            window.open(waUrl, '_blank');
         }
 
         // --- PRINTER & CETAK ---
