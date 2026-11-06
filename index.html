@@ -6,6 +6,28 @@
     <title>Goozy.co - Official Portal & POS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* Pengaturan Khusus Saat Print Struk & Label Cup */
+        @media print {
+            body * { visibility: hidden; }
+            #printArea, #printArea * { visibility: visible; }
+            #printArea {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 58mm; /* Ukuran standar printer thermal kasir/stiker */
+                font-family: monospace;
+                color: #000;
+                background: #fff;
+            }
+            .page-break {
+                page-break-after: always;
+                border-bottom: 1px dashed #ccc;
+                padding-bottom: 8px;
+                margin-bottom: 8px;
+            }
+        }
+    </style>
 </head>
 <body class="bg-stone-50 text-stone-800 font-sans min-h-screen flex flex-col justify-between">
 
@@ -71,32 +93,46 @@
             <!-- Daftar Menu -->
             <div class="md:col-span-2">
                 <h3 class="font-bold text-base mb-3">Pilih Menu Pesanan</h3>
-                <div id="posMenuGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    <!-- Diisi otomatis dari database -->
-                </div>
+                <div id="posMenuGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
             </div>
 
             <!-- Keranjang & Pembayaran -->
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200 h-fit">
                 <h3 class="font-bold text-base mb-3 border-b pb-2">Keranjang Kasir</h3>
-                <div id="cartList" class="space-y-2 text-sm mb-4 min-h-[100px] text-stone-500 flex items-center justify-center">
+                <div id="cartList" class="space-y-2 text-sm mb-4 min-h-[80px] text-stone-400 flex items-center justify-center">
                     Belum ada item dipilih
                 </div>
-                <div class="border-t pt-3 space-y-3">
-                    <div class="flex justify-between font-bold text-base">
-                        <span>Total Tagihan:</span>
-                        <span id="cartTotal" class="text-amber-700">Rp 0</span>
+
+                <!-- Info Pelanggan & Custom Order -->
+                <div class="border-t pt-3 space-y-2.5">
+                    <div>
+                        <label class="block text-[11px] font-medium text-stone-600 mb-0.5">Nama Pembeli (Tampil di Label Cup)</label>
+                        <input type="text" id="custNama" placeholder="Contoh: Kak Dinda" class="w-full px-2.5 py-1.5 border border-stone-300 rounded-lg text-xs">
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-stone-600 mb-1">Metode Pembayaran</label>
-                        <select id="metodeBayar" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm bg-white">
+                        <label class="block text-[11px] font-medium text-stone-600 mb-0.5">Catatan Pesanan (Less Sugar, Es Sedikit, dll)</label>
+                        <input type="text" id="custCatatan" placeholder="Contoh: Matcha Less Sugar" class="w-full px-2.5 py-1.5 border border-stone-300 rounded-lg text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-medium text-stone-600 mb-0.5">No. WhatsApp (Opsional utk Kirim Struk)</label>
+                        <input type="tel" id="custWA" placeholder="Contoh: 08123456789" class="w-full px-2.5 py-1.5 border border-stone-300 rounded-lg text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-medium text-stone-600 mb-0.5">Metode Pembayaran</label>
+                        <select id="metodeBayar" class="w-full px-2.5 py-1.5 border border-stone-300 rounded-lg text-xs bg-white">
                             <option value="QRIS">QRIS</option>
                             <option value="Tunai">Tunai (Cash)</option>
                         </select>
                     </div>
+
+                    <div class="flex justify-between font-bold text-base pt-2 border-t">
+                        <span>Total Tagihan:</span>
+                        <span id="cartTotal" class="text-amber-700">Rp 0</span>
+                    </div>
+
                     <div class="flex gap-2 pt-1">
                         <button onclick="clearCart()" class="w-1/3 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold py-2.5 rounded-lg text-xs">Reset</button>
-                        <button onclick="prosesBayar()" id="btnBayar" class="w-2/3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-lg text-sm">Bayar & Cetak</button>
+                        <button onclick="prosesBayar()" id="btnBayar" class="w-2/3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-lg text-sm">Bayar & Proses</button>
                     </div>
                 </div>
             </div>
@@ -104,7 +140,6 @@
 
         <!-- 2. TAB KELOLA STOK & MENU -->
         <div id="content-stok" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Form Tambah Menu -->
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200 h-fit">
                 <h3 class="font-bold text-base mb-3">Tambah Produk Baru</h3>
                 <form onsubmit="tambahProduk(event)" class="space-y-3">
@@ -134,18 +169,14 @@
                 </form>
             </div>
 
-            <!-- Daftar Stok -->
             <div class="md:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-stone-200">
                 <h3 class="font-bold text-base mb-3">Daftar Stok Menu Aktif</h3>
-                <div id="stokList" class="divide-y divide-stone-100 text-sm">
-                    <!-- Diisi otomatis -->
-                </div>
+                <div id="stokList" class="divide-y divide-stone-100 text-sm"></div>
             </div>
         </div>
 
         <!-- 3. TAB RIWAYAT TRANSAKSI & MASUKAN -->
         <div id="content-rekap" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Riwayat Kasir -->
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200">
                 <div class="flex justify-between items-center mb-3">
                     <h3 class="font-bold text-base">Riwayat Transaksi</h3>
@@ -154,7 +185,6 @@
                 <div id="transaksiList" class="divide-y divide-stone-100 text-sm max-h-96 overflow-y-auto"></div>
             </div>
 
-            <!-- Daftar Masukan Pelanggan -->
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200">
                 <h3 class="font-bold text-base mb-3">Kotak Masuk Pelanggan</h3>
                 <div id="feedbackList" class="divide-y divide-stone-100 text-sm max-h-96 overflow-y-auto"></div>
@@ -162,12 +192,44 @@
         </div>
     </main>
 
+    <!-- ================= MODAL CETAK STRUK, LABEL CUP & WA ================= -->
+    <div id="receiptModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-xl space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="font-bold text-base text-emerald-700">✅ Transaksi Berhasil!</h3>
+                <button onclick="tutupModal()" class="text-xs text-stone-400 hover:text-stone-700 font-bold">✕ Tutup</button>
+            </div>
+
+            <!-- Preview Struk Singkat -->
+            <div id="modalPreview" class="bg-stone-50 p-3 rounded-xl font-mono text-xs space-y-1 border border-stone-200 max-h-48 overflow-y-auto"></div>
+
+            <!-- 3 Tombol Aksi Utama -->
+            <div class="space-y-2 pt-1">
+                <button onclick="cetakStruk()" class="w-full bg-stone-900 hover:bg-stone-700 text-white font-semibold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2">
+                    🖨️ Cetak Struk Kasir (Thermal)
+                </button>
+                <button onclick="cetakLabelCup()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2">
+                    🏷️ Cetak Stiker Label Cup (Per Gelas)
+                </button>
+                <button onclick="kirimStrukWA()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2">
+                    💬 Kirim Struk ke WhatsApp
+                </button>
+            </div>
+
+            <button onclick="tutupModal()" class="w-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold py-2 rounded-xl text-xs">
+                Transaksi Baru
+            </button>
+        </div>
+    </div>
+
+    <!-- AREA KHUSUS PRINT (Tersembunyi di layar, hanya muncul saat diprint) -->
+    <div id="printArea" class="hidden"></div>
+
     <footer class="text-center py-6 text-xs text-stone-400">
         &copy; 2026 Goozy.co. All rights reserved.
     </footer>
 
     <script>
-        // KONEKSI SUPABASE GOOZY
         const SUPABASE_URL = 'https://ffisxrtyqdkntuscalxv.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_KsCXOP4a6kjsFBB5G_MHYQ_WhQltPdU';
         const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -175,6 +237,7 @@
         let isStaff = false;
         let products = [];
         let cart = [];
+        let lastOrder = null; // Menyimpan data transaksi terakhir untuk cetak struk/label/WA
 
         // 1. FUNGSI KIRIM MASUKAN PELANGGAN
         async function kirimMasukan(e) {
@@ -192,9 +255,9 @@
             btn.disabled = false;
 
             if (error) {
-                alert('Gagal mengirim: ' + error.message + '\nPastikan tabel SQL sudah di-Run di Supabase!');
+                alert('Gagal mengirim: ' + error.message);
             } else {
-                alert('Terima kasih! Masukanmu sudah tersimpan di database Goozy.');
+                alert('Terima kasih! Masukanmu sudah tersimpan di sistem Goozy.');
                 document.getElementById('feedbackForm').reset();
             }
         }
@@ -219,7 +282,6 @@
             }
         }
 
-        // PINDAH TAB INTERNAL
         function switchTab(tab) {
             ['pos', 'stok', 'rekap'].forEach(t => {
                 document.getElementById('content-' + t).classList.add('hidden');
@@ -230,7 +292,6 @@
             loadAllData();
         }
 
-        // MUAT DATA DARI DATABASE
         async function loadAllData() {
             const { data: prodData } = await db.from('products').select('*').order('id', { ascending: true });
             products = prodData || [];
@@ -278,16 +339,25 @@
             renderCart();
         }
 
+        function kurangiItemCart(id) {
+            const idx = cart.findIndex(c => c.id === id);
+            if (idx > -1) {
+                cart[idx].qty--;
+                if (cart[idx].qty <= 0) cart.splice(idx, 1);
+                renderCart();
+            }
+        }
+
         function renderCart() {
             const list = document.getElementById('cartList');
             const totalEl = document.getElementById('cartTotal');
             if (cart.length === 0) {
-                list.className = 'space-y-2 text-sm mb-4 min-h-[100px] text-stone-400 flex items-center justify-center';
+                list.className = 'space-y-2 text-sm mb-4 min-h-[80px] text-stone-400 flex items-center justify-center';
                 list.innerHTML = 'Belum ada item dipilih';
                 totalEl.innerText = 'Rp 0';
                 return;
             }
-            list.className = 'space-y-2 text-sm mb-4 min-h-[100px]';
+            list.className = 'space-y-2 text-sm mb-4 min-h-[80px]';
             let total = 0;
             list.innerHTML = cart.map(c => {
                 total += c.harga * c.qty;
@@ -297,7 +367,10 @@
                             <p class="font-semibold text-xs">${c.nama}</p>
                             <p class="text-[11px] text-stone-500">${c.qty} x Rp ${c.harga.toLocaleString('id-ID')}</p>
                         </div>
-                        <span class="font-bold text-xs">Rp ${(c.harga * c.qty).toLocaleString('id-ID')}</span>
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-xs">Rp ${(c.harga * c.qty).toLocaleString('id-ID')}</span>
+                            <button onclick="kurangiItemCart(${c.id})" class="text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">-</button>
+                        </div>
                     </div>
                 `;
             }).join('');
@@ -306,6 +379,9 @@
 
         function clearCart() {
             cart = [];
+            document.getElementById('custNama').value = '';
+            document.getElementById('custCatatan').value = '';
+            document.getElementById('custWA').value = '';
             renderCart();
         }
 
@@ -315,23 +391,36 @@
             btn.innerText = 'Memproses...';
             btn.disabled = true;
 
-            const rincian = cart.map(c => `${c.nama} (${c.qty}x)`).join(', ');
-            const total = cart.reduce((sum, c) => sum + (c.harga * c.qty), 0);
+            const custNama = document.getElementById('custNama').value.trim() || 'Pelanggan';
+            const custCatatan = document.getElementById('custCatatan').value.trim() || '-';
+            const custWA = document.getElementById('custWA').value.trim();
             const metode = document.getElementById('metodeBayar').value;
+            const waktu = new Date().toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' });
 
-            // Simpan transaksi
-            const { error } = await db.from('transactions').insert([{ rincian_item: rincian, total_harga: total, metode_bayar: metode }]);
-            
-            // Potong stok otomatis
+            const rincianDB = `${custNama}: ` + cart.map(c => `${c.nama} (${c.qty}x)`).join(', ') + (custCatatan !== '-' ? ` [Note: ${custCatatan}]` : '');
+            const total = cart.reduce((sum, c) => sum + (c.harga * c.qty), 0);
+
+            // Simpan ke Supabase
+            const { error } = await db.from('transactions').insert([{ rincian_item: rincianDB, total_harga: total, metode_bayar: metode }]);
             for (const item of cart) {
                 await db.from('products').update({ stok: item.sisaStok - item.qty }).eq('id', item.id);
             }
 
-            btn.innerText = 'Bayar & Cetak';
+            btn.innerText = 'Bayar & Proses';
             btn.disabled = false;
 
             if (!error) {
-                alert(`Transaksi Berhasil!\nTotal: Rp ${total.toLocaleString('id-ID')} (${metode})`);
+                // Simpan ke memori sementara untuk dicetak / dikirim WA
+                lastOrder = {
+                    waktu,
+                    custNama,
+                    custCatatan,
+                    custWA,
+                    metode,
+                    total,
+                    items: JSON.parse(JSON.stringify(cart))
+                };
+                tampilkanModalStruk();
                 clearCart();
                 loadAllData();
             } else {
@@ -339,7 +428,115 @@
             }
         }
 
-        // 4. LOGIKA KELOLA STOK & PRODUK
+        // 4. LOGIKA CETAK STRUK, LABEL CUP & KIRIM WA
+        function tampilkanModalStruk() {
+            const o = lastOrder;
+            const preview = document.getElementById('modalPreview');
+            preview.innerHTML = `
+                <div class="text-center font-bold border-b pb-1 mb-1">GOOZY.CO</div>
+                <div>Waktu : ${o.waktu}</div>
+                <div>Nama  : ${o.custNama}</div>
+                <div>Bayar : ${o.metode}</div>
+                <div class="border-b my-1"></div>
+                ${o.items.map(i => `<div class="flex justify-between"><span>${i.qty}x ${i.nama}</span><span>Rp ${(i.harga * i.qty).toLocaleString('id-ID')}</span></div>`).join('')}
+                <div class="border-b my-1"></div>
+                <div class="font-bold flex justify-between"><span>TOTAL</span><span>Rp ${o.total.toLocaleString('id-ID')}</span></div>
+                ${o.custCatatan !== '-' ? `<div class="text-[11px] mt-1 italic">Catatan: ${o.custCatatan}</div>` : ''}
+            `;
+            document.getElementById('receiptModal').classList.remove('hidden');
+        }
+
+        function tutupModal() {
+            document.getElementById('receiptModal').classList.add('hidden');
+        }
+
+        function cetakStruk() {
+            const o = lastOrder;
+            const printArea = document.getElementById('printArea');
+            printArea.classList.remove('hidden');
+            printArea.innerHTML = `
+                <div style="text-align:center; font-weight:bold; font-size:14px;">GOOZY.CO</div>
+                <div style="text-align:center; font-size:10px; margin-bottom:6px;">Specialty Beverage & Bakery</div>
+                <div style="font-size:11px;">Tgl  : ${o.waktu}</div>
+                <div style="font-size:11px;">Nama : ${o.custNama}</div>
+                <div style="font-size:11px;">Bayar: ${o.metode}</div>
+                <div style="border-top:1px dashed #000; margin:6px 0;"></div>
+                ${o.items.map(i => `
+                    <div style="font-size:11px;">${i.nama}</div>
+                    <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;">
+                        <span>${i.qty} x Rp ${i.harga.toLocaleString('id-ID')}</span>
+                        <span>Rp ${(i.harga * i.qty).toLocaleString('id-ID')}</span>
+                    </div>
+                `).join('')}
+                <div style="border-top:1px dashed #000; margin:6px 0;"></div>
+                <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:12px;">
+                    <span>TOTAL</span>
+                    <span>Rp ${o.total.toLocaleString('id-ID')}</span>
+                </div>
+                ${o.custCatatan !== '-' ? `<div style="font-size:10px; margin-top:4px;">Note: ${o.custCatatan}</div>` : ''}
+                <div style="text-align:center; font-size:10px; margin-top:10px;">Terima kasih sudah jajan di Goozy!</div>
+            `;
+            window.print();
+            printArea.classList.add('hidden');
+        }
+
+        function cetakLabelCup() {
+            const o = lastOrder;
+            const printArea = document.getElementById('printArea');
+            printArea.classList.remove('hidden');
+
+            // Pecah setiap kuantitas item menjadi 1 stiker per cup/item
+            let daftarLabel = [];
+            o.items.forEach(item => {
+                for (let i = 0; i < item.qty; i++) {
+                    daftarLabel.push(item.nama);
+                }
+            });
+
+            const totalCup = daftarLabel.length;
+            printArea.innerHTML = daftarLabel.map((namaMenu, idx) => `
+                <div class="page-break" style="padding:4px 0; font-family:sans-serif;">
+                    <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:bold;">
+                        <span>GOOZY.CO</span>
+                        <span>Cup ${idx + 1}/${totalCup}</span>
+                    </div>
+                    <div style="font-size:13px; font-weight:bold; margin:3px 0;">${o.custNama}</div>
+                    <div style="font-size:12px; font-weight:bold; border-top:1px solid #000; padding-top:2px;">${namaMenu}</div>
+                    ${o.custCatatan !== '-' ? `<div style="font-size:10px; margin-top:2px;">* ${o.custCatatan}</div>` : ''}
+                    <div style="font-size:8px; margin-top:4px; color:#555;">${o.waktu}</div>
+                </div>
+            `).join('');
+
+            window.print();
+            printArea.classList.add('hidden');
+        }
+
+        function kirimStrukWA() {
+            const o = lastOrder;
+            let noWA = o.custWA || prompt('Masukkan Nomor WhatsApp Pembeli (contoh: 08123456789):');
+            if (!noWA) return;
+
+            // Ubah awalan 08 menjadi 628 (format resmi WA)
+            noWA = noWA.replace(/[^0-9]/g, '');
+            if (noWA.startsWith('0')) noWA = '62' + noWA.slice(1);
+
+            let teks = `*STRUK PEMBELIAN GOOZY.CO*\n`;
+            teks += `Waktu: ${o.waktu}\n`;
+            teks += `Pelanggan: ${o.custNama}\n`;
+            teks += `------------------------\n`;
+            o.items.forEach(i => {
+                teks += `• ${i.qty}x ${i.nama} = Rp ${(i.harga * i.qty).toLocaleString('id-ID')}\n`;
+            });
+            teks += `------------------------\n`;
+            teks += `*TOTAL: Rp ${o.total.toLocaleString('id-ID')} (${o.metode})*\n`;
+            if (o.custCatatan !== '-') teks += `Catatan: ${o.custCatatan}\n`;
+            teks += `\nTerima kasih sudah jajan di Goozy! 🍵🥐`;
+
+            const url = `https://wa.me/${noWA}?text=${encodeURIComponent(teks)}`;
+            window.open(url, '_blank');
+        }
+
+        // 5. LOGIKA KELOLA STOK & PRODUK
         function renderStok() {
             const list = document.getElementById('stokList');
             list.innerHTML = products.map(p => `
@@ -383,7 +580,7 @@
             loadAllData();
         }
 
-        // 5. LOGIKA REKAP TRANSAKSI & MASUKAN
+        // 6. LOGIKA REKAP TRANSAKSI & MASUKAN
         function renderTransaksi(data) {
             const list = document.getElementById('transaksiList');
             let omzet = 0;
