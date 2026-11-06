@@ -10,10 +10,7 @@
         @media print {
             body * { visibility: hidden; }
             #printArea, #printArea * { visibility: visible; }
-            #printArea {
-                position: absolute; left: 0; top: 0; width: 58mm;
-                font-family: monospace; color: #000; background: #fff;
-            }
+            #printArea { position: absolute; left: 0; top: 0; width: 58mm; font-family: monospace; color: #000; background: #fff; }
             .page-break { page-break-after: always; border-bottom: 1px dashed #ccc; padding-bottom: 8px; margin-bottom: 8px; }
         }
     </style>
@@ -27,74 +24,45 @@
             <span id="badgeMode" class="hidden text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded">MODE</span>
         </div>
         <div class="flex gap-2">
-            <button onclick="bukaModalAbsen()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg font-bold transition">
-                🕒 Absen / Izin
-            </button>
-            <button id="btnLogin" onclick="toggleStaffMode()" class="text-xs bg-stone-900 text-white px-3.5 py-2 rounded-lg hover:bg-stone-700 transition font-medium">
-                Login Karyawan / Owner
-            </button>
+            <button onclick="bukaModalAbsen()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg font-bold transition">🕒 Absen / Izin</button>
+            <button id="btnLogin" onclick="toggleStaffMode()" class="text-xs bg-stone-900 text-white px-3.5 py-2 rounded-lg hover:bg-stone-700 transition font-medium">Login Karyawan / Owner</button>
         </div>
     </nav>
 
-    <!-- ================= HALAMAN PUBLIK ================= -->
+    <!-- HALAMAN PUBLIK -->
     <main id="publicView" class="max-w-4xl mx-auto w-full px-4 sm:px-6 py-8 space-y-10">
         <div class="text-center max-w-xl mx-auto">
             <span class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full">Specialty Coffee, Matcha & Refresher</span>
             <h2 class="text-3xl font-extrabold mt-3 text-stone-900">Our Signature Menu</h2>
             <p class="text-sm text-stone-500 mt-1">Semua minuman tersedia dalam ukuran Regular & Large (+5K).</p>
         </div>
-
         <div id="publicMenuContainer" class="space-y-6"></div>
-
-        <div class="max-w-md mx-auto bg-white p-6 rounded-2xl shadow-sm border border-stone-200">
-            <h3 class="font-bold text-lg mb-1">Kotak Suara Pelanggan</h3>
-            <p class="text-xs text-stone-500 mb-4">Punya masukan soal rasa minuman atau pelayanan kami? Tulis langsung di bawah ya.</p>
-            <form id="feedbackForm" onsubmit="kirimMasukan(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-medium text-stone-600 mb-1">Nama (Opsional)</label>
-                    <input type="text" id="nama" placeholder="Boleh dikosongkan" class="w-full px-3 py-2 border rounded-lg text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-stone-600 mb-1">Kategori</label>
-                    <select id="kategori" class="w-full px-3 py-2 border rounded-lg text-sm bg-white">
-                        <option value="Matcha & Coffee">Matcha & Coffee</option>
-                        <option value="Non-Coffee, Tea & Soda">Non-Coffee, Tea & Soda</option>
-                        <option value="Pelayanan / Booth">Pelayanan / Booth</option>
-                        <option value="Lainnya">Lainnya</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-stone-600 mb-1">Kritik / Masukan</label>
-                    <textarea id="pesan" rows="3" required placeholder="Ceritakan pengalamanmu..." class="w-full px-3 py-2 border rounded-lg text-sm"></textarea>
-                </div>
-                <button type="submit" id="btnSubmitFeedback" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2.5 rounded-lg text-sm transition">
-                    Kirim Masukan
-                </button>
-            </form>
-        </div>
     </main>
 
-    <!-- ================= HALAMAN INTERNAL ================= -->
+    <!-- HALAMAN INTERNAL -->
     <main id="staffView" class="hidden max-w-6xl mx-auto w-full px-4 py-6 flex-1">
         
+        <!-- Peringatan Low-Stock Alert -->
+        <div id="lowStockAlert" class="hidden bg-red-50 border border-red-200 text-red-700 p-3.5 rounded-2xl mb-4 text-xs font-semibold flex items-center justify-between">
+            <span id="lowStockText">⚠️ Perhatian: Beberapa bahan baku hampir habis! Segera lakukan restock.</span>
+            <button onclick="switchTab('resep')" class="underline font-bold text-xs">Cek Gudang</button>
+        </div>
+
         <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-stone-200 mb-5 flex flex-wrap gap-3 justify-between items-center">
             <div class="text-xs">
-                <span class="font-bold text-stone-800">📡 Koneksi Dual Printer Bluetooth</span>
-                <p class="text-[11px] text-stone-400">Sambungkan printer struk dan stiker cup via Chrome.</p>
+                <span class="font-bold text-stone-800">📡 Koneksi Dual Printer Bluetooth & Offline Mode</span>
+                <p id="connectionStatus" class="text-[11px] text-emerald-600 font-semibold">Status: Online (Sinkron)</p>
             </div>
             <div class="flex flex-wrap gap-2">
-                <button onclick="connectPrinter('receipt')" id="btnPrinterStruk" class="text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 px-3 py-2 rounded-xl font-semibold border">
-                    🖨️ Struk: <span class="text-red-600">Terputus</span>
-                </button>
-                <button onclick="connectPrinter('label')" id="btnPrinterLabel" class="text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 px-3 py-2 rounded-xl font-semibold border">
-                    🏷️ Stiker: <span class="text-red-600">Terputus</span>
-                </button>
+                <button onclick="connectPrinter('receipt')" id="btnPrinterStruk" class="text-xs bg-stone-100 text-stone-700 px-3 py-2 rounded-xl font-semibold border">🖨️ Struk: <span class="text-red-600">Terputus</span></button>
+                <button onclick="connectPrinter('label')" id="btnPrinterLabel" class="text-xs bg-stone-100 text-stone-700 px-3 py-2 rounded-xl font-semibold border">🏷️ Stiker: <span class="text-red-600">Terputus</span></button>
             </div>
         </div>
 
         <div class="flex gap-2 mb-6 border-b border-stone-200 pb-3 overflow-x-auto">
             <button onclick="switchTab('pos')" id="tab-pos" class="px-4 py-2 rounded-lg text-sm font-semibold bg-stone-900 text-white shrink-0">🛒 Kasir (POS)</button>
             <button onclick="switchTab('pelanggan')" id="tab-pelanggan" class="px-4 py-2 rounded-lg text-sm font-semibold bg-white text-stone-600 border shrink-0">👥 Loyalitas Pelanggan</button>
+            <button onclick="switchTab('bestseller')" id="tab-bestseller" class="owner-only px-4 py-2 rounded-lg text-sm font-semibold bg-white text-stone-600 border shrink-0">🔥 Menu Terlaris</button>
             <button onclick="switchTab('stok')" id="tab-stok" class="owner-only px-4 py-2 rounded-lg text-sm font-semibold bg-white text-stone-600 border shrink-0">📋 Daftar Menu</button>
             <button onclick="switchTab('resep')" id="tab-resep" class="owner-only px-4 py-2 rounded-lg text-sm font-semibold bg-white text-stone-600 border shrink-0">🧪 Bahan & Resep</button>
             <button onclick="switchTab('absen')" id="tab-absen" class="owner-only px-4 py-2 rounded-lg text-sm font-semibold bg-white text-stone-600 border shrink-0">🕒 Absen & Gaji</button>
@@ -108,70 +76,28 @@
                 <div id="posMenuGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
             </div>
 
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200 h-fit">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border h-fit">
                 <div class="flex justify-between items-center border-b pb-2 mb-3">
                     <h3 class="font-bold text-base">Keranjang Kasir</h3>
                     <span id="activeUserBadge" class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded">Kasir</span>
                 </div>
-
-                <div id="cartList" class="space-y-2 text-sm mb-4 min-h-[80px] text-stone-400 flex items-center justify-center">
-                    Belum ada item dipilih
-                </div>
-
+                <div id="cartList" class="space-y-2 text-sm mb-4 min-h-[80px] text-stone-400 flex items-center justify-center">Belum ada item</div>
                 <div class="border-t pt-3 space-y-2.5">
                     <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[11px] font-medium text-stone-600 mb-0.5">Nama Pembeli</label>
-                            <input type="text" id="custNama" placeholder="Ghestan" class="w-full px-2.5 py-1.5 border rounded-lg text-xs font-bold">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-medium text-stone-600 mb-0.5">No. WA</label>
-                            <input type="tel" id="custWA" placeholder="0812..." class="w-full px-2.5 py-1.5 border rounded-lg text-xs">
-                        </div>
+                        <div><label class="block text-[11px] font-medium text-stone-600 mb-0.5">Nama Pembeli</label><input type="text" id="custNama" placeholder="Ghestan" class="w-full px-2.5 py-1.5 border rounded-lg text-xs font-bold"></div>
+                        <div><label class="block text-[11px] font-medium text-stone-600 mb-0.5">No. WA</label><input type="tel" id="custWA" placeholder="0812..." class="w-full px-2.5 py-1.5 border rounded-lg text-xs"></div>
                     </div>
-
-                    <div>
-                        <label class="block text-[11px] font-medium text-stone-600 mb-0.5">Catatan Pesanan</label>
-                        <input type="text" id="custCatatan" placeholder="Less Sugar, Extra Ice" class="w-full px-2.5 py-1.5 border rounded-lg text-xs">
-                    </div>
-
+                    <div><label class="block text-[11px] font-medium text-stone-600 mb-0.5">Catatan Pesanan</label><input type="text" id="custCatatan" placeholder="Less Sugar" class="w-full px-2.5 py-1.5 border rounded-lg text-xs"></div>
                     <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[11px] font-medium text-stone-600 mb-0.5">Metode Bayar</label>
-                            <select id="metodeBayar" onchange="toggleCashSection()" class="w-full px-2.5 py-1.5 border rounded-lg text-xs bg-white font-semibold">
-                                <option value="QRIS">QRIS</option>
-                                <option value="Tunai">Tunai (Cash)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-medium text-stone-600 mb-0.5">Diskon (Rp)</label>
-                            <input type="number" id="inputDiskon" value="0" min="0" oninput="renderCart()" class="w-full px-2.5 py-1.5 border rounded-lg text-xs">
-                        </div>
+                        <div><label class="block text-[11px] font-medium text-stone-600 mb-0.5">Metode Bayar</label><select id="metodeBayar" onchange="toggleCashSection()" class="w-full px-2.5 py-1.5 border rounded-lg text-xs bg-white font-semibold"><option value="QRIS">QRIS</option><option value="Tunai">Tunai</option></select></div>
+                        <div><label class="block text-[11px] font-medium text-stone-600 mb-0.5">Diskon (Rp)</label><input type="number" id="inputDiskon" value="0" min="0" oninput="renderCart()" class="w-full px-2.5 py-1.5 border rounded-lg text-xs"></div>
                     </div>
-
                     <div id="cashCalculator" class="hidden bg-stone-50 p-2.5 rounded-xl border space-y-2">
-                        <div class="flex justify-between items-center">
-                            <label class="text-[11px] font-semibold text-stone-700">Uang Tunai (Rp)</label>
-                            <button type="button" onclick="setUangCepat('pas')" class="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold">Uang Pas</button>
-                        </div>
+                        <div class="flex justify-between items-center"><label class="text-[11px] font-semibold">Uang Tunai</label><button type="button" onclick="setUangCepat('pas')" class="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold">Uang Pas</button></div>
                         <input type="number" id="uangDiterima" placeholder="Nominal..." oninput="hitungKembalian()" class="w-full px-2.5 py-1.5 border rounded-lg text-xs bg-white font-bold">
-                        <div class="grid grid-cols-4 gap-1">
-                            <button type="button" onclick="setUangCepat(20000)" class="bg-white border rounded py-1 text-[10px]">20K</button>
-                            <button type="button" onclick="setUangCepat(50000)" class="bg-white border rounded py-1 text-[10px]">50K</button>
-                            <button type="button" onclick="setUangCepat(100000)" class="bg-white border rounded py-1 text-[10px]">100K</button>
-                            <button type="button" onclick="setUangCepat(0)" class="bg-white border rounded py-1 text-[10px] text-red-500">Clear</button>
-                        </div>
-                        <div class="flex justify-between items-center text-xs font-bold pt-1 border-t">
-                            <span>Kembalian:</span>
-                            <span id="teksKembalian" class="text-emerald-700">Rp 0</span>
-                        </div>
+                        <div class="flex justify-between items-center text-xs font-bold pt-1 border-t"><span>Kembalian:</span><span id="teksKembalian" class="text-emerald-700">Rp 0</span></div>
                     </div>
-
-                    <div class="flex justify-between font-bold text-base pt-2 border-t">
-                        <span>Total Tagihan:</span>
-                        <span id="cartTotal" class="text-amber-700">Rp 0</span>
-                    </div>
-
+                    <div class="flex justify-between font-bold text-base pt-2 border-t"><span>Total Tagihan:</span><span id="cartTotal" class="text-amber-700">Rp 0</span></div>
                     <div class="flex gap-2 pt-1">
                         <button onclick="clearCart()" class="w-1/3 bg-stone-100 text-stone-700 font-semibold py-2.5 rounded-lg text-xs">Reset</button>
                         <button onclick="prosesBayar()" id="btnBayar" class="w-2/3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-lg text-sm">Bayar & Proses</button>
@@ -180,172 +106,107 @@
             </div>
         </div>
 
-        <!-- 2. TAB RIWAYAT PELANGGAN -->
+        <!-- 2. TAB LOYALITAS PELANGGAN -->
         <div id="content-pelanggan" class="hidden space-y-6">
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200">
-                <h3 class="font-bold text-base mb-1">👥 Daftar Pelanggan & Riwayat Order</h3>
-                <p class="text-xs text-stone-400 mb-4">Sistem otomatis merekam frekuensi kunjungan dan menu apa saja yang pernah dibeli oleh tiap nama.</p>
-                <div id="customerHistoryList" class="space-y-3 max-h-[500px] overflow-y-auto"></div>
-            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border"><h3 class="font-bold text-base mb-1">👥 Riwayat & Loyalitas Pelanggan</h3><p class="text-xs text-stone-400 mb-4">Frekuensi order dan rincian produk yang pernah dibeli.</p><div id="customerHistoryList" class="space-y-3 max-h-[500px] overflow-y-auto"></div></div>
         </div>
 
-        <!-- 3. TAB MENU -->
+        <!-- 3. TAB MENU TERLARIS (BEST SELLER) -->
+        <div id="content-bestseller" class="hidden space-y-6">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border"><h3 class="font-bold text-base mb-1">🔥 Analisis Menu Terlaris (Best Seller)</h3><p class="text-xs text-stone-400 mb-4">Peringkat produk yang paling sering dibeli berdasarkan data transaksi.</p><div id="bestSellerList" class="space-y-3"></div></div>
+        </div>
+
+        <!-- 4. TAB MENU -->
         <div id="content-stok" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200 h-fit">
-                <h3 class="font-bold text-base mb-3">Tambah Menu Baru</h3>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border h-fit"><h3 class="font-bold text-base mb-3">Tambah Menu</h3>
                 <form onsubmit="tambahProduk(event)" class="space-y-3">
-                    <input type="text" id="prodNama" required placeholder="Pistachio Latte 🔥" class="w-full px-3 py-2 border rounded-lg text-sm">
-                    <select id="prodKategori" class="w-full px-3 py-2 border rounded-lg text-sm bg-white">
-                        <option value="Matcha Series">Matcha Series</option><option value="Coffee Series">Coffee Series</option>
-                        <option value="Non-Coffee & Creme">Non-Coffee & Creme</option><option value="Tea Series">Tea Series</option>
-                        <option value="Soda & Refresher">Soda & Refresher</option><option value="Bakery & Pastry">Bakery & Pastry</option>
-                    </select>
-                    <input type="number" id="prodHarga" required placeholder="Harga Regular (Rp)" class="w-full px-3 py-2 border rounded-lg text-sm">
-                    <button type="submit" class="w-full bg-stone-900 text-white font-semibold py-2 rounded-lg text-sm">+ Simpan Menu</button>
+                    <input type="text" id="prodNama" required placeholder="Nama Menu 🔥" class="w-full px-3 py-2 border rounded-lg text-sm">
+                    <select id="prodKategori" class="w-full px-3 py-2 border rounded-lg text-sm bg-white"><option value="Matcha Series">Matcha Series</option><option value="Coffee Series">Coffee Series</option><option value="Non-Coffee & Creme">Non-Coffee & Creme</option><option value="Tea Series">Tea Series</option><option value="Soda & Refresher">Soda & Refresher</option><option value="Bakery & Pastry">Bakery & Pastry</option></select>
+                    <input type="number" id="prodHarga" required placeholder="Harga Reg" class="w-full px-3 py-2 border rounded-lg text-sm">
+                    <button type="submit" class="w-full bg-stone-900 text-white py-2 rounded-lg text-sm">+ Simpan</button>
                 </form>
             </div>
-            <div class="md:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-stone-200">
-                <h3 class="font-bold text-base mb-3">Daftar Menu Aktif</h3>
-                <div id="stokList" class="divide-y text-sm max-h-[500px] overflow-y-auto"></div>
-            </div>
+            <div class="md:col-span-2 bg-white p-5 rounded-2xl shadow-sm border"><h3 class="font-bold text-base mb-3">Daftar Menu Aktif</h3><div id="stokList" class="divide-y text-sm max-h-[500px] overflow-y-auto"></div></div>
         </div>
 
-        <!-- 4. TAB BAHAN & RESEP -->
+        <!-- 5. TAB BAHAN & RESEP -->
         <div id="content-resep" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-4">
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200">
-                    <h3 class="font-bold text-base mb-1">Gudang Bahan Baku</h3>
-                    <form onsubmit="tambahBahan(event)" class="grid grid-cols-2 gap-2 mt-3">
-                        <input type="text" id="ingNama" required placeholder="Nama Bahan" class="col-span-2 sm:col-span-1 px-3 py-2 border rounded-lg text-xs">
-                        <select id="ingSatuan" class="px-2 py-2 border rounded-lg text-xs bg-white">
-                            <option value="gram">gram (gr)</option><option value="ml">ml</option><option value="pcs">pcs</option>
-                        </select>
-                        <input type="number" step="any" id="ingStok" required placeholder="Stok Awal" class="px-3 py-2 border rounded-lg text-xs">
-                        <input type="number" step="any" id="ingHargaSatuan" required placeholder="Modal per satuan (Rp)" class="px-3 py-2 border rounded-lg text-xs">
-                        <button type="submit" class="col-span-2 bg-stone-900 text-white font-semibold py-2 rounded-lg text-xs">+ Simpan Bahan</button>
-                    </form>
-                </div>
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200">
-                    <h4 class="font-bold text-sm mb-3">Daftar Bahan</h4>
-                    <div id="ingredientList" class="divide-y text-xs max-h-80 overflow-y-auto"></div>
-                </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border"><h3 class="font-bold text-base mb-3">Gudang Bahan Baku</h3>
+                <form onsubmit="tambahBahan(event)" class="space-y-2">
+                    <input type="text" id="ingNama" required placeholder="Nama Bahan" class="w-full px-3 py-2 border rounded-lg text-xs">
+                    <select id="ingSatuan" class="w-full px-2 py-2 border rounded-lg text-xs bg-white"><option value="gram">gram</option><option value="ml">ml</option><option value="pcs">pcs</option></select>
+                    <input type="number" step="any" id="ingStok" required placeholder="Stok Awal" class="w-full px-3 py-2 border rounded-lg text-xs">
+                    <input type="number" step="any" id="ingHargaSatuan" required placeholder="Modal per satuan" class="w-full px-3 py-2 border rounded-lg text-xs">
+                    <button type="submit" class="w-full bg-stone-900 text-white py-2 rounded-lg text-xs">+ Simpan Bahan</button>
+                </form>
+                <div id="ingredientList" class="divide-y text-xs mt-4 max-h-60 overflow-y-auto"></div>
             </div>
-            <div class="space-y-4">
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200">
-                    <h3 class="font-bold text-base mb-1">Rakit Resep Menu</h3>
-                    <form onsubmit="tambahResep(event)" class="space-y-2.5 mt-3">
-                        <select id="recProduct" required class="w-full px-3 py-2 border rounded-lg text-xs bg-white"></select>
-                        <div class="grid grid-cols-2 gap-2">
-                            <select id="recIngredient" required class="w-full px-3 py-2 border rounded-lg text-xs bg-white"></select>
-                            <input type="number" step="any" id="recJumlah" required placeholder="Takaran" class="w-full px-3 py-2 border rounded-lg text-xs">
-                        </div>
-                        <button type="submit" class="w-full bg-amber-600 text-white font-semibold py-2 rounded-lg text-xs">+ Sambungkan Resep</button>
-                    </form>
-                </div>
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200">
-                    <h4 class="font-bold text-sm mb-3">Analisa HPP & Margin</h4>
-                    <div id="recipeList" class="space-y-3 text-xs max-h-96 overflow-y-auto"></div>
-                </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border"><h3 class="font-bold text-base mb-3">Rakit Resep</h3>
+                <form onsubmit="tambahResep(event)" class="space-y-2">
+                    <select id="recProduct" required class="w-full px-3 py-2 border rounded-lg text-xs bg-white"></select>
+                    <select id="recIngredient" required class="w-full px-3 py-2 border rounded-lg text-xs bg-white"></select>
+                    <input type="number" step="any" id="recJumlah" required placeholder="Takaran per cup" class="w-full px-3 py-2 border rounded-lg text-xs">
+                    <button type="submit" class="w-full bg-amber-600 text-white py-2 rounded-lg text-xs">+ Sambungkan Resep</button>
+                </form>
+                <div id="recipeList" class="space-y-2 text-xs mt-4 max-h-60 overflow-y-auto"></div>
             </div>
         </div>
 
-        <!-- 5. TAB ABSEN -->
+        <!-- 6. TAB ABSEN -->
         <div id="content-absen" class="hidden space-y-6">
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200">
-                <div class="flex justify-between items-center mb-4">
-                    <div>
-                        <h3 class="font-bold text-base">Kelola Karyawan & PIN</h3>
-                        <p class="text-xs text-stone-400">Aturan Gaji: Rp 75.000/hari. Jam 06:00 - 07:45 (Telat potong Rp 15.000 | Izin potong Rp 75.000).</p>
-                    </div>
-                    <button onclick="tambahKaryawanBaru()" class="px-3 py-2 bg-stone-900 text-white text-xs font-bold rounded-xl">+ Tambah Karyawan</button>
-                </div>
-                <div id="employeeManagerList" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4"></div>
-            </div>
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200">
-                <h3 class="font-bold text-base mb-3">Riwayat Absen & Gaji Harian Karyawan</h3>
-                <div id="attendanceList" class="divide-y text-sm max-h-96 overflow-y-auto"></div>
-            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-base">Kelola Karyawan & PIN</h3><button onclick="tambahKaryawanBaru()" class="px-3 py-2 bg-stone-900 text-white text-xs font-bold rounded-xl">+ Tambah Karyawan</button></div><div id="employeeManagerList" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4"></div></div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border"><h3 class="font-bold text-base mb-3">Riwayat Absen</h3><div id="attendanceList" class="divide-y text-sm max-h-96 overflow-y-auto"></div></div>
         </div>
 
-        <!-- 6. TAB KEUANGAN -->
+        <!-- 7. TAB KEUANGAN -->
         <div id="content-rekap" class="hidden space-y-6">
-            <div class="flex flex-wrap justify-between items-center gap-3 bg-white p-4 rounded-2xl border shadow-sm">
-                <div class="flex gap-2">
-                    <button onclick="setFilterRekap('today')" id="btnFilterToday" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-stone-900 text-white">Hari Ini</button>
-                    <button onclick="setFilterRekap('all')" id="btnFilterAll" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-stone-100 text-stone-600">Semua</button>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="kirimRekapShiftWA()" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white">
-                        📲 Kirim Rekap Shift ke WA
-                    </button>
-                    <button onclick="exportLaporanCSV()" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-stone-800 hover:bg-stone-700 text-white">
-                        📥 Download Excel (.CSV)
-                    </button>
-                </div>
+            <div class="flex justify-between items-center bg-white p-4 rounded-2xl border shadow-sm">
+                <div class="flex gap-2"><button onclick="setFilterRekap('today')" id="btnFilterToday" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-stone-900 text-white">Hari Ini</button><button onclick="setFilterRekap('all')" id="btnFilterAll" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-stone-100 text-stone-600">Semua</button></div>
+                <div class="flex gap-2"><button onclick="kirimRekapShiftWA()" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 text-white">📲 Kirim Rekap ke WA</button><button onclick="exportLaporanCSV()" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-stone-800 text-white">📥 Download Excel</button></div>
             </div>
-
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <div class="bg-white p-4 rounded-2xl border"><p class="text-[11px] text-stone-400">Omzet Kotor</p><p id="statOmzet" class="text-lg font-extrabold mt-1">Rp 0</p></div>
                 <div class="bg-white p-4 rounded-2xl border"><p class="text-[11px] text-stone-400">Tunai vs QRIS</p><p id="statMetode" class="text-xs font-bold text-amber-700 mt-1.5">Tunai: Rp 0</p></div>
-                <div class="bg-white p-4 rounded-2xl border"><p class="text-[11px] text-stone-400">Pengeluaran Kas</p><p id="statPengeluaran" class="text-lg font-extrabold text-red-600 mt-1">Rp 0</p></div>
-                <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200"><p class="text-[11px] text-emerald-700 font-semibold">Sisa Kas Bersih</p><p id="statBersih" class="text-lg font-extrabold text-emerald-800 mt-1">Rp 0</p></div>
+                <div class="bg-white p-4 rounded-2xl border"><p class="text-[11px] text-stone-400">Pengeluaran</p><p id="statPengeluaran" class="text-lg font-extrabold text-red-600 mt-1">Rp 0</p></div>
+                <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200"><p class="text-[11px] text-emerald-700 font-semibold">Kas Bersih</p><p id="statBersih" class="text-lg font-extrabold text-emerald-800 mt-1">Rp 0</p></div>
             </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-white p-5 rounded-2xl shadow-sm border"><h3 class="font-bold text-base mb-1">Riwayat Struk</h3><div id="transaksiList" class="divide-y text-sm max-h-96 overflow-y-auto"></div></div>
-                <div class="bg-white p-5 rounded-2xl shadow-sm border">
-                    <h3 class="font-bold text-base mb-1">Catat Pengeluaran</h3>
-                    <form onsubmit="tambahPengeluaran(event)" class="space-y-2 mb-4 mt-2">
-                        <input type="text" id="expKet" required placeholder="Beli Es Batu" class="w-full px-3 py-1.5 border rounded-lg text-xs">
-                        <div class="flex gap-2">
-                            <input type="number" id="expNominal" required placeholder="Nominal" class="w-2/3 px-3 py-1.5 border rounded-lg text-xs">
-                            <button type="submit" class="w-1/3 bg-red-600 text-white font-semibold py-1.5 rounded-lg text-xs">+ Catat</button>
-                        </div>
-                    </form>
+                <div class="bg-white p-5 rounded-2xl shadow-sm border"><h3 class="font-bold text-base mb-1">Catat Pengeluaran</h3>
+                    <form onsubmit="tambahPengeluaran(event)" class="space-y-2 mb-4 mt-2"><input type="text" id="expKet" required placeholder="Beli Es Batu" class="w-full px-3 py-1.5 border rounded-lg text-xs"><div class="flex gap-2"><input type="number" id="expNominal" required placeholder="Nominal" class="w-2/3 px-3 py-1.5 border rounded-lg text-xs"><button type="submit" class="w-1/3 bg-red-600 text-white py-1.5 rounded-lg text-xs">+ Catat</button></div></form>
                     <div id="expenseList" class="divide-y text-xs max-h-64 overflow-y-auto"></div>
                 </div>
-                <div class="bg-white p-5 rounded-2xl shadow-sm border"><h3 class="font-bold text-base mb-3">Suara Pelanggan</h3><div id="feedbackList" class="divide-y text-sm max-h-96 overflow-y-auto"></div></div>
             </div>
         </div>
     </main>
 
-    <!-- MODAL ABSENSI KARYAWAN -->
-    <div id="attendanceModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <!-- MODAL CUSTOMIZATION ADD-ON (ICE, SUGAR, EXTRA SHOT) -->
+    <div id="customModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl space-y-4">
-            <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="font-bold text-base text-stone-900">🕒 Absensi & Izin Karyawan</h3>
-                <button onclick="tutupModalAbsen()" class="text-xs text-stone-400 font-bold">✕</button>
-            </div>
-            <div class="space-y-3">
-                <div>
-                    <label class="block text-xs font-medium text-stone-600 mb-1">Pilih Karyawan</label>
-                    <select id="absenNama" class="w-full px-3 py-2 border rounded-xl text-sm bg-white font-semibold"></select>
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-stone-600 mb-1">PIN Karyawan</label>
-                    <input type="password" id="absenPin" placeholder="Masukkan PIN..." class="w-full px-3 py-2 border rounded-xl text-sm font-bold text-center tracking-widest">
-                </div>
-                <div class="grid grid-cols-2 gap-2 pt-2">
-                    <button onclick="submitAbsen('hadir')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs">✅ Check-In Hadir</button>
-                    <button onclick="submitAbsen('izin')" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 rounded-xl text-xs">📝 Ajukan Izin</button>
-                </div>
+            <div class="flex justify-between items-center border-b pb-2"><h3 id="modalTitle" class="font-bold text-base text-stone-900">Custom Menu</h3><button onclick="tutupModalCustom()" class="text-xs text-stone-400 font-bold">✕</button></div>
+            <div class="space-y-3 text-xs">
+                <div><label class="block font-semibold mb-1">Level Es:</label><select id="optIce" class="w-full p-2 border rounded-lg bg-white"><option value="Normal Ice">Normal Ice</option><option value="Less Ice">Less Ice</option><option value="No Ice">No Ice</option></select></div>
+                <div><label class="block font-semibold mb-1">Level Gula:</label><select id="optSugar" class="w-full p-2 border rounded-lg bg-white"><option value="Normal Sugar">Normal Sugar</option><option value="Less Sugar">Less Sugar</option><option value="No Sugar">No Sugar</option></select></div>
+                <div><label class="block font-semibold mb-1">Add-on Tambahan:</label><label class="flex items-center gap-2 mt-1"><input type="checkbox" id="optExtraShot" value="5000"> Extra Shot Espresso (+Rp 5.000)</label></div>
+                <button onclick="simpanCustomCart()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl mt-2">Masukkan ke Keranjang</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL CETAK STRUK -->
+    <!-- MODAL ABSENSI -->
+    <div id="attendanceModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl space-y-4">
+            <div class="flex justify-between items-center border-b pb-2"><h3 class="font-bold text-base">🕒 Absensi</h3><button onclick="tutupModalAbsen()" class="text-xs text-stone-400 font-bold">✕</button></div>
+            <div class="space-y-3"><select id="absenNama" class="w-full px-3 py-2 border rounded-xl text-sm bg-white font-semibold"></select><input type="password" id="absenPin" placeholder="PIN Karyawan..." class="w-full px-3 py-2 border rounded-xl text-sm font-bold text-center tracking-widest"><div class="grid grid-cols-2 gap-2 pt-2"><button onclick="submitAbsen('hadir')" class="bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-xs">✅ Hadir</button><button onclick="submitAbsen('izin')" class="bg-amber-600 text-white font-bold py-2.5 rounded-xl text-xs">📝 Izin</button></div></div>
+        </div>
+    </div>
+
+    <!-- MODAL STRUK -->
     <div id="receiptModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-xl space-y-4">
-            <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="font-bold text-base text-emerald-700">✅ Transaksi Berhasil!</h3>
-                <button onclick="tutupModal()" class="text-xs text-stone-400 font-bold">✕ Tutup</button>
-            </div>
+            <div class="flex justify-between items-center border-b pb-2"><h3 class="font-bold text-base text-emerald-700">✅ Transaksi Berhasil!</h3><button onclick="tutupModal()" class="text-xs text-stone-400 font-bold">✕</button></div>
             <div id="modalPreview" class="bg-stone-50 p-3 rounded-xl font-mono text-xs space-y-1 border max-h-52 overflow-y-auto"></div>
-            <div class="space-y-2 pt-1">
-                <button onclick="cetakStruk()" class="w-full bg-stone-900 text-white font-semibold py-2.5 rounded-xl text-xs">🖨️ Cetak Struk</button>
-                <button onclick="cetakLabelCup()" class="w-full bg-amber-600 text-white font-semibold py-2.5 rounded-xl text-xs">🏷️ Cetak Stiker Cup</button>
-                <button onclick="kirimStrukWA()" class="w-full bg-emerald-600 text-white font-semibold py-2.5 rounded-xl text-xs">💬 Kirim ke WhatsApp</button>
-            </div>
+            <div class="space-y-2 pt-1"><button onclick="cetakStruk()" class="w-full bg-stone-900 text-white font-semibold py-2.5 rounded-xl text-xs">🖨️ Cetak Struk</button><button onclick="cetakLabelCup()" class="w-full bg-amber-600 text-white font-semibold py-2.5 rounded-xl text-xs">🏷️ Cetak Stiker Cup</button><button onclick="kirimStrukWA()" class="w-full bg-emerald-600 text-white font-semibold py-2.5 rounded-xl text-xs">💬 Kirim ke WhatsApp</button></div>
             <button onclick="tutupModal()" class="w-full bg-stone-100 text-stone-700 font-semibold py-2 rounded-xl text-xs">Transaksi Baru</button>
         </div>
     </div>
@@ -358,9 +219,8 @@
         const SUPABASE_KEY = 'sb_publishable_KsCXOP4a6kjsFBB5G_MHYQ_WhQltPdU';
         const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let userRole = null; 
-        let products = [], ingredients = [], recipes = [], allTransactions = [], allExpenses = [], employees = [], attendances = [], customerOrders = [];
-        let cart = [], activeCategory = 'Semua', rekapFilter = 'today', lastOrder = null;
+        let userRole = null, products = [], ingredients = [], recipes = [], allTransactions = [], allExpenses = [], employees = [], attendances = [], customerOrders = [];
+        let cart = [], activeCategory = 'Semua', rekapFilter = 'today', lastOrder = null, selectedMenuForCustom = null;
         let btPrinters = { receipt: { device: null, characteristic: null }, label: { device: null, characteristic: null } };
 
         window.addEventListener('DOMContentLoaded', loadPublicCatalog);
@@ -373,17 +233,11 @@
 
         function renderPublicMenu() {
             const container = document.getElementById('publicMenuContainer');
-            if (products.length === 0) { container.innerHTML = `<p class="text-center text-xs text-stone-400">Menu sedang disiapkan...</p>`; return; }
+            if (products.length === 0) { container.innerHTML = `<p class="text-center text-xs text-stone-400">Menu kosong</p>`; return; }
             container.innerHTML = [...new Set(products.map(p => p.kategori))].map(cat => `
-                <div class="bg-white p-5 rounded-2xl shadow-sm border">
-                    <h3 class="font-extrabold text-base text-stone-900 mb-3 border-b pb-2">${cat}</h3>
+                <div class="bg-white p-5 rounded-2xl shadow-sm border"><h3 class="font-extrabold text-base mb-3 border-b pb-2">${cat}</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                        ${products.filter(p => p.kategori === cat).map(p => `
-                            <div class="p-3 rounded-xl border bg-stone-50/60 flex justify-between items-center">
-                                <div><p class="font-bold text-sm text-stone-800">${p.nama_produk}</p><p class="text-xs font-bold text-amber-700 mt-0.5">Reg ${p.harga / 1000}K | Large ${(p.harga + 5000) / 1000}K</p></div>
-                                <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-700">Ready</span>
-                            </div>
-                        `).join('')}
+                        ${products.filter(p => p.kategori === cat).map(p => `<div class="p-3 rounded-xl border bg-stone-50 flex justify-between items-center"><div><p class="font-bold text-sm">${p.nama_produk}</p><p class="text-xs font-bold text-amber-700">Reg ${p.harga/1000}K | Large ${(p.harga+5000)/1000}K</p></div><span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-700">Ready</span></div>`).join('')}
                     </div>
                 </div>
             `).join('');
@@ -392,7 +246,7 @@
         async function bukaModalAbsen() {
             const { data } = await db.from('employees').select('*');
             employees = data || [];
-            document.getElementById('absenNama').innerHTML = employees.length === 0 ? `<option value="">Belum ada karyawan</option>` : employees.map(e => `<option value="${e.nama_karyawan}">${e.nama_karyawan}</option>`).join('');
+            document.getElementById('absenNama').innerHTML = employees.length === 0 ? `<option value="">Kosong</option>` : employees.map(e => `<option value="${e.nama_karyawan}">${e.nama_karyawan}</option>`).join('');
             document.getElementById('absenPin').value = '';
             document.getElementById('attendanceModal').classList.remove('hidden');
         }
@@ -400,9 +254,8 @@
 
         async function submitAbsen(jenis) {
             const nama = document.getElementById('absenNama').value, pinInput = document.getElementById('absenPin').value.trim();
-            if (!nama) return alert('Pilih nama!');
             const emp = employees.find(e => e.nama_karyawan === nama);
-            if (!emp || emp.pin !== pinInput) return alert('PIN Karyawan Salah!');
+            if (!emp || emp.pin !== pinInput) return alert('PIN Salah!');
             let status = jenis === 'izin' ? 'Izin (-75K)' : (new Date().getHours()*60 + new Date().getMinutes() > 465 ? 'Terlambat (-15K)' : 'Hadir Tepat Waktu');
             let gaji = status.includes('Izin') ? 0 : (status.includes('Terlambat') ? 60000 : 75000);
             await db.from('attendances').insert([{ nama_karyawan: nama, status, gaji_harian: gaji }]);
@@ -411,7 +264,7 @@
 
         async function toggleStaffMode() {
             if (!userRole) {
-                const inputPin = prompt('Masukkan PIN Anda (Owner: 1234 / Karyawan: PIN Masing-masing):');
+                const inputPin = prompt('PIN Anda (1234 Owner / 2211 Aldi / 3322 Rani):');
                 if (!inputPin) return;
                 if (inputPin === '1234') { userRole = 'owner'; }
                 else {
@@ -438,7 +291,7 @@
         }
 
         function switchTab(tab) {
-            ['pos', 'pelanggan', 'stok', 'resep', 'absen', 'rekap'].forEach(t => {
+            ['pos', 'pelanggan', 'bestseller', 'stok', 'resep', 'absen', 'rekap'].forEach(t => {
                 const btn = document.getElementById('tab-' + t), content = document.getElementById('content-' + t);
                 if (btn) btn.className = 'px-4 py-2 rounded-lg text-sm font-semibold bg-white text-stone-600 border shrink-0';
                 if (content) content.classList.add('hidden');
@@ -449,22 +302,41 @@
         }
 
         async function loadAllData() {
-            const [p, i, r, t, e, emp, att, cust] = await Promise.all([
-                db.from('products').select('*').order('id'),
-                db.from('ingredients').select('*').order('nama_bahan'),
-                db.from('recipes').select('*'),
-                db.from('transactions').select('*').order('id', { ascending: false }),
-                db.from('expenses').select('*').order('id', { ascending: false }),
-                db.from('employees').select('*').order('id'),
-                db.from('attendances').select('*').order('id', { ascending: false }),
-                db.from('customer_orders').select('*').order('id', { ascending: false })
-            ]);
-            products = p.data || []; ingredients = i.data || []; recipes = r.data || [];
-            allTransactions = t.data || []; allExpenses = e.data || [];
-            employees = emp.data || []; attendances = att.data || []; customerOrders = cust.data || [];
+            try {
+                const [p, i, r, t, e, emp, att, cust] = await Promise.all([
+                    db.from('products').select('*').order('id'),
+                    db.from('ingredients').select('*').order('nama_bahan'),
+                    db.from('recipes').select('*'),
+                    db.from('transactions').select('*').order('id', { ascending: false }),
+                    db.from('expenses').select('*').order('id', { ascending: false }),
+                    db.from('employees').select('*').order('id'),
+                    db.from('attendances').select('*').order('id', { ascending: false }),
+                    db.from('customer_orders').select('*').order('id', { ascending: false })
+                ]);
+                products = p.data || []; ingredients = i.data || []; recipes = r.data || [];
+                allTransactions = t.data || []; allExpenses = e.data || [];
+                employees = emp.data || []; attendances = att.data || []; customerOrders = cust.data || [];
+                
+                checkLowStockAlert();
+                renderPOS(); renderCustomerHistory(); renderBestSeller();
+                if (userRole === 'owner') { renderStok(); renderBahanDanResep(); renderAbsensiKaryawan(); renderKeuanganDanRiwayat(); }
+                document.getElementById('connectionStatus').innerText = 'Status: Online (Sinkron)';
+            } catch (err) {
+                // Mode Offline-First Fallback
+                document.getElementById('connectionStatus').innerText = 'Status: Offline (Mode Lokal)';
+            }
+        }
 
-            renderPOS(); renderCustomerHistory();
-            if (userRole === 'owner') { renderStok(); renderBahanDanResep(); renderAbsensiKaryawan(); renderKeuanganDanRiwayat(); }
+        // --- 1. LOW-STOCK ALERT ---
+        function checkLowStockAlert() {
+            const lowItems = ingredients.filter(i => Number(i.stok_bahan) <= 5);
+            const alertBox = document.getElementById('lowStockAlert');
+            if (lowItems.length > 0 && userRole === 'owner') {
+                alertBox.classList.remove('hidden');
+                document.getElementById('lowStockText').innerText = `⚠️ Peringatan Stok Menipis: ${lowItems.map(i => i.nama_bahan + ' (' + i.stok_bahan + ' ' + i.satuan + ')').join(', ')}`;
+            } else {
+                alertBox.classList.add('hidden');
+            }
         }
 
         function hitungStokPorsi(productId) {
@@ -483,35 +355,53 @@
         function setCategoryFilter(cat) { activeCategory = cat; renderPOS(); }
         function renderPOS() {
             const cats = ['Semua', ...new Set(products.map(p => p.kategori))];
-            document.getElementById('posCategoryFilter').innerHTML = cats.map(c => `
-                <button onclick="setCategoryFilter('${c}')" class="px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 transition ${activeCategory === c ? 'bg-amber-600 text-white' : 'bg-white text-stone-600 border'}">${c}</button>
-            `).join('');
+            document.getElementById('posCategoryFilter').innerHTML = cats.map(c => `<button onclick="setCategoryFilter('${c}')" class="px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 transition ${activeCategory === c ? 'bg-amber-600 text-white' : 'bg-white text-stone-600 border'}">${c}</button>`).join('');
             const filtered = activeCategory === 'Semua' ? products : products.filter(p => p.kategori === activeCategory);
             document.getElementById('posMenuGrid').innerHTML = filtered.length === 0 ? `<p class="text-xs text-stone-400">Kosong</p>` : filtered.map(p => {
                 const sisa = hitungStokPorsi(p.id), habis = sisa !== null && sisa <= 0;
                 return `
-                    <button onclick="addToCart(${p.id})" ${habis ? 'disabled' : ''} class="p-3.5 rounded-xl border text-left transition flex flex-col justify-between ${habis ? 'bg-stone-100 opacity-50' : 'bg-white hover:border-amber-600 shadow-sm'}">
+                    <button onclick="bukaModalCustom(${p.id})" ${habis ? 'disabled' : ''} class="p-3.5 rounded-xl border text-left transition flex flex-col justify-between ${habis ? 'bg-stone-100 opacity-50' : 'bg-white hover:border-amber-600 shadow-sm'}">
                         <div><span class="text-[10px] px-2 py-0.5 bg-stone-100 rounded">${p.kategori}</span><h4 class="font-bold text-sm mt-1.5">${p.nama_produk}</h4></div>
-                        <div class="mt-3 flex justify-between items-center w-full"><span class="text-xs font-extrabold text-amber-700">Rp ${p.harga.toLocaleString('id-ID')}</span><span class="text-[10px] font-bold ${sisa <= 5 ? 'text-red-600' : 'text-emerald-700'}">${sisa === null ? '+ Pilih' : 'Stok: ' + sisa}</span></div>
+                        <div class="mt-3 flex justify-between items-center w-full"><span class="text-xs font-extrabold text-amber-700">Rp ${p.harga.toLocaleString('id-ID')}</span><span class="text-[10px] font-bold ${sisa <= 5 ? 'text-red-600' : 'text-emerald-700'}">${sisa === null ? '+ Custom' : 'Stok: ' + sisa}</span></div>
                     </button>
                 `;
             }).join('');
         }
 
-        function addToCart(id) {
-            const prod = products.find(p => p.id === id);
-            if (!prod) return;
-            const existing = cart.find(c => c.id === id && c.size === 'Reg');
-            if (existing) existing.qty++;
-            else cart.push({ cartKey: `${id}_Reg_${Date.now()}`, id: prod.id, namaAsli: prod.nama_produk, hargaDasar: prod.harga, size: 'Reg', hargaFinal: prod.harga, qty: 1 });
-            renderCart();
+        // --- 2. MANAJEMEN VARIAN & ADD-ON (POP-UP CUSTOMIZATION) ---
+        function bukaModalCustom(id) {
+            selectedMenuForCustom = products.find(p => p.id === id);
+            if (!selectedMenuForCustom) return;
+            document.getElementById('modalTitle').innerText = `Custom: ${selectedMenuForCustom.nama_produk}`;
+            document.getElementById('optIce').value = 'Normal Ice';
+            document.getElementById('optSugar').value = 'Normal Sugar';
+            document.getElementById('optExtraShot').checked = false;
+            document.getElementById('customModal').classList.remove('hidden');
         }
+        function tutupModalCustom() { document.getElementById('customModal').classList.add('hidden'); selectedMenuForCustom = null; }
 
-        function toggleSizeCart(cartKey) {
-            const item = cart.find(c => c.cartKey === cartKey);
-            if (!item) return;
-            if (item.size === 'Reg') { item.size = 'Large'; item.hargaFinal = item.hargaDasar + 5000; }
-            else { item.size = 'Reg'; item.hargaFinal = item.hargaDasar; }
+        function simpanCustomCart() {
+            if (!selectedMenuForCustom) return;
+            const p = selectedMenuForCustom;
+            const ice = document.getElementById('optIce').value;
+            const sugar = document.getElementById('optSugar').value;
+            const extraShot = document.getElementById('optExtraShot').checked;
+            
+            let hargaFinal = p.harga;
+            let noteAddon = `${ice}, ${sugar}`;
+            if (extraShot) { hargaFinal += 5000; noteAddon += ', Extra Shot Espresso'; }
+
+            cart.push({
+                cartKey: `${p.id}_${Date.now()}`,
+                id: p.id,
+                namaAsli: p.nama_produk,
+                hargaDasar: p.harga,
+                size: 'Reg',
+                hargaFinal: hargaFinal,
+                catatanCustom: noteAddon,
+                qty: 1
+            });
+            tutupModalCustom();
             renderCart();
         }
 
@@ -531,7 +421,8 @@
             list.innerHTML = cart.map(c => `
                 <div class="flex justify-between items-center bg-stone-50 p-2 rounded-lg border">
                     <div><p class="font-bold text-xs">${c.namaAsli}</p>
-                        <div class="flex items-center gap-1.5 mt-0.5"><button onclick="toggleSizeCart('${c.cartKey}')" class="text-[10px] font-bold px-1.5 py-0.5 rounded border ${c.size === 'Large' ? 'bg-amber-600 text-white' : 'bg-white'}">${c.size === 'Large' ? 'Large (+5K)' : 'Reg'}</button><span class="text-[11px] text-stone-500">${c.qty} x Rp ${c.hargaFinal.toLocaleString('id-ID')}</span></div>
+                        <p class="text-[10px] text-amber-700 font-semibold">${c.catatanCustom}</p>
+                        <span class="text-[11px] text-stone-500">${c.qty} x Rp ${c.hargaFinal.toLocaleString('id-ID')}</span>
                     </div>
                     <div class="flex items-center gap-2"><span class="font-bold text-xs">Rp ${(c.hargaFinal * c.qty).toLocaleString('id-ID')}</span><button onclick="kurangiItemCart('${c.cartKey}')" class="text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">-</button></div>
                 </div>
@@ -558,10 +449,18 @@
             const custNama = document.getElementById('custNama').value.trim() || 'Pelanggan';
             const custCatatan = document.getElementById('custCatatan').value.trim() || '-';
             const waktu = new Date().toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' });
-            const rincianDB = `${custNama} (Kasir: ${userRole}): ` + cart.map(c => `${c.namaAsli}${c.size === 'Large' ? ' (L)' : ''} (${c.qty}x)`).join(', ') + (custCatatan !== '-' ? ` [Note: ${custCatatan}]` : '');
+            const rincianDB = `${custNama} (Kasir: ${userRole}): ` + cart.map(c => `${c.namaAsli} (${c.catatanCustom}) (${c.qty}x)`).join(', ') + (custCatatan !== '-' ? ` [Note: ${custCatatan}]` : '');
 
-            await db.from('transactions').insert([{ rincian_item: rincianDB, total_harga: total, metode_bayar: metode, items_json: JSON.stringify(cart.map(c => ({ id: c.id, qty: c.qty }))) }]);
-            await db.from('customer_orders').insert([{ nama_pelanggan: custNama.toLowerCase(), total_belanja: total, rincian_pesanan: rincianDB }]);
+            // Simpan transaksi & Sinkronisasi Offline Backup ke localStorage
+            try {
+                await db.from('transactions').insert([{ rincian_item: rincianDB, total_harga: total, metode_bayar: metode, items_json: JSON.stringify(cart.map(c => ({ id: c.id, qty: c.qty }))) }]);
+                await db.from('customer_orders').insert([{ nama_pelanggan: custNama.toLowerCase(), total_belanja: total, rincian_pesanan: rincianDB }]);
+            } catch (e) {
+                let offlineTrans = JSON.parse(localStorage.getItem('goozy_offline') || '[]');
+                offlineTrans.push({ rincian_item: rincianDB, total_harga: total, metode_bayar: metode });
+                localStorage.setItem('goozy_offline', JSON.stringify(offlineTrans));
+                alert('Internet terputus! Transaksi disimpan di Mode Offline HP.');
+            }
 
             for (const item of cart) {
                 for (const r of recipes.filter(r => r.product_id === item.id)) {
@@ -570,11 +469,11 @@
                 }
             }
 
-            lastOrder = { waktu, custNama, custCatatan, custWA: document.getElementById('custWA').value.trim(), metode, diskon: parseInt(document.getElementById('inputDiskon').value)||0, total, uangDiterima: metode === 'Tunai' ? terima : total, kembalian: metode === 'Tunai' ? (terima - total) : 0, items: cart.map(c => ({ nama: `${c.namaAsli}${c.size === 'Large' ? ' (Large)' : ''}`, harga: c.hargaFinal, qty: c.qty })) };
+            lastOrder = { waktu, custNama, custCatatan, custWA: document.getElementById('custWA').value.trim(), metode, diskon: parseInt(document.getElementById('inputDiskon').value)||0, total, uangDiterima: metode === 'Tunai' ? terima : total, kembalian: metode === 'Tunai' ? (terima - total) : 0, items: cart.map(c => ({ nama: `${c.namaAsli} (${c.catatanCustom})`, harga: c.hargaFinal, qty: c.qty })) };
             tampilkanModalStruk(); clearCart(); loadAllData();
         }
 
-        // --- RENDER RIWAYAT PELANGGAN ---
+        // --- 3. TAB LOYALITAS PELANGGAN ---
         function renderCustomerHistory() {
             const container = document.getElementById('customerHistoryList');
             if (customerOrders.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400">Belum ada riwayat order pelanggan.</p>`; return; }
@@ -582,44 +481,42 @@
             customerOrders.forEach(o => {
                 const name = o.nama_pelanggan;
                 if (!grouped[name]) grouped[name] = { count: 0, totalSpent: 0, items: [] };
-                grouped[name].count++;
-                grouped[name].totalSpent += o.total_belanja;
-                grouped[name].items.push(o.rincian_pesanan);
+                grouped[name].count++; grouped[name].totalSpent += o.total_belanja; grouped[name].items.push(o.rincian_pesanan);
             });
             container.innerHTML = Object.keys(grouped).map(name => {
                 const data = grouped[name];
-                return `
-                    <div class="p-4 rounded-xl border bg-stone-50 space-y-2">
-                        <div class="flex justify-between items-center border-b pb-2">
-                            <div>
-                                <h4 class="font-bold text-sm text-stone-900 uppercase">👤 ${name}</h4>
-                                <p class="text-xs text-amber-700 font-semibold">Sudah order: <b>${data.count} kali</b> | Total Belanja: Rp ${data.totalSpent.toLocaleString('id-ID')}</p>
-                            </div>
-                            <span class="px-2 py-1 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full">Loyal Customer</span>
-                        </div>
-                        <div class="text-xs text-stone-600 space-y-1">
-                            <p class="font-semibold text-stone-700">Daftar Pesanan Sebelumnya:</p>
-                            <ul class="list-disc pl-4 space-y-0.5">${data.items.map(i => `<li>${i}</li>`).join('')}</ul>
-                        </div>
-                    </div>
-                `;
+                return `<div class="p-4 rounded-xl border bg-stone-50 space-y-2"><div class="flex justify-between items-center border-b pb-2"><div><h4 class="font-bold text-sm uppercase">👤 ${name}</h4><p class="text-xs text-amber-700 font-semibold">Order: <b>${data.count}x</b> | Total: Rp ${data.totalSpent.toLocaleString('id-ID')}</p></div><span class="px-2 py-1 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full">Loyal</span></div><ul class="list-disc pl-4 text-xs space-y-0.5">${data.items.map(i => `<li>${i}</li>`).join('')}</ul></div>`;
             }).join('');
         }
 
-        // --- ADMIN & KEUANGAN ---
+        // --- 4. ANALISIS MENU TERLARIS (BEST SELLER) ---
+        function renderBestSeller() {
+            const container = document.getElementById('bestSellerList');
+            const counts = {};
+            allTransactions.forEach(t => {
+                if (t.items_json) {
+                    try {
+                        JSON.parse(t.items_json).forEach(item => {
+                            const prod = products.find(p => p.id === item.id);
+                            if (prod) { counts[prod.nama_produk] = (counts[prod.nama_produk] || 0) + item.qty; }
+                        });
+                    } catch(e) {}
+                }
+            });
+            const sorted = Object.keys(counts).sort((a,b) => counts[b] - counts[a]);
+            if (sorted.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400">Belum ada data penjualan.</p>`; return; }
+            container.innerHTML = sorted.map((name, idx) => `
+                <div class="p-3 rounded-xl border bg-stone-50 flex justify-between items-center text-xs">
+                    <div><span class="font-extrabold text-amber-700 mr-2">#${idx+1}</span><b>${name}</b></div>
+                    <span class="px-2.5 py-1 bg-amber-100 text-amber-800 font-bold rounded-full">Terjual: ${counts[name]} cup</span>
+                </div>
+            `).join('');
+        }
+
+        // ADMIN & KEUANGAN
         function renderAbsensiKaryawan() {
-            document.getElementById('employeeManagerList').innerHTML = employees.map(e => `
-                <div class="flex justify-between items-center bg-stone-50 p-3 rounded-xl border text-xs">
-                    <div><b>${e.nama_karyawan}</b><br><span class="text-stone-400">PIN: ${e.pin || '1234'}</span></div>
-                    <button onclick="gantiPinKaryawan(${e.id}, '${e.nama_karyawan}')" class="text-amber-700 font-bold bg-amber-50 px-2 py-1 rounded">Ganti PIN</button>
-                </div>
-            `).join('');
-            document.getElementById('attendanceList').innerHTML = attendances.length === 0 ? '<p class="text-xs text-stone-400">Kosong</p>' : attendances.map(a => `
-                <div class="py-2.5 flex justify-between items-center text-xs">
-                    <div><b>${a.nama_karyawan}</b><br><span class="text-stone-400">${new Date(a.created_at).toLocaleString('id-ID')}</span></div>
-                    <div class="flex items-center gap-3"><span class="px-2 py-0.5 rounded font-bold text-[10px] bg-emerald-100 text-emerald-800">${a.status}</span><b>Rp ${a.gaji_harian.toLocaleString('id-ID')}</b></div>
-                </div>
-            `).join('');
+            document.getElementById('employeeManagerList').innerHTML = employees.map(e => `<div class="flex justify-between items-center bg-stone-50 p-3 rounded-xl border text-xs"><div><b>${e.nama_karyawan}</b><br><span class="text-stone-400">PIN: ${e.pin || '1234'}</span></div><button onclick="gantiPinKaryawan(${e.id}, '${e.nama_karyawan}')" class="text-amber-700 font-bold bg-amber-50 px-2 py-1 rounded">Ganti PIN</button></div>`).join('');
+            document.getElementById('attendanceList').innerHTML = attendances.length === 0 ? '<p class="text-xs text-stone-400">Kosong</p>' : attendances.map(a => `<div class="py-2.5 flex justify-between items-center text-xs"><div><b>${a.nama_karyawan}</b><br><span class="text-stone-400">${new Date(a.created_at).toLocaleString('id-ID')}</span></div><div class="flex items-center gap-3"><span class="px-2 py-0.5 rounded font-bold text-[10px] bg-emerald-100 text-emerald-800">${a.status}</span><b>Rp ${a.gaji_harian.toLocaleString('id-ID')}</b></div></div>`).join('');
         }
         async function gantiPinKaryawan(id, nama) { const p = prompt(`PIN baru untuk ${nama}:`); if (p) { await db.from('employees').update({ pin: p.trim() }).eq('id', id); loadAllData(); } }
         async function tambahKaryawanBaru() { const n = prompt('Nama:'), p = prompt('PIN:'); if (n && p) { await db.from('employees').insert([{ nama_karyawan: n.trim(), pin: p.trim() }]); loadAllData(); } }
@@ -658,15 +555,8 @@
             document.getElementById('statPengeluaran').innerText = 'Rp ' + totalExp.toLocaleString('id-ID');
             document.getElementById('statBersih').innerText = 'Rp ' + (omzet - totalExp).toLocaleString('id-ID');
 
-            document.getElementById('transaksiList').innerHTML = tF.length === 0 ? '<p class="text-xs text-stone-400 py-2">Kosong</p>' : tF.map(t => `
-                <div class="py-2.5 flex justify-between items-center text-xs">
-                    <div><b>${t.rincian_item}</b><br><span class="text-stone-400">${new Date(t.created_at).toLocaleString('id-ID')} • ${t.metode_bayar} • Rp ${t.total_harga.toLocaleString('id-ID')}</span></div>
-                    <button onclick="cancelTransaksi(${t.id})" class="text-[10px] bg-red-50 text-red-600 font-bold px-2 py-1 rounded">❌ Cancel</button>
-                </div>
-            `).join('');
-            document.getElementById('expenseList').innerHTML = eF.length === 0 ? '<p class="text-xs text-stone-400 py-2">Kosong</p>' : eF.map(e => `
-                <div class="py-2 flex justify-between items-center text-xs"><span><b>${e.keterangan}</b> (-Rp ${e.nominal.toLocaleString('id-ID')})</span><button onclick="hapusExp(${e.id})" class="text-stone-400">✕</button></div>
-            `).join('');
+            document.getElementById('transaksiList').innerHTML = tF.length === 0 ? '<p class="text-xs text-stone-400 py-2">Kosong</p>' : tF.map(t => `<div class="py-2.5 flex justify-between items-center text-xs"><div><b>${t.rincian_item}</b><br><span class="text-stone-400">${new Date(t.created_at).toLocaleString('id-ID')} • ${t.metode_bayar} • Rp ${t.total_harga.toLocaleString('id-ID')}</span></div><button onclick="cancelTransaksi(${t.id})" class="text-[10px] bg-red-50 text-red-600 font-bold px-2 py-1 rounded">❌ Cancel</button></div>`).join('');
+            document.getElementById('expenseList').innerHTML = eF.length === 0 ? '<p class="text-xs text-stone-400 py-2">Kosong</p>' : eF.map(e => `<div class="py-2 flex justify-between items-center text-xs"><span><b>${e.keterangan}</b> (-Rp ${e.nominal.toLocaleString('id-ID')})</span><button onclick="hapusExp(${e.id})" class="text-stone-400">✕</button></div>`).join('');
         }
 
         async function tambahPengeluaran(e) { e.preventDefault(); await db.from('expenses').insert([{ keterangan: document.getElementById('expKet').value, nominal: parseInt(document.getElementById('expNominal').value) }]); e.target.reset(); loadAllData(); }
@@ -675,8 +565,7 @@
         function exportLaporanCSV() {
             let csv = 'ID,Waktu,Rincian,Metode,Total\n';
             (rekapFilter === 'today' ? allTransactions.filter(t => isToday(t.created_at)) : allTransactions).forEach(t => { csv += `${t.id},"${new Date(t.created_at).toLocaleString('id-ID')}","${t.rincian_item.replace(/"/g, '""')}",${t.metode_bayar},${t.total_harga}\n`; });
-            const link = document.createElement('a'); link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-            link.download = `Laporan_${rekapFilter}.csv`; link.click();
+            const link = document.createElement('a'); link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); link.download = `Laporan_${rekapFilter}.csv`; link.click();
         }
 
         function kirimRekapShiftWA() {
@@ -689,7 +578,6 @@
             let noOwner = prompt('Masukkan Nomor WhatsApp Owner (08...):');
             if (!noOwner) return;
             noOwner = noOwner.replace(/[^0-9]/g, ''); if (noOwner.startsWith('0')) noOwner = '62' + noOwner.slice(1);
-
             let t = `*REKAP SHIFT GOOZY.CO*\nWaktu: ${new Date().toLocaleString('id-ID')}\nPelapor: ${userRole}\n------------------------\n• Total Omzet: Rp ${omzet.toLocaleString('id-ID')}\n• Tunai (Laci): Rp ${tunai.toLocaleString('id-ID')}\n• QRIS (Rekening): Rp ${qris.toLocaleString('id-ID')}\n• Pengeluaran: Rp ${eF.reduce((s, e) => s + e.nominal, 0).toLocaleString('id-ID')}\n------------------------\n*SISA KAS BERSIH: Rp ${bersih.toLocaleString('id-ID')}*\n\nTerima kasih! Laporan shift harian Goozy.co 🚀`;
             window.open(`https://api.whatsapp.com/send?phone=${noOwner}&text=${encodeURIComponent(t)}`, '_blank');
         }
