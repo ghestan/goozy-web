@@ -310,4 +310,127 @@
         }
 
         async function prosesBayar() {
-            if
+            if (cart.length === 0) return alert('Pilih menu terlebih dahulu!');
+            const btn = document.getElementById('btnBayar');
+            btn.innerText = 'Memproses...';
+            btn.disabled = true;
+
+            const rincian = cart.map(c => `${c.nama} (${c.qty}x)`).join(', ');
+            const total = cart.reduce((sum, c) => sum + (c.harga * c.qty), 0);
+            const metode = document.getElementById('metodeBayar').value;
+
+            // Simpan transaksi
+            const { error } = await db.from('transactions').insert([{ rincian_item: rincian, total_harga: total, metode_bayar: metode }]);
+            
+            // Potong stok otomatis
+            for (const item of cart) {
+                await db.from('products').update({ stok: item.sisaStok - item.qty }).eq('id', item.id);
+            }
+
+            btn.innerText = 'Bayar & Cetak';
+            btn.disabled = false;
+
+            if (!error) {
+                alert(`Transaksi Berhasil!\nTotal: Rp ${total.toLocaleString('id-ID')} (${metode})`);
+                clearCart();
+                loadAllData();
+            } else {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // 4. LOGIKA KELOLA STOK & PRODUK
+        function renderStok() {
+            const list = document.getElementById('stokList');
+            list.innerHTML = products.map(p => `
+                <div class="py-3 flex justify-between items-center">
+                    <div>
+                        <p class="font-bold text-stone-800">${p.nama_produk} <span class="text-xs font-normal text-stone-400">(${p.kategori})</span></p>
+                        <p class="text-xs text-amber-700 font-semibold">Rp ${p.harga.toLocaleString('id-ID')}</p>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="ubahStok(${p.id}, ${p.stok - 1})" class="px-2.5 py-1 bg-stone-100 hover:bg-stone-200 rounded text-xs font-bold">-1</button>
+                        <span class="w-10 text-center font-bold text-xs ${p.stok <= 5 ? 'text-red-600' : ''}">${p.stok}</span>
+                        <button onclick="ubahStok(${p.id}, ${p.stok + 1})" class="px-2.5 py-1 bg-stone-100 hover:bg-stone-200 rounded text-xs font-bold">+1</button>
+                        <button onclick="ubahStok(${p.id}, ${p.stok + 5})" class="px-2 py-1 bg-amber-100 text-amber-800 hover:bg-amber-200 rounded text-xs font-bold">+5</button>
+                        <button onclick="hapusProduk(${p.id})" class="ml-2 text-xs text-red-500 hover:underline">Hapus</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function tambahProduk(e) {
+            e.preventDefault();
+            const nama_produk = document.getElementById('prodNama').value;
+            const kategori = document.getElementById('prodKategori').value;
+            const harga = parseInt(document.getElementById('prodHarga').value);
+            const stok = parseInt(document.getElementById('prodStok').value);
+
+            await db.from('products').insert([{ nama_produk, kategori, harga, stok }]);
+            e.target.reset();
+            loadAllData();
+        }
+
+        async function ubahStok(id, stokBaru) {
+            if (stokBaru < 0) return;
+            await db.from('products').update({ stok: stokBaru }).eq('id', id);
+            loadAllData();
+        }
+
+        async function hapusProduk(id) {
+            if (!confirm('Hapus menu ini?')) return;
+            await db.from('products').delete().eq('id', id);
+            loadAllData();
+        }
+
+        // 5. LOGIKA REKAP TRANSAKSI & MASUKAN
+        function renderTransaksi(data) {
+            const list = document.getElementById('transaksiList');
+            let omzet = 0;
+            if (data.length === 0) {
+                list.innerHTML = '<p class="text-xs text-stone-400 py-2">Belum ada transaksi.</p>';
+                document.getElementById('totalOmzet').innerText = 'Omzet: Rp 0';
+                return;
+            }
+            list.innerHTML = data.map(t => {
+                omzet += t.total_harga;
+                const waktu = new Date(t.created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' });
+                return `
+                    <div class="py-2.5">
+                        <div class="flex justify-between font-semibold text-xs">
+                            <span>${t.rincian_item}</span>
+                            <span class="text-emerald-700">Rp ${t.total_harga.toLocaleString('id-ID')}</span>
+                        </div>
+                        <div class="flex justify-between text-[11px] text-stone-400 mt-0.5">
+                            <span>${waktu}</span>
+                            <span class="font-medium text-stone-600">${t.metode_bayar}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('totalOmzet').innerText = 'Omzet: Rp ' + omzet.toLocaleString('id-ID');
+        }
+
+        function renderFeedback(data) {
+            const list = document.getElementById('feedbackList');
+            if (data.length === 0) {
+                list.innerHTML = '<p class="text-xs text-stone-400 py-2">Belum ada masukan pelanggan.</p>';
+                return;
+            }
+            list.innerHTML = data.map(f => {
+                const waktu = new Date(f.created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' });
+                return `
+                    <div class="py-2.5">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-xs">${f.nama}</span>
+                            <span class="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded">${f.kategori}</span>
+                        </div>
+                        <p class="text-xs text-stone-600 mt-1">${f.pesan}</p>
+                        <span class="text-[10px] text-stone-400">${waktu}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+    </script>
+</body>
+</html>
