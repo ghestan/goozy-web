@@ -11,20 +11,10 @@
             body * { visibility: hidden; }
             #printArea, #printArea * { visibility: visible; }
             #printArea {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 58mm;
-                font-family: monospace;
-                color: #000;
-                background: #fff;
+                position: absolute; left: 0; top: 0; width: 58mm;
+                font-family: monospace; color: #000; background: #fff;
             }
-            .page-break {
-                page-break-after: always;
-                border-bottom: 1px dashed #ccc;
-                padding-bottom: 8px;
-                margin-bottom: 8px;
-            }
+            .page-break { page-break-after: always; border-bottom: 1px dashed #ccc; padding-bottom: 8px; margin-bottom: 8px; }
         }
     </style>
 </head>
@@ -34,39 +24,39 @@
     <nav class="bg-white shadow-sm px-6 py-4 flex justify-between items-center sticky top-0 z-20">
         <div class="flex items-center gap-2">
             <h1 class="text-xl font-extrabold tracking-tight text-stone-900">GOOZY.CO</h1>
-            <span id="badgeMode" class="hidden text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded">STAFF MODE</span>
+            <span id="badgeMode" class="hidden text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded">OWNER MODE</span>
         </div>
-        <div>
+        <div class="flex gap-2">
+            <button onclick="bukaModalAbsen()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg font-bold transition">
+                🕒 Absen / Izin Karyawan
+            </button>
             <button id="btnLogin" onclick="toggleStaffMode()" class="text-xs bg-stone-900 text-white px-3.5 py-2 rounded-lg hover:bg-stone-700 transition font-medium">
-                Login Staff / POS
+                Login Owner
             </button>
         </div>
     </nav>
 
-    <!-- ================= HALAMAN PUBLIK (KATALOG MENU & MASUKAN PELANGGAN) ================= -->
+    <!-- ================= HALAMAN PUBLIK ================= -->
     <main id="publicView" class="max-w-4xl mx-auto w-full px-4 sm:px-6 py-8 space-y-10">
-        <!-- Hero Banner -->
         <div class="text-center max-w-xl mx-auto">
             <span class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full">Specialty Coffee, Matcha & Refresher</span>
             <h2 class="text-3xl font-extrabold mt-3 text-stone-900">Our Signature Menu</h2>
             <p class="text-sm text-stone-500 mt-1">Semua minuman tersedia dalam ukuran Regular & Large (+5K).</p>
         </div>
 
-        <!-- Katalog Menu Publik Otomatis -->
         <div id="publicMenuContainer" class="space-y-6"></div>
 
-        <!-- Form Keluhan & Masukan -->
         <div class="max-w-md mx-auto bg-white p-6 rounded-2xl shadow-sm border border-stone-200">
             <h3 class="font-bold text-lg mb-1">Kotak Suara Pelanggan</h3>
-            <p class="text-xs text-stone-500 mb-4">Punya masukan soal rasa minuman atau pelayanan kami? Tulis langsung di bawah ya.</p>
+            <p class="text-xs text-stone-500 mb-4">Punya masukan soal rasa minuman atau pelayanan kami?</p>
             <form id="feedbackForm" onsubmit="kirimMasukan(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-medium text-stone-600 mb-1">Nama (Opsional)</label>
-                    <input type="text" id="nama" placeholder="Boleh dikosongkan" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm focus:outline-none focus:border-stone-800">
+                    <input type="text" id="nama" placeholder="Boleh dikosongkan" class="w-full px-3 py-2 border rounded-lg text-sm">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-stone-600 mb-1">Kategori</label>
-                    <select id="kategori" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm bg-white focus:outline-none focus:border-stone-800">
+                    <select id="kategori" class="w-full px-3 py-2 border rounded-lg text-sm bg-white">
                         <option value="Matcha & Coffee">Matcha & Coffee</option>
                         <option value="Non-Coffee, Tea & Soda">Non-Coffee, Tea & Soda</option>
                         <option value="Pelayanan / Booth">Pelayanan / Booth</option>
@@ -74,8 +64,8 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-stone-600 mb-1">Kritik / Masukan / Request Menu</label>
-                    <textarea id="pesan" rows="3" required placeholder="Ceritakan pengalamanmu..." class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm focus:outline-none focus:border-stone-800"></textarea>
+                    <label class="block text-xs font-medium text-stone-600 mb-1">Kritik / Masukan</label>
+                    <textarea id="pesan" rows="3" required placeholder="Ceritakan pengalamanmu..." class="w-full px-3 py-2 border rounded-lg text-sm"></textarea>
                 </div>
                 <button type="submit" id="btnSubmitFeedback" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2.5 rounded-lg text-sm transition">
                     Kirim Masukan
@@ -84,46 +74,43 @@
         </div>
     </main>
 
-    <!-- ================= HALAMAN INTERNAL (KASIR, MENU, RESEP/HPP, KEUANGAN) ================= -->
+    <!-- ================= HALAMAN INTERNAL OWNER ================= -->
     <main id="staffView" class="hidden max-w-6xl mx-auto w-full px-4 py-6 flex-1">
         
-        <!-- Panel Koneksi 2 Printer Bluetooth -->
         <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-stone-200 mb-5 flex flex-wrap gap-3 justify-between items-center">
             <div class="text-xs">
                 <span class="font-bold text-stone-800">📡 Koneksi Dual Printer Bluetooth</span>
-                <p class="text-[11px] text-stone-400">Sambungkan printer struk dan printer stiker label cup secara terpisah via Chrome.</p>
+                <p class="text-[11px] text-stone-400">Sambungkan printer struk dan stiker cup via Chrome.</p>
             </div>
             <div class="flex flex-wrap gap-2">
-                <button onclick="connectPrinter('receipt')" id="btnPrinterStruk" class="text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 px-3 py-2 rounded-xl font-semibold border border-stone-300 transition">
+                <button onclick="connectPrinter('receipt')" id="btnPrinterStruk" class="text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 px-3 py-2 rounded-xl font-semibold border">
                     🖨️ Printer Struk: <span class="text-red-600">Terputus</span>
                 </button>
-                <button onclick="connectPrinter('label')" id="btnPrinterLabel" class="text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 px-3 py-2 rounded-xl font-semibold border border-stone-300 transition">
+                <button onclick="connectPrinter('label')" id="btnPrinterLabel" class="text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 px-3 py-2 rounded-xl font-semibold border">
                     🏷️ Printer Stiker: <span class="text-red-600">Terputus</span>
                 </button>
             </div>
         </div>
 
-        <!-- Navigasi Tab Internal -->
         <div class="flex gap-2 mb-6 border-b border-stone-200 pb-3 overflow-x-auto">
             <button onclick="switchTab('pos')" id="tab-pos" class="px-4 py-2 rounded-lg text-sm font-semibold bg-stone-900 text-white shrink-0">🛒 Kasir (POS)</button>
-            <button onclick="switchTab('stok')" id="tab-stok" class="px-4 py-2 rounded-lg text-sm font-semibold bg-white text-stone-600 border border-stone-200 shrink-0">📋 Daftar Menu</button>
-            <button onclick="switchTab('resep')" id="tab-resep" class="px-4 py-2 rounded-lg text-sm font-semibold bg-white text-stone-600 border border-stone-200 shrink-0">🧪 Bahan Baku, Resep & HPP</button>
-            <button onclick="switchTab('rekap')" id="tab-rekap" class="px-4 py-2 rounded-lg text-sm font-semibold bg-white text-stone-600 border border-stone-200 shrink-0">📊 Keuangan, Riwayat & Pengeluaran</button>
+            <button onclick="switchTab('stok')" id="tab-stok" class="px-4 py-2 rounded-lg text-sm font-semibold bg-white text-stone-600 border shrink-0">📋 Daftar Menu</button>
+            <button onclick="switchTab('resep')" id="tab-resep" class="px-4 py-2 rounded-lg text-sm font-semibold bg-white text-stone-600 border shrink-0">🧪 Bahan, Resep & HPP</button>
+            <button onclick="switchTab('absen')" id="tab-absen" class="px-4 py-2 rounded-lg text-sm font-semibold bg-white text-stone-600 border shrink-0">🕒 Rekap Absen & Gaji</button>
+            <button onclick="switchTab('rekap')" id="tab-rekap" class="px-4 py-2 rounded-lg text-sm font-semibold bg-white text-stone-600 border shrink-0">📊 Keuangan & Riwayat</button>
         </div>
 
-        <!-- 1. TAB KASIR (POS) -->
+        <!-- 1. TAB KASIR -->
         <div id="content-pos" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div class="lg:col-span-2">
-                <!-- Filter Kategori Cepat -->
                 <div id="posCategoryFilter" class="flex gap-1.5 overflow-x-auto pb-3 mb-2"></div>
                 <div id="posMenuGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
             </div>
 
-            <!-- Keranjang, Kalkulator Kembalian & Pembayaran -->
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200 h-fit">
                 <div class="flex justify-between items-center border-b pb-2 mb-3">
                     <h3 class="font-bold text-base">Keranjang Kasir</h3>
-                    <span class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded font-semibold">Klik [Reg] utk Upgrade Large +5K</span>
+                    <span class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded font-semibold">Klik [Reg] utk Large +5K</span>
                 </div>
 
                 <div id="cartList" class="space-y-2 text-sm mb-4 min-h-[80px] text-stone-400 flex items-center justify-center">
@@ -133,46 +120,45 @@
                 <div class="border-t pt-3 space-y-2.5">
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-[11px] font-medium text-stone-600 mb-0.5">Nama Pembeli (Di Cup)</label>
-                            <input type="text" id="custNama" placeholder="Kak Dinda" class="w-full px-2.5 py-1.5 border border-stone-300 rounded-lg text-xs">
+                            <label class="block text-[11px] font-medium text-stone-600 mb-0.5">Nama Pembeli</label>
+                            <input type="text" id="custNama" placeholder="Kak Dinda" class="w-full px-2.5 py-1.5 border rounded-lg text-xs">
                         </div>
                         <div>
-                            <label class="block text-[11px] font-medium text-stone-600 mb-0.5">No. WA (Opsional)</label>
-                            <input type="tel" id="custWA" placeholder="0812..." class="w-full px-2.5 py-1.5 border border-stone-300 rounded-lg text-xs">
+                            <label class="block text-[11px] font-medium text-stone-600 mb-0.5">No. WA</label>
+                            <input type="tel" id="custWA" placeholder="0812..." class="w-full px-2.5 py-1.5 border rounded-lg text-xs">
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-[11px] font-medium text-stone-600 mb-0.5">Catatan Pesanan (Less Sugar, Extra Ice, dll)</label>
-                        <input type="text" id="custCatatan" placeholder="Contoh: Matcha Less Sugar" class="w-full px-2.5 py-1.5 border border-stone-300 rounded-lg text-xs">
+                        <label class="block text-[11px] font-medium text-stone-600 mb-0.5">Catatan Pesanan</label>
+                        <input type="text" id="custCatatan" placeholder="Less Sugar, Extra Ice" class="w-full px-2.5 py-1.5 border rounded-lg text-xs">
                     </div>
 
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-[11px] font-medium text-stone-600 mb-0.5">Metode Bayar</label>
-                            <select id="metodeBayar" onchange="toggleCashSection()" class="w-full px-2.5 py-1.5 border border-stone-300 rounded-lg text-xs bg-white font-semibold">
+                            <select id="metodeBayar" onchange="toggleCashSection()" class="w-full px-2.5 py-1.5 border rounded-lg text-xs bg-white font-semibold">
                                 <option value="QRIS">QRIS</option>
                                 <option value="Tunai">Tunai (Cash)</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[11px] font-medium text-stone-600 mb-0.5">Diskon Potongan (Rp)</label>
-                            <input type="number" id="inputDiskon" value="0" min="0" oninput="renderCart()" class="w-full px-2.5 py-1.5 border border-stone-300 rounded-lg text-xs">
+                            <label class="block text-[11px] font-medium text-stone-600 mb-0.5">Diskon (Rp)</label>
+                            <input type="number" id="inputDiskon" value="0" min="0" oninput="renderCart()" class="w-full px-2.5 py-1.5 border rounded-lg text-xs">
                         </div>
                     </div>
 
-                    <!-- Kalkulator Kembalian Khusus Tunai -->
-                    <div id="cashCalculator" class="hidden bg-stone-50 p-2.5 rounded-xl border border-stone-200 space-y-2">
+                    <div id="cashCalculator" class="hidden bg-stone-50 p-2.5 rounded-xl border space-y-2">
                         <div class="flex justify-between items-center">
-                            <label class="text-[11px] font-semibold text-stone-700">Uang Tunai Diterima (Rp)</label>
+                            <label class="text-[11px] font-semibold text-stone-700">Uang Tunai (Rp)</label>
                             <button type="button" onclick="setUangCepat('pas')" class="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold">Uang Pas</button>
                         </div>
-                        <input type="number" id="uangDiterima" placeholder="Masukkan nominal uang..." oninput="hitungKembalian()" class="w-full px-2.5 py-1.5 border border-stone-300 rounded-lg text-xs bg-white font-bold">
+                        <input type="number" id="uangDiterima" placeholder="Nominal..." oninput="hitungKembalian()" class="w-full px-2.5 py-1.5 border rounded-lg text-xs bg-white font-bold">
                         <div class="grid grid-cols-4 gap-1">
-                            <button type="button" onclick="setUangCepat(20000)" class="bg-white border rounded py-1 text-[10px] font-semibold hover:bg-stone-100">20K</button>
-                            <button type="button" onclick="setUangCepat(50000)" class="bg-white border rounded py-1 text-[10px] font-semibold hover:bg-stone-100">50K</button>
-                            <button type="button" onclick="setUangCepat(100000)" class="bg-white border rounded py-1 text-[10px] font-semibold hover:bg-stone-100">100K</button>
-                            <button type="button" onclick="setUangCepat(0)" class="bg-white border rounded py-1 text-[10px] text-red-500 font-semibold hover:bg-stone-100">Clear</button>
+                            <button type="button" onclick="setUangCepat(20000)" class="bg-white border rounded py-1 text-[10px]">20K</button>
+                            <button type="button" onclick="setUangCepat(50000)" class="bg-white border rounded py-1 text-[10px]">50K</button>
+                            <button type="button" onclick="setUangCepat(100000)" class="bg-white border rounded py-1 text-[10px]">100K</button>
+                            <button type="button" onclick="setUangCepat(0)" class="bg-white border rounded py-1 text-[10px] text-red-500">Clear</button>
                         </div>
                         <div class="flex justify-between items-center text-xs font-bold pt-1 border-t">
                             <span>Kembalian:</span>
@@ -186,24 +172,24 @@
                     </div>
 
                     <div class="flex gap-2 pt-1">
-                        <button onclick="clearCart()" class="w-1/3 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold py-2.5 rounded-lg text-xs">Reset</button>
+                        <button onclick="clearCart()" class="w-1/3 bg-stone-100 text-stone-700 font-semibold py-2.5 rounded-lg text-xs">Reset</button>
                         <button onclick="prosesBayar()" id="btnBayar" class="w-2/3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-lg text-sm">Bayar & Proses</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 2. TAB DAFTAR MENU -->
+        <!-- 2. TAB MENU -->
         <div id="content-stok" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200 h-fit">
                 <h3 class="font-bold text-base mb-3">Tambah Menu Baru</h3>
                 <form onsubmit="tambahProduk(event)" class="space-y-3">
                     <div>
-                        <label class="block text-xs text-stone-600 mb-1">Nama Menu (Beri ⭐ utk Must Try / 🔥 utk New)</label>
-                        <input type="text" id="prodNama" required placeholder="Contoh: Pistachio Latte 🔥" class="w-full px-3 py-2 border rounded-lg text-sm">
+                        <label class="block text-xs text-stone-600 mb-1">Nama Menu</label>
+                        <input type="text" id="prodNama" required placeholder="Pistachio Latte 🔥" class="w-full px-3 py-2 border rounded-lg text-sm">
                     </div>
                     <div>
-                        <label class="block text-xs text-stone-600 mb-1">Kategori Seri Menu</label>
+                        <label class="block text-xs text-stone-600 mb-1">Kategori</label>
                         <select id="prodKategori" class="w-full px-3 py-2 border rounded-lg text-sm bg-white">
                             <option value="Matcha Series">Matcha Series</option>
                             <option value="Coffee Series">Coffee Series</option>
@@ -217,174 +203,158 @@
                         <label class="block text-xs text-stone-600 mb-1">Harga Regular (Rp)</label>
                         <input type="number" id="prodHarga" required placeholder="20000" class="w-full px-3 py-2 border rounded-lg text-sm">
                     </div>
-                    <button type="submit" class="w-full bg-stone-900 hover:bg-stone-700 text-white font-semibold py-2 rounded-lg text-sm">
-                        + Simpan Menu
-                    </button>
+                    <button type="submit" class="w-full bg-stone-900 text-white font-semibold py-2 rounded-lg text-sm">+ Simpan Menu</button>
                 </form>
             </div>
-
             <div class="md:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-stone-200">
-                <h3 class="font-bold text-base mb-3">Daftar Menu Goozy Aktif</h3>
+                <h3 class="font-bold text-base mb-3">Daftar Menu Aktif</h3>
                 <div id="stokList" class="divide-y divide-stone-100 text-sm max-h-[500px] overflow-y-auto"></div>
             </div>
         </div>
 
-        <!-- 3. TAB BAHAN BAKU, RESEP & KALKULATOR HPP -->
+        <!-- 3. TAB BAHAN & RESEP -->
         <div id="content-resep" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-4">
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200">
-                    <h3 class="font-bold text-base mb-1">1. Gudang Bahan Baku & Harga Modal</h3>
-                    <p class="text-xs text-stone-400 mb-3">Contoh: Susu 1000 ml dibeli Rp 18.000 -> Harga per ml = 18.</p>
-                    <form onsubmit="tambahBahan(event)" class="grid grid-cols-2 gap-2">
-                        <input type="text" id="ingNama" required placeholder="Nama Bahan (Susu UHT)" class="col-span-2 sm:col-span-1 px-3 py-2 border rounded-lg text-xs">
+                    <h3 class="font-bold text-base mb-1">Gudang Bahan Baku & Modal</h3>
+                    <form onsubmit="tambahBahan(event)" class="grid grid-cols-2 gap-2 mt-3">
+                        <input type="text" id="ingNama" required placeholder="Nama Bahan" class="col-span-2 sm:col-span-1 px-3 py-2 border rounded-lg text-xs">
                         <select id="ingSatuan" class="px-2 py-2 border rounded-lg text-xs bg-white">
                             <option value="gram">gram (gr)</option>
-                            <option value="ml">mililiter (ml)</option>
-                            <option value="pcs">pcs / buah</option>
+                            <option value="ml">ml</option>
+                            <option value="pcs">pcs</option>
                         </select>
-                        <input type="number" step="any" id="ingStok" required placeholder="Stok Awal (Contoh: 5000)" class="px-3 py-2 border rounded-lg text-xs">
-                        <input type="number" step="any" id="ingHargaSatuan" required placeholder="Harga Modal per gr/ml/pcs (Rp)" class="px-3 py-2 border rounded-lg text-xs">
-                        <button type="submit" class="col-span-2 bg-stone-900 hover:bg-stone-700 text-white font-semibold py-2 rounded-lg text-xs">
-                            + Simpan Bahan Baku
-                        </button>
+                        <input type="number" step="any" id="ingStok" required placeholder="Stok Awal" class="px-3 py-2 border rounded-lg text-xs">
+                        <input type="number" step="any" id="ingHargaSatuan" required placeholder="Modal per satuan (Rp)" class="px-3 py-2 border rounded-lg text-xs">
+                        <button type="submit" class="col-span-2 bg-stone-900 text-white font-semibold py-2 rounded-lg text-xs">+ Simpan Bahan</button>
                     </form>
                 </div>
-
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200">
-                    <h4 class="font-bold text-sm mb-3">Daftar Stok & Biaya Bahan</h4>
-                    <div id="ingredientList" class="divide-y divide-stone-100 text-xs max-h-80 overflow-y-auto"></div>
+                    <h4 class="font-bold text-sm mb-3">Daftar Bahan</h4>
+                    <div id="ingredientList" class="divide-y text-xs max-h-80 overflow-y-auto"></div>
                 </div>
             </div>
-
             <div class="space-y-4">
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200">
-                    <h3 class="font-bold text-base mb-1">2. Rakit Resep & Hitung HPP Otomatis</h3>
-                    <p class="text-xs text-stone-400 mb-3">Sistem otomatis menghitung HPP (Modal) dan Laba Kotor tiap menu.</p>
-                    <form onsubmit="tambahResep(event)" class="space-y-2.5">
-                        <div>
-                            <label class="block text-[11px] text-stone-600 mb-0.5">Pilih Menu</label>
-                            <select id="recProduct" required class="w-full px-3 py-2 border rounded-lg text-xs bg-white"></select>
-                        </div>
+                    <h3 class="font-bold text-base mb-1">Rakit Resep Menu</h3>
+                    <form onsubmit="tambahResep(event)" class="space-y-2.5 mt-3">
+                        <select id="recProduct" required class="w-full px-3 py-2 border rounded-lg text-xs bg-white"></select>
                         <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block text-[11px] text-stone-600 mb-0.5">Bahan yang Dipakai</label>
-                                <select id="recIngredient" required class="w-full px-3 py-2 border rounded-lg text-xs bg-white"></select>
-                            </div>
-                            <div>
-                                <label class="block text-[11px] text-stone-600 mb-0.5">Takaran per 1 Cup Reg</label>
-                                <input type="number" step="any" id="recJumlah" required placeholder="Contoh: 120" class="w-full px-3 py-2 border rounded-lg text-xs">
-                            </div>
+                            <select id="recIngredient" required class="w-full px-3 py-2 border rounded-lg text-xs bg-white"></select>
+                            <input type="number" step="any" id="recJumlah" required placeholder="Takaran per cup" class="w-full px-3 py-2 border rounded-lg text-xs">
                         </div>
-                        <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2 rounded-lg text-xs">
-                            + Tambahkan ke Resep Menu
-                        </button>
+                        <button type="submit" class="w-full bg-amber-600 text-white font-semibold py-2 rounded-lg text-xs">+ Sambungkan Resep</button>
                     </form>
                 </div>
-
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200">
-                    <h4 class="font-bold text-sm mb-3">Analisa HPP, Margin Laba & Estimasi Porsi</h4>
+                    <h4 class="font-bold text-sm mb-3">Analisa HPP & Margin</h4>
                     <div id="recipeList" class="space-y-3 text-xs max-h-96 overflow-y-auto"></div>
                 </div>
             </div>
         </div>
 
-        <!-- 4. TAB KEUANGAN, PENGELUARAN & RIWAYAT -->
-        <div id="content-rekap" class="hidden space-y-6">
-            <!-- Bar Filter Tanggal & Export CSV -->
-            <div class="flex flex-wrap justify-between items-center gap-3 bg-white p-4 rounded-2xl border border-stone-200 shadow-sm">
-                <div class="flex gap-2">
-                    <button onclick="setFilterRekap('today')" id="btnFilterToday" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-stone-900 text-white">Hari Ini</button>
-                    <button onclick="setFilterRekap('all')" id="btnFilterAll" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-stone-100 text-stone-600">Semua Waktu</button>
+        <!-- 4. TAB ABSEN & GAJI -->
+        <div id="content-absen" class="hidden space-y-6">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200">
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <h3 class="font-bold text-base">Kelola Karyawan & Absensi</h3>
+                        <p class="text-xs text-stone-400">Aturan Gaji: Rp 75.000/hari. Jam 06:00 - 07:45 (Telat potong Rp 15.000 | Izin potong Rp 75.000).</p>
+                    </div>
+                    <button onclick="tambahKaryawanBaru()" class="px-3 py-2 bg-stone-900 text-white text-xs font-bold rounded-xl">+ Tambah Karyawan</button>
                 </div>
-                <button onclick="exportLaporanCSV()" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white">
-                    📥 Download Laporan Excel (.CSV)
-                </button>
+                <div id="employeeManagerList" class="flex flex-wrap gap-2 mb-4"></div>
             </div>
 
-            <!-- 4 Kartu Ringkasan Keuangan -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200">
+                <h3 class="font-bold text-base mb-3">Riwayat Absen & Gaji Harian Karyawan</h3>
+                <div id="attendanceList" class="divide-y divide-stone-100 text-sm max-h-96 overflow-y-auto"></div>
+            </div>
+        </div>
+
+        <!-- 5. TAB KEUANGAN -->
+        <div id="content-rekap" class="hidden space-y-6">
+            <div class="flex flex-wrap justify-between items-center gap-3 bg-white p-4 rounded-2xl border shadow-sm">
+                <div class="flex gap-2">
+                    <button onclick="setFilterRekap('today')" id="btnFilterToday" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-stone-900 text-white">Hari Ini</button>
+                    <button onclick="setFilterRekap('all')" id="btnFilterAll" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-stone-100 text-stone-600">Semua</button>
+                </div>
+                <button onclick="exportLaporanCSV()" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 text-white">📥 Download Excel (.CSV)</button>
+            </div>
+
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm">
-                    <p class="text-[11px] text-stone-400">Total Omzet Kotor</p>
-                    <p id="statOmzet" class="text-lg font-extrabold text-stone-900 mt-1">Rp 0</p>
-                </div>
-                <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm">
-                    <p class="text-[11px] text-stone-400">Tunai di Laci vs QRIS</p>
-                    <p id="statMetode" class="text-xs font-bold text-amber-700 mt-1.5">Tunai: Rp 0 | QRIS: Rp 0</p>
-                </div>
-                <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm">
-                    <p class="text-[11px] text-stone-400">Pengeluaran Kas</p>
-                    <p id="statPengeluaran" class="text-lg font-extrabold text-red-600 mt-1">Rp 0</p>
-                </div>
-                <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200 shadow-sm">
-                    <p class="text-[11px] text-emerald-700 font-semibold">Sisa Kas Bersih (Net)</p>
-                    <p id="statBersih" class="text-lg font-extrabold text-emerald-800 mt-1">Rp 0</p>
-                </div>
+                <div class="bg-white p-4 rounded-2xl border"><p class="text-[11px] text-stone-400">Omzet Kotor</p><p id="statOmzet" class="text-lg font-extrabold mt-1">Rp 0</p></div>
+                <div class="bg-white p-4 rounded-2xl border"><p class="text-[11px] text-stone-400">Tunai vs QRIS</p><p id="statMetode" class="text-xs font-bold text-amber-700 mt-1.5">Tunai: Rp 0</p></div>
+                <div class="bg-white p-4 rounded-2xl border"><p class="text-[11px] text-stone-400">Pengeluaran Kas</p><p id="statPengeluaran" class="text-lg font-extrabold text-red-600 mt-1">Rp 0</p></div>
+                <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200"><p class="text-[11px] text-emerald-700 font-semibold">Sisa Kas Bersih</p><p id="statBersih" class="text-lg font-extrabold text-emerald-800 mt-1">Rp 0</p></div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Riwayat Transaksi Kasir -->
-                <div class="md:col-span-1 bg-white p-5 rounded-2xl shadow-sm border border-stone-200">
-                    <h3 class="font-bold text-base mb-1">Riwayat Struk Kasir</h3>
-                    <p class="text-[11px] text-stone-400 mb-3">Cancel struk otomatis mengembalikan stok bahan.</p>
-                    <div id="transaksiList" class="divide-y divide-stone-100 text-sm max-h-96 overflow-y-auto"></div>
-                </div>
-
-                <!-- Pencatatan Pengeluaran Kas -->
-                <div class="md:col-span-1 bg-white p-5 rounded-2xl shadow-sm border border-stone-200">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border"><h3 class="font-bold text-base mb-1">Riwayat Struk</h3><div id="transaksiList" class="divide-y text-sm max-h-96 overflow-y-auto"></div></div>
+                <div class="bg-white p-5 rounded-2xl shadow-sm border">
                     <h3 class="font-bold text-base mb-1">Catat Pengeluaran</h3>
-                    <p class="text-[11px] text-stone-400 mb-3">Input beli es batu, susu darurat, plastik, dll.</p>
-                    <form onsubmit="tambahPengeluaran(event)" class="space-y-2 mb-4">
-                        <input type="text" id="expKet" required placeholder="Keterangan (Beli Es Batu 2 Pak)" class="w-full px-3 py-1.5 border rounded-lg text-xs">
+                    <form onsubmit="tambahPengeluaran(event)" class="space-y-2 mb-4 mt-2">
+                        <input type="text" id="expKet" required placeholder="Beli Es Batu" class="w-full px-3 py-1.5 border rounded-lg text-xs">
                         <div class="flex gap-2">
-                            <input type="number" id="expNominal" required placeholder="Nominal (Rp)" class="w-2/3 px-3 py-1.5 border rounded-lg text-xs">
-                            <button type="submit" class="w-1/3 bg-red-600 hover:bg-red-700 text-white font-semibold py-1.5 rounded-lg text-xs">+ Catat</button>
+                            <input type="number" id="expNominal" required placeholder="Nominal" class="w-2/3 px-3 py-1.5 border rounded-lg text-xs">
+                            <button type="submit" class="w-1/3 bg-red-600 text-white font-semibold py-1.5 rounded-lg text-xs">+ Catat</button>
                         </div>
                     </form>
-                    <div id="expenseList" class="divide-y divide-stone-100 text-xs max-h-64 overflow-y-auto"></div>
+                    <div id="expenseList" class="divide-y text-xs max-h-64 overflow-y-auto"></div>
                 </div>
-
-                <!-- Kotak Masuk Pelanggan -->
-                <div class="md:col-span-1 bg-white p-5 rounded-2xl shadow-sm border border-stone-200">
-                    <h3 class="font-bold text-base mb-3">Suara Pelanggan</h3>
-                    <div id="feedbackList" class="divide-y divide-stone-100 text-sm max-h-96 overflow-y-auto"></div>
-                </div>
+                <div class="bg-white p-5 rounded-2xl shadow-sm border"><h3 class="font-bold text-base mb-3">Suara Pelanggan</h3><div id="feedbackList" class="divide-y text-sm max-h-96 overflow-y-auto"></div></div>
             </div>
         </div>
     </main>
 
-    <!-- ================= MODAL CETAK STRUK, LABEL CUP & WA ================= -->
+    <!-- MODAL ABSENSI KARYAWAN -->
+    <div id="attendanceModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="font-bold text-base text-stone-900">🕒 Absensi & Izin Karyawan</h3>
+                <button onclick="tutupModalAbsen()" class="text-xs text-stone-400 font-bold">✕</button>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-medium text-stone-600 mb-1">Pilih Nama Karyawan</label>
+                    <select id="absenNama" class="w-full px-3 py-2 border rounded-xl text-sm bg-white font-semibold"></select>
+                </div>
+                <div class="p-3 bg-stone-50 rounded-xl border text-xs text-stone-600 space-y-1">
+                    <p><b>Jam Kerja:</b> 06:00 - 07:45 (Gaji Rp 75.000)</p>
+                    <p><b>Terlambat:</b> > 07:45 (Potong Rp 15.000)</p>
+                    <p><b>Izin:</b> Gaji dipotong penuh Rp 75.000</p>
+                </div>
+                <div class="grid grid-cols-2 gap-2 pt-2">
+                    <button onclick="submitAbsen('hadir')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs">
+                        ✅ Check-In Hadir
+                    </button>
+                    <button onclick="submitAbsen('izin')" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 rounded-xl text-xs">
+                        📝 Ajukan Izin
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CETAK STRUK -->
     <div id="receiptModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-xl space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
                 <h3 class="font-bold text-base text-emerald-700">✅ Transaksi Berhasil!</h3>
-                <button onclick="tutupModal()" class="text-xs text-stone-400 hover:text-stone-700 font-bold">✕ Tutup</button>
+                <button onclick="tutupModal()" class="text-xs text-stone-400 font-bold">✕ Tutup</button>
             </div>
-
-            <div id="modalPreview" class="bg-stone-50 p-3 rounded-xl font-mono text-xs space-y-1 border border-stone-200 max-h-52 overflow-y-auto"></div>
-
+            <div id="modalPreview" class="bg-stone-50 p-3 rounded-xl font-mono text-xs space-y-1 border max-h-52 overflow-y-auto"></div>
             <div class="space-y-2 pt-1">
-                <button onclick="cetakStruk()" class="w-full bg-stone-900 hover:bg-stone-700 text-white font-semibold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2">
-                    🖨️ Cetak ke Printer Struk
-                </button>
-                <button onclick="cetakLabelCup()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2">
-                    🏷️ Cetak ke Printer Stiker Cup
-                </button>
-                <button onclick="kirimStrukWA()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2">
-                    💬 Kirim Struk ke WhatsApp
-                </button>
+                <button onclick="cetakStruk()" class="w-full bg-stone-900 text-white font-semibold py-2.5 rounded-xl text-xs">🖨️ Cetak Struk</button>
+                <button onclick="cetakLabelCup()" class="w-full bg-amber-600 text-white font-semibold py-2.5 rounded-xl text-xs">🏷️ Cetak Stiker Cup</button>
+                <button onclick="kirimStrukWA()" class="w-full bg-emerald-600 text-white font-semibold py-2.5 rounded-xl text-xs">💬 Kirim ke WhatsApp</button>
             </div>
-
-            <button onclick="tutupModal()" class="w-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold py-2 rounded-xl text-xs">
-                Transaksi Baru
-            </button>
+            <button onclick="tutupModal()" class="w-full bg-stone-100 text-stone-700 font-semibold py-2 rounded-xl text-xs">Transaksi Baru</button>
         </div>
     </div>
 
     <div id="printArea" class="hidden"></div>
-
-    <footer class="text-center py-6 text-xs text-stone-400">
-        &copy; 2026 Goozy.co. All rights reserved.
-    </footer>
+    <footer class="text-center py-6 text-xs text-stone-400">&copy; 2026 Goozy.co. All rights reserved.</footer>
 
     <script>
         const SUPABASE_URL = 'https://ffisxrtyqdkntuscalxv.supabase.co';
@@ -392,169 +362,160 @@
         const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let isStaff = false;
-        let products = [];
-        let ingredients = [];
-        let recipes = [];
-        let allTransactions = [];
-        let allExpenses = [];
-        let cart = [];
-        let activeCategory = 'Semua';
-        let rekapFilter = 'today';
-        let lastOrder = null;
+        let products = [], ingredients = [], recipes = [], allTransactions = [], allExpenses = [], employees = [], attendances = [];
+        let cart = [], activeCategory = 'Semua', rekapFilter = 'today', lastOrder = null;
+        let btPrinters = { receipt: { device: null, characteristic: null }, label: { device: null, characteristic: null } };
 
-        let btPrinters = {
-            receipt: { device: null, characteristic: null },
-            label: { device: null, characteristic: null }
-        };
-
-        // Load Katalog Publik saat halaman pertama dibuka
         window.addEventListener('DOMContentLoaded', loadPublicCatalog);
 
         async function loadPublicCatalog() {
             const { data: prodData } = await db.from('products').select('*').order('id', { ascending: true });
-            const { data: ingData } = await db.from('ingredients').select('*');
-            const { data: recData } = await db.from('recipes').select('*');
             products = prodData || [];
-            ingredients = ingData || [];
-            recipes = recData || [];
             renderPublicMenu();
         }
 
         function renderPublicMenu() {
             const container = document.getElementById('publicMenuContainer');
-            if (products.length === 0) {
-                container.innerHTML = `<p class="text-center text-xs text-stone-400">Menu sedang disiapkan...</p>`;
-                return;
-            }
+            if (products.length === 0) { container.innerHTML = `<p class="text-center text-xs text-stone-400">Menu sedang disiapkan...</p>`; return; }
             const categories = [...new Set(products.map(p => p.kategori))];
             container.innerHTML = categories.map(cat => {
                 const items = products.filter(p => p.kategori === cat);
                 return `
-                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200">
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border">
                         <h3 class="font-extrabold text-base text-stone-900 mb-3 border-b pb-2">${cat}</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                            ${items.map(p => {
-                                const sisa = hitungStokPorsi(p.id);
-                                const habis = sisa !== null && sisa <= 0;
-                                return `
-                                    <div class="p-3 rounded-xl border border-stone-100 bg-stone-50/60 flex justify-between items-center ${habis ? 'opacity-50' : ''}">
-                                        <div>
-                                            <p class="font-bold text-sm text-stone-800">${p.nama_produk}</p>
-                                            <p class="text-xs font-bold text-amber-700 mt-0.5">Reg ${p.harga / 1000}K <span class="text-stone-400 font-normal">| Large ${(p.harga + 5000) / 1000}K</span></p>
-                                        </div>
-                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded ${habis ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-700'}">
-                                            ${habis ? 'Sold Out' : 'Ready'}
-                                        </span>
+                            ${items.map(p => `
+                                <div class="p-3 rounded-xl border bg-stone-50/60 flex justify-between items-center">
+                                    <div>
+                                        <p class="font-bold text-sm text-stone-800">${p.nama_produk}</p>
+                                        <p class="text-xs font-bold text-amber-700 mt-0.5">Reg ${p.harga / 1000}K <span class="text-stone-400 font-normal">| Large ${(p.harga + 5000) / 1000}K</span></p>
                                     </div>
-                                `;
-                            }).join('')}
+                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-700">Ready</span>
+                                </div>
+                            `).join('')}
                         </div>
                     </div>
                 `;
             }).join('');
         }
 
-        // 1. KONEKSI WEB BLUETOOTH (2 PRINTER TERPISAH)
-        async function connectPrinter(type) {
-            if (!navigator.bluetooth) {
-                return alert('Gunakan browser Google Chrome di HP Android atau Laptop untuk koneksi Bluetooth.');
+        // --- ABSENSI & IZIN KARYAWAN ---
+        async function bukaModalAbsen() {
+            const { data } = await db.from('employees').select('*');
+            employees = data || [];
+            const select = document.getElementById('absenNama');
+            if (employees.length === 0) {
+                select.innerHTML = `<option value="">Belum ada karyawan terdaftar</option>`;
+            } else {
+                select.innerHTML = employees.map(e => `<option value="${e.nama_karyawan}">${e.nama_karyawan}</option>`).join('');
             }
+            document.getElementById('attendanceModal').classList.remove('hidden');
+        }
+
+        function tutupModalAbsen() {
+            document.getElementById('attendanceModal').classList.add('hidden');
+        }
+
+        async function submitAbsen(jenis) {
+            const nama = document.getElementById('absenNama').value;
+            if (!nama) return alert('Pilih nama karyawan!');
+
+            let status = '';
+            let gaji = 75000;
+
+            if (jenis === 'izin') {
+                status = 'Izin (-75K)';
+                gaji = 0;
+            } else {
+                const now = new Date();
+                const jam = now.getHours();
+                const menit = now.getMinutes();
+                const totalMenit = jam * 60 + menit;
+                const batasTelat = 7 * 60 + 45; // 07:45
+
+                if (totalMenit > batasTelat) {
+                    status = 'Terlambat (-15K)';
+                    gaji = 60000;
+                    alert(`⚠️ Perhatian: Anda tercatat terlambat hadir!\nJam masuk: ${String(jam).padStart(2,'0')}:${String(menit).padStart(2,'0')}\nGaji hari ini terpotong Rp 15.000 (Menjadi Rp 60.000).`);
+                } else {
+                    status = 'Hadir Tepat Waktu';
+                    gaji = 75000;
+                    alert(`✅ Absen Berhasil!\nSelamat bekerja, Gaji full Rp 75.000 tercatat.`);
+                }
+            }
+
+            const { error } = await db.from('attendances').insert([{ nama_karyawan: nama, status, gaji_harian: gaji }]);
+            if (!error) tutupModalAbsen();
+            else alert('Gagal absen: ' + error.message);
+        }
+
+        async function tambahKaryawanBaru() {
+            const nama = prompt('Masukkan Nama Karyawan Baru:');
+            if (!nama || !nama.trim()) return;
+            await db.from('employees').insert([{ nama_karyawan: nama.trim() }]);
+            loadAllData();
+        }
+
+        async function hapusKaryawan(id) {
+            if (!confirm('Hapus karyawan ini?')) return;
+            await db.from('employees').delete().eq('id', id);
+            loadAllData();
+        }
+
+        // --- PRINTER BLUETOOTH ---
+        async function connectPrinter(type) {
+            if (!navigator.bluetooth) return alert('Gunakan Google Chrome.');
             try {
-                const device = await navigator.bluetooth.requestDevice({
-                    acceptAllDevices: true,
-                    optionalServices: [
-                        '000018f0-0000-1000-8000-00805f9b34fb',
-                        'e7810a71-73ae-499d-8c15-faa9aef0c3f2',
-                        '49535343-fe7d-4ae5-8fa9-9fafd205e455'
-                    ]
-                });
+                const device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb', 'e7810a71-73ae-499d-8c15-faa9aef0c3f2', '49535343-fe7d-4ae5-8fa9-9fafd205e455'] });
                 const server = await device.gatt.connect();
                 const services = await server.getPrimaryServices();
                 let writeChar = null;
-
-                for (const service of services) {
-                    const chars = await service.getCharacteristics();
-                    for (const c of chars) {
-                        if (c.properties.write || c.properties.writeWithoutResponse) {
-                            writeChar = c;
-                            break;
-                        }
-                    }
+                for (const s of services) {
+                    const chars = await s.getCharacteristics();
+                    for (const c of chars) { if (c.properties.write || c.properties.writeWithoutResponse) { writeChar = c; break; } }
                     if (writeChar) break;
                 }
-
-                if (!writeChar) throw new Error('Karakteristik cetak tidak ditemukan.');
-
                 btPrinters[type] = { device, characteristic: writeChar };
-                const btnId = type === 'receipt' ? 'btnPrinterStruk' : 'btnPrinterLabel';
-                const labelTeks = type === 'receipt' ? '🖨️ Printer Struk' : '🏷️ Printer Stiker';
-                document.getElementById(btnId).innerHTML = `${labelTeks}: <span class="text-emerald-600 font-bold">${device.name || 'Terhubung'}</span>`;
-            } catch (err) {
-                alert('Gagal menyambungkan printer: ' + err.message);
-            }
+                document.getElementById(type === 'receipt' ? 'btnPrinterStruk' : 'btnPrinterLabel').innerHTML = `Terhubung: ${device.name}`;
+            } catch (err) { alert('Gagal: ' + err.message); }
         }
 
         async function sendTextToBluetooth(type, textData) {
-            const printer = btPrinters[type];
-            if (!printer || !printer.characteristic) return false;
+            const p = btPrinters[type];
+            if (!p || !p.characteristic) return false;
             try {
-                const encoder = new TextEncoder();
-                const bytes = encoder.encode(textData);
-                for (let i = 0; i < bytes.length; i += 100) {
-                    await printer.characteristic.writeValue(bytes.slice(i, i + 100));
-                }
+                const enc = new TextEncoder();
+                const bytes = enc.encode(textData);
+                for (let i = 0; i < bytes.length; i += 100) await p.characteristic.writeValue(bytes.slice(i, i + 100));
                 return true;
-            } catch (err) {
-                return false;
-            }
+            } catch (e) { return false; }
         }
 
-        // 2. MASUKAN PELANGGAN
-        async function kirimMasukan(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btnSubmitFeedback');
-            btn.innerText = 'Mengirim...';
-            btn.disabled = true;
-
-            const nama = document.getElementById('nama').value || 'Anonim';
-            const kategori = document.getElementById('kategori').value;
-            const pesan = document.getElementById('pesan').value;
-
-            const { error } = await db.from('feedbacks').insert([{ nama, kategori, pesan }]);
-            btn.innerText = 'Kirim Masukan';
-            btn.disabled = false;
-
-            if (!error) {
-                alert('Terima kasih! Masukanmu sudah tersimpan di Goozy.');
-                document.getElementById('feedbackForm').reset();
-            }
-        }
-
-        // 3. LOGIN STAFF MODE (PIN: 1234)
+        // --- AUTH & LOAD DATA ---
         function toggleStaffMode() {
             if (!isStaff) {
-                const pin = prompt('Masukkan PIN Staff Goozy (Default: 1234):');
+                const pin = prompt('PIN Owner (1234):');
                 if (pin !== '1234') return alert('PIN Salah!');
                 isStaff = true;
                 document.getElementById('publicView').classList.add('hidden');
                 document.getElementById('staffView').classList.remove('hidden');
                 document.getElementById('badgeMode').classList.remove('hidden');
-                document.getElementById('btnLogin').innerText = 'Keluar Mode Staff';
+                document.getElementById('btnLogin').innerText = 'Keluar Owner';
                 loadAllData();
             } else {
                 isStaff = false;
                 document.getElementById('publicView').classList.remove('hidden');
                 document.getElementById('staffView').classList.add('hidden');
                 document.getElementById('badgeMode').classList.add('hidden');
-                document.getElementById('btnLogin').innerText = 'Login Staff / POS';
+                document.getElementById('btnLogin').innerText = 'Login Owner';
                 loadPublicCatalog();
             }
         }
 
         function switchTab(tab) {
-            ['pos', 'stok', 'resep', 'rekap'].forEach(t => {
+            ['pos', 'stok', 'resep', 'absen', 'rekap'].forEach(t => {
                 document.getElementById('content-' + t).classList.add('hidden');
-                document.getElementById('tab-' + t).className = 'px-4 py-2 rounded-lg text-sm font-semibold bg-white text-stone-600 border border-stone-200 shrink-0';
+                document.getElementById('tab-' + t).className = 'px-4 py-2 rounded-lg text-sm font-semibold bg-white text-stone-600 border shrink-0';
             });
             document.getElementById('content-' + tab).classList.remove('hidden');
             document.getElementById('tab-' + tab).className = 'px-4 py-2 rounded-lg text-sm font-semibold bg-stone-900 text-white shrink-0';
@@ -562,91 +523,64 @@
         }
 
         async function loadAllData() {
-            const { data: prodData } = await db.from('products').select('*').order('id', { ascending: true });
-            products = prodData || [];
+            const [p, i, r, t, e, f, emp, att] = await Promise.all([
+                db.from('products').select('*').order('id'),
+                db.from('ingredients').select('*').order('nama_bahan'),
+                db.from('recipes').select('*'),
+                db.from('transactions').select('*').order('id', { ascending: false }),
+                db.from('expenses').select('*').order('id', { ascending: false }),
+                db.from('feedbacks').select('*').order('id', { ascending: false }),
+                db.from('employees').select('*').order('id'),
+                db.from('attendances').select('*').order('id', { ascending: false })
+            ]);
+            products = p.data || []; ingredients = i.data || []; recipes = r.data || [];
+            allTransactions = t.data || []; allExpenses = e.data || [];
+            employees = emp.data || []; attendances = att.data || [];
 
-            const { data: ingData } = await db.from('ingredients').select('*').order('nama_bahan', { ascending: true });
-            ingredients = ingData || [];
-
-            const { data: recData } = await db.from('recipes').select('*');
-            recipes = recData || [];
-
-            const { data: transData } = await db.from('transactions').select('*').order('id', { ascending: false });
-            allTransactions = transData || [];
-
-            const { data: expData } = await db.from('expenses').select('*').order('id', { ascending: false });
-            allExpenses = expData || [];
-
-            const { data: fbData } = await db.from('feedbacks').select('*').order('id', { ascending: false });
-
-            renderPOS();
-            renderStok();
-            renderBahanDanResep();
-            renderKeuanganDanRiwayat();
-            renderFeedback(fbData || []);
+            renderPOS(); renderStok(); renderBahanDanResep(); renderAbsensiKaryawan(); renderKeuanganDanRiwayat();
+            renderFeedback(f.data || []);
         }
 
         function hitungStokPorsi(productId) {
             const resepMenu = recipes.filter(r => r.product_id === productId);
             if (resepMenu.length === 0) return null;
-            let maxPorsi = Infinity;
+            let maxP = Infinity;
             for (const r of resepMenu) {
-                const bahan = ingredients.find(i => i.id === r.ingredient_id);
-                if (!bahan || r.jumlah_pakai <= 0) return 0;
-                const bisaBuat = Math.floor(Number(bahan.stok_bahan) / Number(r.jumlah_pakai));
-                if (bisaBuat < maxPorsi) maxPorsi = bisaBuat;
+                const b = ingredients.find(i => i.id === r.ingredient_id);
+                if (!b || r.jumlah_pakai <= 0) return 0;
+                const bP = Math.floor(Number(b.stok_bahan) / Number(r.jumlah_pakai));
+                if (bP < maxP) maxP = bP;
             }
-            return maxPorsi;
+            return maxP;
         }
 
         function hitungHPPMenu(productId) {
             const resepMenu = recipes.filter(r => r.product_id === productId);
             if (resepMenu.length === 0) return 0;
-            return resepMenu.reduce((total, r) => {
-                const bahan = ingredients.find(i => i.id === r.ingredient_id);
-                const hargaSatuan = bahan ? Number(bahan.harga_satuan || 0) : 0;
-                return total + (hargaSatuan * Number(r.jumlah_pakai));
+            return resepMenu.reduce((sum, r) => {
+                const b = ingredients.find(i => i.id === r.ingredient_id);
+                return sum + ((b ? Number(b.harga_satuan || 0) : 0) * Number(r.jumlah_pakai));
             }, 0);
         }
 
-        // 4. LOGIKA KASIR + FILTER KATEGORI + UPGRADE LARGE (+5K) + KEMBALIAN
-        function setCategoryFilter(cat) {
-            activeCategory = cat;
-            renderPOS();
-        }
-
+        // --- KASIR POS ---
+        function setCategoryFilter(cat) { activeCategory = cat; renderPOS(); }
         function renderPOS() {
             const cats = ['Semua', ...new Set(products.map(p => p.kategori))];
             document.getElementById('posCategoryFilter').innerHTML = cats.map(c => `
-                <button onclick="setCategoryFilter('${c}')" class="px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 transition ${activeCategory === c ? 'bg-amber-600 text-white' : 'bg-white text-stone-600 border border-stone-200'}">
-                    ${c}
-                </button>
+                <button onclick="setCategoryFilter('${c}')" class="px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 transition ${activeCategory === c ? 'bg-amber-600 text-white' : 'bg-white text-stone-600 border'}">${c}</button>
             `).join('');
 
             const filtered = activeCategory === 'Semua' ? products : products.filter(p => p.kategori === activeCategory);
-            const grid = document.getElementById('posMenuGrid');
-
-            if (filtered.length === 0) {
-                grid.innerHTML = `<p class="text-xs text-stone-400 col-span-3">Belum ada menu di kategori ini.</p>`;
-                return;
-            }
-
-            grid.innerHTML = filtered.map(p => {
-                const sisaPorsi = hitungStokPorsi(p.id);
-                const habis = sisaPorsi !== null && sisaPorsi <= 0;
-                const badgeStok = sisaPorsi === null
-                    ? `<span class="text-[10px] text-emerald-600 font-semibold">+ Pilih</span>`
-                    : `<span class="text-[10px] font-bold ${sisaPorsi <= 5 ? 'text-red-600' : 'text-emerald-700'}">Stok: ${sisaPorsi}</span>`;
-
+            document.getElementById('posMenuGrid').innerHTML = filtered.length === 0 ? `<p class="text-xs text-stone-400">Kosong</p>` : filtered.map(p => {
+                const sisa = hitungStokPorsi(p.id);
+                const habis = sisa !== null && sisa <= 0;
                 return `
-                    <button onclick="addToCart(${p.id})" ${habis ? 'disabled' : ''} class="p-3.5 rounded-xl border text-left transition flex flex-col justify-between ${habis ? 'bg-stone-100 opacity-50 cursor-not-allowed' : 'bg-white hover:border-amber-600 shadow-sm'}">
-                        <div>
-                            <span class="text-[10px] font-semibold px-2 py-0.5 bg-stone-100 rounded text-stone-600">${p.kategori}</span>
-                            <h4 class="font-bold text-sm mt-1.5 text-stone-800">${p.nama_produk}</h4>
-                        </div>
+                    <button onclick="addToCart(${p.id})" ${habis ? 'disabled' : ''} class="p-3.5 rounded-xl border text-left transition flex flex-col justify-between ${habis ? 'bg-stone-100 opacity-50' : 'bg-white hover:border-amber-600 shadow-sm'}">
+                        <div><span class="text-[10px] px-2 py-0.5 bg-stone-100 rounded text-stone-600">${p.kategori}</span><h4 class="font-bold text-sm mt-1.5">${p.nama_produk}</h4></div>
                         <div class="mt-3 flex justify-between items-center w-full">
                             <span class="text-xs font-extrabold text-amber-700">Rp ${p.harga.toLocaleString('id-ID')}</span>
-                            ${badgeStok}
+                            <span class="text-[10px] font-bold ${sisa <= 5 ? 'text-red-600' : 'text-emerald-700'}">${sisa === null ? '+ Pilih' : 'Stok: ' + sisa}</span>
                         </div>
                     </button>
                 `;
@@ -656,56 +590,29 @@
         function addToCart(id) {
             const prod = products.find(p => p.id === id);
             if (!prod) return;
-            const sisaPorsi = hitungStokPorsi(id);
-            const totalQtyMenuIni = cart.filter(c => c.id === id).reduce((s, i) => s + i.qty, 0);
-
-            if (sisaPorsi !== null && totalQtyMenuIni + 1 > sisaPorsi) {
-                return alert(`Bahan baku tidak cukup untuk menambah ${prod.nama_produk}!`);
-            }
-
             const existing = cart.find(c => c.id === id && c.size === 'Reg');
-            if (existing) {
-                existing.qty++;
-            } else {
-                cart.push({
-                    cartKey: `${id}_Reg_${Date.now()}`,
-                    id: prod.id,
-                    namaAsli: prod.nama_produk,
-                    hargaDasar: prod.harga,
-                    size: 'Reg',
-                    hargaFinal: prod.harga,
-                    qty: 1
-                });
-            }
+            if (existing) existing.qty++;
+            else cart.push({ cartKey: `${id}_Reg_${Date.now()}`, id: prod.id, namaAsli: prod.nama_produk, hargaDasar: prod.harga, size: 'Reg', hargaFinal: prod.harga, qty: 1 });
             renderCart();
         }
 
         function toggleSizeCart(cartKey) {
             const item = cart.find(c => c.cartKey === cartKey);
             if (!item) return;
-            if (item.size === 'Reg') {
-                item.size = 'Large';
-                item.hargaFinal = item.hargaDasar + 5000;
-            } else {
-                item.size = 'Reg';
-                item.hargaFinal = item.hargaDasar;
-            }
+            if (item.size === 'Reg') { item.size = 'Large'; item.hargaFinal = item.hargaDasar + 5000; }
+            else { item.size = 'Reg'; item.hargaFinal = item.hargaDasar; }
             renderCart();
         }
 
         function kurangiItemCart(cartKey) {
             const idx = cart.findIndex(c => c.cartKey === cartKey);
-            if (idx > -1) {
-                cart[idx].qty--;
-                if (cart[idx].qty <= 0) cart.splice(idx, 1);
-                renderCart();
-            }
+            if (idx > -1) { cart[idx].qty--; if (cart[idx].qty <= 0) cart.splice(idx, 1); renderCart(); }
         }
 
         function getGrandTotal() {
-            const subtotal = cart.reduce((sum, c) => sum + (c.hargaFinal * c.qty), 0);
+            const sub = cart.reduce((s, c) => s + (c.hargaFinal * c.qty), 0);
             const diskon = parseInt(document.getElementById('inputDiskon').value) || 0;
-            return Math.max(0, subtotal - diskon);
+            return Math.max(0, sub - diskon);
         }
 
         function renderCart() {
@@ -713,20 +620,15 @@
             const totalEl = document.getElementById('cartTotal');
             if (cart.length === 0) {
                 list.className = 'space-y-2 text-sm mb-4 min-h-[80px] text-stone-400 flex items-center justify-center';
-                list.innerHTML = 'Belum ada item dipilih';
-                totalEl.innerText = 'Rp 0';
-                hitungKembalian();
-                return;
+                list.innerHTML = 'Belum ada item dipilih'; totalEl.innerText = 'Rp 0'; hitungKembalian(); return;
             }
             list.className = 'space-y-2 text-sm mb-4 min-h-[80px]';
             list.innerHTML = cart.map(c => `
-                <div class="flex justify-between items-center bg-stone-50 p-2 rounded-lg border border-stone-200/60">
+                <div class="flex justify-between items-center bg-stone-50 p-2 rounded-lg border">
                     <div>
-                        <p class="font-bold text-xs text-stone-800">${c.namaAsli}</p>
+                        <p class="font-bold text-xs">${c.namaAsli}</p>
                         <div class="flex items-center gap-1.5 mt-0.5">
-                            <button onclick="toggleSizeCart('${c.cartKey}')" class="text-[10px] font-bold px-1.5 py-0.5 rounded border ${c.size === 'Large' ? 'bg-amber-600 text-white border-amber-600' : 'bg-white text-stone-600 border-stone-300'}">
-                                ${c.size === 'Large' ? 'Large (+5K)' : 'Reg'}
-                            </button>
+                            <button onclick="toggleSizeCart('${c.cartKey}')" class="text-[10px] font-bold px-1.5 py-0.5 rounded border ${c.size === 'Large' ? 'bg-amber-600 text-white' : 'bg-white'}">${c.size === 'Large' ? 'Large (+5K)' : 'Reg'}</button>
                             <span class="text-[11px] text-stone-500">${c.qty} x Rp ${c.hargaFinal.toLocaleString('id-ID')}</span>
                         </div>
                     </div>
@@ -736,7 +638,6 @@
                     </div>
                 </div>
             `).join('');
-
             totalEl.innerText = 'Rp ' + getGrandTotal().toLocaleString('id-ID');
             hitungKembalian();
         }
@@ -744,68 +645,41 @@
         function toggleCashSection() {
             const metode = document.getElementById('metodeBayar').value;
             const box = document.getElementById('cashCalculator');
-            if (metode === 'Tunai') {
-                box.classList.remove('hidden');
-                hitungKembalian();
-            } else {
-                box.classList.add('hidden');
-            }
+            if (metode === 'Tunai') { box.classList.remove('hidden'); hitungKembalian(); }
+            else box.classList.add('hidden');
         }
 
-        function setUangCepat(nominal) {
+        function setUangCepat(n) {
             const input = document.getElementById('uangDiterima');
-            if (nominal === 'pas') {
-                input.value = getGrandTotal();
-            } else if (nominal === 0) {
-                input.value = '';
-            } else {
-                input.value = nominal;
-            }
+            if (n === 'pas') input.value = getGrandTotal();
+            else if (n === 0) input.value = '';
+            else input.value = n;
             hitungKembalian();
         }
 
         function hitungKembalian() {
             const total = getGrandTotal();
-            const diterima = parseInt(document.getElementById('uangDiterima').value) || 0;
-            const kembali = diterima - total;
+            const terima = parseInt(document.getElementById('uangDiterima').value) || 0;
+            const kembali = terima - total;
             const el = document.getElementById('teksKembalian');
-            if (diterima === 0) {
-                el.innerText = 'Rp 0';
-                el.className = 'text-stone-400';
-            } else if (kembali < 0) {
-                el.innerText = 'Kurang Rp ' + Math.abs(kembali).toLocaleString('id-ID');
-                el.className = 'text-red-600 font-bold';
-            } else {
-                el.innerText = 'Rp ' + kembali.toLocaleString('id-ID');
-                el.className = 'text-emerald-700 font-bold';
-            }
+            if (terima === 0) { el.innerText = 'Rp 0'; el.className = 'text-stone-400'; }
+            else if (kembali < 0) { el.innerText = 'Kurang Rp ' + Math.abs(kembali).toLocaleString('id-ID'); el.className = 'text-red-600 font-bold'; }
+            else { el.innerText = 'Rp ' + kembali.toLocaleString('id-ID'); el.className = 'text-emerald-700 font-bold'; }
         }
 
         function clearCart() {
-            cart = [];
-            document.getElementById('custNama').value = '';
-            document.getElementById('custCatatan').value = '';
-            document.getElementById('custWA').value = '';
-            document.getElementById('inputDiskon').value = '0';
-            document.getElementById('uangDiterima').value = '';
+            cart = []; document.getElementById('custNama').value = ''; document.getElementById('custCatatan').value = '';
+            document.getElementById('custWA').value = ''; document.getElementById('inputDiskon').value = '0'; document.getElementById('uangDiterima').value = '';
             renderCart();
         }
 
         async function prosesBayar() {
-            if (cart.length === 0) return alert('Pilih menu terlebih dahulu!');
-            const total = getGrandTotal();
-            const diskon = parseInt(document.getElementById('inputDiskon').value) || 0;
-            const metode = document.getElementById('metodeBayar').value;
-            const uangDiterima = parseInt(document.getElementById('uangDiterima').value) || total;
+            if (cart.length === 0) return alert('Pilih menu dulu!');
+            const total = getGrandTotal(), diskon = parseInt(document.getElementById('inputDiskon').value) || 0;
+            const metode = document.getElementById('metodeBayar').value, terima = parseInt(document.getElementById('uangDiterima').value) || total;
+            if (metode === 'Tunai' && terima < total) return alert('Uang tunai kurang!');
 
-            if (metode === 'Tunai' && uangDiterima < total) {
-                return alert('Uang tunai yang diterima kurang dari total tagihan!');
-            }
-
-            const btn = document.getElementById('btnBayar');
-            btn.innerText = 'Memproses...';
-            btn.disabled = true;
-
+            const btn = document.getElementById('btnBayar'); btn.innerText = 'Memproses...'; btn.disabled = true;
             const custNama = document.getElementById('custNama').value.trim() || 'Pelanggan';
             const custCatatan = document.getElementById('custCatatan').value.trim() || '-';
             const custWA = document.getElementById('custWA').value.trim();
@@ -814,108 +688,77 @@
             const rincianDB = `${custNama}: ` + cart.map(c => `${c.namaAsli}${c.size === 'Large' ? ' (L)' : ''} (${c.qty}x)`).join(', ') + (custCatatan !== '-' ? ` [Note: ${custCatatan}]` : '');
             const itemsJson = JSON.stringify(cart.map(c => ({ id: c.id, qty: c.qty })));
 
-            const { error } = await db.from('transactions').insert([{
-                rincian_item: rincianDB,
-                total_harga: total,
-                metode_bayar: metode,
-                items_json: itemsJson
-            }]);
-
+            const { error } = await db.from('transactions').insert([{ rincian_item: rincianDB, total_harga: total, metode_bayar: metode, items_json: itemsJson }]);
             if (!error) {
                 for (const item of cart) {
                     const resepMenu = recipes.filter(r => r.product_id === item.id);
                     for (const r of resepMenu) {
-                        const bahan = ingredients.find(i => i.id === r.ingredient_id);
-                        if (bahan) {
-                            const stokBaru = Math.max(0, Number(bahan.stok_bahan) - (Number(r.jumlah_pakai) * item.qty));
-                            bahan.stok_bahan = stokBaru;
-                            await db.from('ingredients').update({ stok_bahan: stokBaru }).eq('id', bahan.id);
+                        const b = ingredients.find(i => i.id === r.ingredient_id);
+                        if (b) {
+                            const newStok = Math.max(0, Number(b.stok_bahan) - (Number(r.jumlah_pakai) * item.qty));
+                            await db.from('ingredients').update({ stok_bahan: newStok }).eq('id', b.id);
                         }
                     }
                 }
             }
-
-            btn.innerText = 'Bayar & Proses';
-            btn.disabled = false;
-
+            btn.innerText = 'Bayar & Proses'; btn.disabled = false;
             if (!error) {
-                lastOrder = {
-                    waktu,
-                    custNama,
-                    custCatatan,
-                    custWA,
-                    metode,
-                    diskon,
-                    total,
-                    uangDiterima: metode === 'Tunai' ? uangDiterima : total,
-                    kembalian: metode === 'Tunai' ? (uangDiterima - total) : 0,
-                    items: cart.map(c => ({
-                        nama: `${c.namaAsli}${c.size === 'Large' ? ' (Large)' : ''}`,
-                        harga: c.hargaFinal,
-                        qty: c.qty
-                    }))
-                };
-                tampilkanModalStruk();
-                clearCart();
-                loadAllData();
-            } else {
-                alert('Error: ' + error.message);
-            }
+                lastOrder = { waktu, custNama, custCatatan, custWA, metode, diskon, total, uangDiterima: metode === 'Tunai' ? terima : total, kembalian: metode === 'Tunai' ? (terima - total) : 0, items: cart.map(c => ({ nama: `${c.namaAsli}${c.size === 'Large' ? ' (Large)' : ''}`, harga: c.hargaFinal, qty: c.qty })) };
+                tampilkanModalStruk(); clearCart(); loadAllData();
+            } else alert('Error: ' + error.message);
         }
 
-        // 5. BAHAN BAKU, RESEP & KALKULATOR HPP
-        function renderBahanDanResep() {
-            const ingList = document.getElementById('ingredientList');
-            if (ingredients.length === 0) {
-                ingList.innerHTML = `<p class="text-stone-400 py-2">Belum ada bahan baku diinput.</p>`;
-            } else {
-                ingList.innerHTML = ingredients.map(i => `
-                    <div class="py-2.5 flex justify-between items-center">
+        // --- RENDER ABSENSI & GAJI ---
+        function renderAbsensiKaryawan() {
+            const mList = document.getElementById('employeeManagerList');
+            mList.innerHTML = employees.length === 0 ? '<p class="text-xs text-stone-400">Belum ada karyawan.</p>' : employees.map(e => `
+                <div class="flex items-center gap-2 bg-stone-50 px-3 py-1.5 rounded-xl border text-xs">
+                    <span class="font-bold">${e.nama_karyawan}</span>
+                    <button onclick="hapusKaryawan(${e.id})" class="text-red-500 font-bold ml-1">✕</button>
+                </div>
+            `).join('');
+
+            const aList = document.getElementById('attendanceList');
+            aList.innerHTML = attendances.length === 0 ? '<p class="text-xs text-stone-400 py-2">Belum ada riwayat absensi.</p>' : attendances.map(a => {
+                const waktu = new Date(a.created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' });
+                let badgeColor = 'bg-emerald-100 text-emerald-800';
+                if (a.status.includes('Terlambat')) badgeColor = 'bg-amber-100 text-amber-800';
+                if (a.status.includes('Izin')) badgeColor = 'bg-red-100 text-red-800';
+
+                return `
+                    <div class="py-2.5 flex justify-between items-center text-xs">
                         <div>
-                            <p class="font-bold text-stone-800">${i.nama_bahan}</p>
-                            <p class="text-[11px] text-stone-500">Sisa: <b class="${i.stok_bahan <= 0 ? 'text-red-600' : 'text-emerald-700'}">${i.stok_bahan} ${i.satuan}</b> • Modal: Rp ${Number(i.harga_satuan || 0).toLocaleString('id-ID')}/${i.satuan}</p>
+                            <p class="font-bold text-stone-800">${a.nama_karyawan}</p>
+                            <p class="text-[11px] text-stone-400">${waktu}</p>
                         </div>
-                        <div class="flex items-center gap-1.5">
-                            <button onclick="tambahStokBahanCepat(${i.id}, '${i.nama_bahan}', '${i.satuan}', ${i.stok_bahan})" class="px-2 py-1 bg-amber-100 text-amber-800 rounded font-bold text-[11px]">+ Restock</button>
-                            <button onclick="hapusBahan(${i.id})" class="text-red-500 hover:underline ml-1">Hapus</button>
+                        <div class="flex items-center gap-3">
+                            <span class="px-2.5 py-1 rounded-full font-bold text-[10px] ${badgeColor}">${a.status}</span>
+                            <span class="font-extrabold text-emerald-700">Rp ${a.gaji_harian.toLocaleString('id-ID')}</span>
                         </div>
                     </div>
-                `).join('');
-            }
+                `;
+            }).join('');
+        }
+
+        // --- BAHAN BAKU & RESEP ---
+        function renderBahanDanResep() {
+            document.getElementById('ingredientList').innerHTML = ingredients.length === 0 ? '<p class="text-stone-400">Kosong</p>' : ingredients.map(i => `
+                <div class="py-2 flex justify-between items-center text-xs">
+                    <div><p class="font-bold">${i.nama_bahan}</p><p class="text-[10px] text-stone-500">Sisa: ${i.stok_bahan} ${i.satuan} | Modal: Rp ${Number(i.harga_satuan||0)}</p></div>
+                    <button onclick="hapusBahan(${i.id})" class="text-red-500 hover:underline">Hapus</button>
+                </div>
+            `).join('');
 
             document.getElementById('recProduct').innerHTML = products.map(p => `<option value="${p.id}">${p.nama_produk}</option>`).join('');
             document.getElementById('recIngredient').innerHTML = ingredients.map(i => `<option value="${i.id}">${i.nama_bahan} (${i.satuan})</option>`).join('');
 
-            const recList = document.getElementById('recipeList');
-            recList.innerHTML = products.map(p => {
-                const itemResep = recipes.filter(r => r.product_id === p.id);
-                const porsi = hitungStokPorsi(p.id);
-                const hpp = hitungHPPMenu(p.id);
-                const laba = p.harga - hpp;
-
+            document.getElementById('recipeList').innerHTML = products.map(p => {
+                const itemR = recipes.filter(r => r.product_id === p.id);
+                const porsi = hitungStokPorsi(p.id); const hpp = hitungHPPMenu(p.id);
                 return `
-                    <div class="p-3 rounded-xl bg-stone-50 border border-stone-200">
-                        <div class="flex justify-between items-center">
-                            <span class="font-bold text-stone-800">${p.nama_produk} (Jual: Rp ${p.harga.toLocaleString('id-ID')})</span>
-                            <span class="font-bold ${porsi === null ? 'text-stone-400' : 'text-emerald-700'}">${porsi === null ? 'Tanpa Resep' : `Stok: ${porsi} cup`}</span>
-                        </div>
-                        ${itemResep.length > 0 ? `
-                            <div class="flex gap-3 text-[11px] mt-1 font-semibold">
-                                <span class="text-amber-700">HPP Modal: Rp ${Math.round(hpp).toLocaleString('id-ID')}</span>
-                                <span class="text-emerald-700">Margin Laba: Rp ${Math.round(laba).toLocaleString('id-ID')}/cup</span>
-                            </div>
-                            <div class="space-y-1 mt-1.5 border-t pt-1.5">
-                                ${itemResep.map(r => {
-                                    const b = ingredients.find(ing => ing.id === r.ingredient_id);
-                                    return `
-                                        <div class="flex justify-between items-center text-[11px]">
-                                            <span>• ${b ? b.nama_bahan : 'Bahan'}: <b>${r.jumlah_pakai} ${b ? b.satuan : ''}</b> (Rp ${Math.round((b ? b.harga_satuan : 0) * r.jumlah_pakai).toLocaleString('id-ID')})</span>
-                                            <button onclick="hapusResep(${r.id})" class="text-red-500 hover:underline">x</button>
-                                        </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                        ` : `<p class="text-[11px] text-stone-400 italic mt-1">Belum ada bahan baku yang dihubungkan.</p>`}
+                    <div class="p-3 rounded-xl bg-stone-50 border">
+                        <div class="flex justify-between font-bold text-stone-800"><span>${p.nama_produk}</span><span class="${porsi === null ? 'text-stone-400' : 'text-emerald-700'}">${porsi === null ? 'Tanpa Resep' : 'Stok: ' + porsi}</span></div>
+                        ${itemR.length > 0 ? `<p class="text-[11px] text-amber-700 mt-1 font-semibold">HPP: Rp ${Math.round(hpp)} | Laba: Rp ${Math.round(p.harga - hpp)}</p>` : ''}
                     </div>
                 `;
             }).join('');
@@ -923,305 +766,126 @@
 
         async function tambahBahan(e) {
             e.preventDefault();
-            const nama_bahan = document.getElementById('ingNama').value.trim();
-            const satuan = document.getElementById('ingSatuan').value;
-            const stok_bahan = parseFloat(document.getElementById('ingStok').value);
-            const harga_satuan = parseFloat(document.getElementById('ingHargaSatuan').value) || 0;
-
-            const { error } = await db.from('ingredients').insert([{ nama_bahan, satuan, stok_bahan, harga_satuan }]);
-            if (error) return alert('Error: ' + error.message);
-            e.target.reset();
-            loadAllData();
+            await db.from('ingredients').insert([{ nama_bahan: document.getElementById('ingNama').value, satuan: document.getElementById('ingSatuan').value, stok_bahan: parseFloat(document.getElementById('ingStok').value), harga_satuan: parseFloat(document.getElementById('ingHargaSatuan').value)||0 }]);
+            e.target.reset(); loadAllData();
         }
-
-        async function tambahStokBahanCepat(id, nama, satuan, stokLama) {
-            const input = prompt(`Update total stok "${nama}" (${satuan}):`, stokLama);
-            if (input === null || input.trim() === '') return;
-            await db.from('ingredients').update({ stok_bahan: parseFloat(input) }).eq('id', id);
-            loadAllData();
-        }
-
-        async function hapusBahan(id) {
-            if (!confirm('Hapus bahan baku ini?')) return;
-            await db.from('ingredients').delete().eq('id', id);
-            loadAllData();
-        }
-
+        async function hapusBahan(id) { await db.from('ingredients').delete().eq('id', id); loadAllData(); }
         async function tambahResep(e) {
             e.preventDefault();
-            const product_id = parseInt(document.getElementById('recProduct').value);
-            const ingredient_id = parseInt(document.getElementById('recIngredient').value);
-            const jumlah_pakai = parseFloat(document.getElementById('recJumlah').value);
-            if (!product_id || !ingredient_id) return alert('Pilih menu & bahan baku!');
-            await db.from('recipes').insert([{ product_id, ingredient_id, jumlah_pakai }]);
-            document.getElementById('recJumlah').value = '';
-            loadAllData();
+            await db.from('recipes').insert([{ product_id: parseInt(document.getElementById('recProduct').value), ingredient_id: parseInt(document.getElementById('recIngredient').value), jumlah_pakai: parseFloat(document.getElementById('recJumlah').value) }]);
+            document.getElementById('recJumlah').value = ''; loadAllData();
         }
 
-        async function hapusResep(id) {
-            await db.from('recipes').delete().eq('id', id);
-            loadAllData();
-        }
-
-        // 6. KEUANGAN, FILTER HARI INI, PENGELUARAN & EXPORT CSV
-        function setFilterRekap(mode) {
-            rekapFilter = mode;
-            document.getElementById('btnFilterToday').className = mode === 'today' ? 'px-3.5 py-1.5 rounded-lg text-xs font-bold bg-stone-900 text-white' : 'px-3.5 py-1.5 rounded-lg text-xs font-bold bg-stone-100 text-stone-600';
-            document.getElementById('btnFilterAll').className = mode === 'all' ? 'px-3.5 py-1.5 rounded-lg text-xs font-bold bg-stone-900 text-white' : 'px-3.5 py-1.5 rounded-lg text-xs font-bold bg-stone-100 text-stone-600';
+        // --- KEUANGAN & RIWAYAT ---
+        function setFilterRekap(m) {
+            rekapFilter = m;
+            document.getElementById('btnFilterToday').className = m === 'today' ? 'px-3.5 py-1.5 rounded-lg text-xs font-bold bg-stone-900 text-white' : 'px-3.5 py-1.5 rounded-lg text-xs font-bold bg-stone-100 text-stone-600';
+            document.getElementById('btnFilterAll').className = m === 'all' ? 'px-3.5 py-1.5 rounded-lg text-xs font-bold bg-stone-900 text-white' : 'px-3.5 py-1.5 rounded-lg text-xs font-bold bg-stone-100 text-stone-600';
             renderKeuanganDanRiwayat();
         }
-
-        function isToday(dateStr) {
-            const d = new Date(dateStr);
-            const now = new Date();
-            return d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-        }
+        function isToday(dStr) { const d = new Date(dStr), now = new Date(); return d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); }
 
         function renderKeuanganDanRiwayat() {
-            const transFiltered = rekapFilter === 'today' ? allTransactions.filter(t => isToday(t.created_at)) : allTransactions;
-            const expFiltered = rekapFilter === 'today' ? allExpenses.filter(e => isToday(e.created_at)) : allExpenses;
-
+            const tF = rekapFilter === 'today' ? allTransactions.filter(t => isToday(t.created_at)) : allTransactions;
+            const eF = rekapFilter === 'today' ? allExpenses.filter(e => isToday(e.created_at)) : allExpenses;
             let omzet = 0, tunai = 0, qris = 0;
-            transFiltered.forEach(t => {
-                omzet += t.total_harga;
-                if (t.metode_bayar === 'Tunai') tunai += t.total_harga;
-                else qris += t.total_harga;
-            });
-
-            const totalExp = expFiltered.reduce((s, e) => s + e.nominal, 0);
-            const bersih = omzet - totalExp;
+            tF.forEach(t => { omzet += t.total_harga; if (t.metode_bayar === 'Tunai') tunai += t.total_harga; else qris += t.total_harga; });
+            const totalExp = eF.reduce((s, e) => s + e.nominal, 0);
 
             document.getElementById('statOmzet').innerText = 'Rp ' + omzet.toLocaleString('id-ID');
             document.getElementById('statMetode').innerText = `Tunai: Rp ${tunai.toLocaleString('id-ID')} | QRIS: Rp ${qris.toLocaleString('id-ID')}`;
             document.getElementById('statPengeluaran').innerText = 'Rp ' + totalExp.toLocaleString('id-ID');
-            document.getElementById('statBersih').innerText = 'Rp ' + bersih.toLocaleString('id-ID');
+            document.getElementById('statBersih').innerText = 'Rp ' + (omzet - totalExp).toLocaleString('id-ID');
 
-            // Render Transaksi
-            const tList = document.getElementById('transaksiList');
-            tList.innerHTML = transFiltered.length === 0 ? '<p class="text-xs text-stone-400 py-2">Belum ada transaksi.</p>' : transFiltered.map(t => {
-                const waktu = new Date(t.created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' });
-                return `
-                    <div class="py-2.5 flex justify-between items-start gap-2">
-                        <div class="flex-1">
-                            <p class="font-semibold text-xs text-stone-800">${t.rincian_item}</p>
-                            <p class="text-[11px] text-stone-400 mt-0.5">${waktu} • <b>${t.metode_bayar}</b> • <b class="text-emerald-700">Rp ${t.total_harga.toLocaleString('id-ID')}</b></p>
-                        </div>
-                        <button onclick="cancelTransaksi(${t.id})" class="text-[10px] bg-red-50 text-red-600 font-bold px-2 py-1 rounded border border-red-200 shrink-0">❌ Cancel</button>
-                    </div>
-                `;
-            }).join('');
+            document.getElementById('transaksiList').innerHTML = tF.length === 0 ? '<p class="text-xs text-stone-400 py-2">Kosong</p>' : tF.map(t => `
+                <div class="py-2.5 flex justify-between items-start gap-2 text-xs">
+                    <div><p class="font-semibold">${t.rincian_item}</p><p class="text-[10px] text-stone-400">${new Date(t.created_at).toLocaleString('id-ID')} • <b>${t.metode_bayar}</b> • <b class="text-emerald-700">Rp ${t.total_harga.toLocaleString('id-ID')}</b></p></div>
+                    <button onclick="cancelTransaksi(${t.id})" class="text-[10px] bg-red-50 text-red-600 font-bold px-2 py-1 rounded">❌ Cancel</button>
+                </div>
+            `).join('');
 
-            // Render Pengeluaran
-            const eList = document.getElementById('expenseList');
-            eList.innerHTML = expFiltered.length === 0 ? '<p class="text-xs text-stone-400 py-2">Belum ada pengeluaran.</p>' : expFiltered.map(e => {
-                const waktu = new Date(e.created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' });
-                return `
-                    <div class="py-2 flex justify-between items-center">
-                        <div>
-                            <p class="font-semibold text-stone-800">${e.keterangan}</p>
-                            <p class="text-[10px] text-stone-400">${waktu}</p>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="font-bold text-red-600">-Rp ${e.nominal.toLocaleString('id-ID')}</span>
-                            <button onclick="hapusPengeluaran(${e.id})" class="text-stone-400 hover:text-red-600">✕</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+            document.getElementById('expenseList').innerHTML = eF.length === 0 ? '<p class="text-xs text-stone-400 py-2">Kosong</p>' : eF.map(e => `
+                <div class="py-2 flex justify-between items-center text-xs">
+                    <div><p class="font-semibold">${e.keterangan}</p></div>
+                    <div class="flex items-center gap-2"><span class="font-bold text-red-600">-Rp ${e.nominal.toLocaleString('id-ID')}</span><button onclick="hapusExp(${e.id})" class="text-stone-400">✕</button></div>
+                </div>
+            `).join('');
         }
 
         async function tambahPengeluaran(e) {
             e.preventDefault();
-            const keterangan = document.getElementById('expKet').value.trim();
-            const nominal = parseInt(document.getElementById('expNominal').value);
-            const { error } = await db.from('expenses').insert([{ keterangan, nominal }]);
-            if (error) return alert('Pastikan SQL tabel expenses sudah di-Run: ' + error.message);
-            e.target.reset();
-            loadAllData();
+            await db.from('expenses').insert([{ keterangan: document.getElementById('expKet').value, nominal: parseInt(document.getElementById('expNominal').value) }]);
+            e.target.reset(); loadAllData();
         }
-
-        async function hapusPengeluaran(id) {
-            await db.from('expenses').delete().eq('id', id);
-            loadAllData();
+        async function hapusExp(id) { await db.from('expenses').delete().eq('id', id); loadAllData(); }
+        async function cancelTransaksi(id) {
+            if (!confirm('Batalkan struk ini?')) return;
+            await db.from('transactions').delete().eq('id', id); loadAllData();
         }
-
         function exportLaporanCSV() {
-            const transFiltered = rekapFilter === 'today' ? allTransactions.filter(t => isToday(t.created_at)) : allTransactions;
-            if (transFiltered.length === 0) return alert('Tidak ada data transaksi untuk diunduh.');
-            let csv = 'ID,Waktu,Rincian Pesanan,Metode Bayar,Total Harga (Rp)\n';
-            transFiltered.forEach(t => {
-                const waktu = new Date(t.created_at).toLocaleString('id-ID');
-                csv += `${t.id},"${waktu}","${t.rincian_item.replace(/"/g, '""')}",${t.metode_bayar},${t.total_harga}\n`;
-            });
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `Laporan_Goozy_${rekapFilter}.csv`;
-            link.click();
+            const tF = rekapFilter === 'today' ? allTransactions.filter(t => isToday(t.created_at)) : allTransactions;
+            let csv = 'ID,Waktu,Rincian,Metode,Total\n';
+            tF.forEach(t => { csv += `${t.id},"${new Date(t.created_at).toLocaleString('id-ID')}","${t.rincian_item.replace(/"/g, '""')}",${t.metode_bayar},${t.total_harga}\n`; });
+            const link = document.createElement('a'); link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+            link.download = `Laporan_${rekapFilter}.csv`; link.click();
         }
 
-        // 7. CETAK STRUK, LABEL CUP & WA
+        // --- CETAK & WA ---
         function tampilkanModalStruk() {
             const o = lastOrder;
             document.getElementById('modalPreview').innerHTML = `
                 <div class="text-center font-bold border-b pb-1 mb-1">GOOZY.CO</div>
-                <div>Waktu : ${o.waktu}</div>
-                <div>Nama  : ${o.custNama} (${o.metode})</div>
-                <div class="border-b my-1"></div>
+                <div>Waktu: ${o.waktu}</div><div>Nama: ${o.custNama}</div><div class="border-b my-1"></div>
                 ${o.items.map(i => `<div class="flex justify-between"><span>${i.qty}x ${i.nama}</span><span>Rp ${(i.harga * i.qty).toLocaleString('id-ID')}</span></div>`).join('')}
                 <div class="border-b my-1"></div>
-                ${o.diskon > 0 ? `<div class="flex justify-between text-red-600"><span>Diskon</span><span>-Rp ${o.diskon.toLocaleString('id-ID')}</span></div>` : ''}
                 <div class="font-bold flex justify-between"><span>TOTAL</span><span>Rp ${o.total.toLocaleString('id-ID')}</span></div>
                 ${o.metode === 'Tunai' ? `<div class="flex justify-between"><span>Tunai</span><span>Rp ${o.uangDiterima.toLocaleString('id-ID')}</span></div><div class="flex justify-between font-bold"><span>Kembali</span><span>Rp ${o.kembalian.toLocaleString('id-ID')}</span></div>` : ''}
-                ${o.custCatatan !== '-' ? `<div class="text-[11px] mt-1 italic">Note: ${o.custCatatan}</div>` : ''}
             `;
             document.getElementById('receiptModal').classList.remove('hidden');
         }
-
-        function tutupModal() {
-            document.getElementById('receiptModal').classList.add('hidden');
-        }
-
+        function tutupModal() { document.getElementById('receiptModal').classList.add('hidden'); }
         async function cetakStruk() {
             const o = lastOrder;
-            let rawText = `\x1B\x40        GOOZY.CO\nSpecialty Beverage & Bakery\n--------------------------------\n`;
-            rawText += `Tgl  : ${o.waktu}\nNama : ${o.custNama}\nBayar: ${o.metode}\n--------------------------------\n`;
-            o.items.forEach(i => {
-                rawText += `${i.nama}\n${i.qty} x Rp ${i.harga.toLocaleString('id-ID')} = Rp ${(i.harga * i.qty).toLocaleString('id-ID')}\n`;
-            });
-            rawText += `--------------------------------\n`;
-            if (o.diskon > 0) rawText += `Diskon : -Rp ${o.diskon.toLocaleString('id-ID')}\n`;
-            rawText += `TOTAL  : Rp ${o.total.toLocaleString('id-ID')}\n`;
-            if (o.metode === 'Tunai') {
-                rawText += `Tunai  : Rp ${o.uangDiterima.toLocaleString('id-ID')}\nKembali: Rp ${o.kembalian.toLocaleString('id-ID')}\n`;
-            }
-            if (o.custCatatan !== '-') rawText += `Note   : ${o.custCatatan}\n`;
-            rawText += `\nTerima kasih sudah jajan!\n\n\n`;
-
-            if (await sendTextToBluetooth('receipt', rawText)) return;
-
-            const printArea = document.getElementById('printArea');
-            printArea.classList.remove('hidden');
-            printArea.innerHTML = `<pre style="font-family:monospace; font-size:11px;">${rawText}</pre>`;
+            let text = `\x1B\x40 GOOZY.CO\n--------------------------------\nTgl: ${o.waktu}\nNama: ${o.custNama}\n--------------------------------\n`;
+            o.items.forEach(i => { text += `${i.nama}\n${i.qty} x Rp ${i.harga.toLocaleString('id-ID')} = Rp ${(i.harga * i.qty).toLocaleString('id-ID')}\n`; });
+            text += `--------------------------------\nTOTAL: Rp ${o.total.toLocaleString('id-ID')}\n\n\n`;
+            if (await sendTextToBluetooth('receipt', text)) return;
             window.print();
-            printArea.classList.add('hidden');
         }
-
         async function cetakLabelCup() {
             const o = lastOrder;
-            let daftarLabel = [];
-            o.items.forEach(item => {
-                for (let i = 0; i < item.qty; i++) daftarLabel.push(item.nama);
-            });
-            const totalCup = daftarLabel.length;
-
-            let rawLabel = `\x1B\x40`;
-            daftarLabel.forEach((namaMenu, idx) => {
-                rawLabel += `GOOZY.CO        Cup ${idx + 1}/${totalCup}\n${o.custNama}\n------------------------\n${namaMenu}\n`;
-                if (o.custCatatan !== '-') rawLabel += `* ${o.custCatatan}\n`;
-                rawLabel += `${o.waktu}\n\n\n`;
-            });
-
-            if (await sendTextToBluetooth('label', rawLabel)) return;
-
-            const printArea = document.getElementById('printArea');
-            printArea.classList.remove('hidden');
-            printArea.innerHTML = daftarLabel.map((namaMenu, idx) => `
-                <div class="page-break" style="padding:4px 0; font-family:sans-serif;">
-                    <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:bold;"><span>GOOZY.CO</span><span>Cup ${idx + 1}/${totalCup}</span></div>
-                    <div style="font-size:13px; font-weight:bold; margin:3px 0;">${o.custNama}</div>
-                    <div style="font-size:12px; font-weight:bold; border-top:1px solid #000; padding-top:2px;">${namaMenu}</div>
-                    ${o.custCatatan !== '-' ? `<div style="font-size:10px; margin-top:2px;">* ${o.custCatatan}</div>` : ''}
-                    <div style="font-size:8px; margin-top:4px; color:#555;">${o.waktu}</div>
-                </div>
-            `).join('');
+            let labels = []; o.items.forEach(i => { for(let k=0; k<i.qty; k++) labels.push(i.nama); });
+            let text = `\x1B\x40`; labels.forEach((n, idx) => { text += `GOOZY.CO Cup ${idx+1}/${labels.length}\n${o.custNama}\n----\n${n}\n\n\n`; });
+            if (await sendTextToBluetooth('label', text)) return;
             window.print();
-            printArea.classList.add('hidden');
         }
-
         function kirimStrukWA() {
-            const o = lastOrder;
-            let noWA = o.custWA || prompt('Masukkan Nomor WhatsApp Pembeli (08...):');
-            if (!noWA) return;
-            noWA = noWA.replace(/[^0-9]/g, '');
-            if (noWA.startsWith('0')) noWA = '62' + noWA.slice(1);
-
-            let teks = `*STRUK PEMBELIAN GOOZY.CO*\nWaktu: ${o.waktu}\nPelanggan: ${o.custNama}\n------------------------\n`;
-            o.items.forEach(i => { teks += `• ${i.qty}x ${i.nama} = Rp ${(i.harga * i.qty).toLocaleString('id-ID')}\n`; });
-            teks += `------------------------\n`;
-            if (o.diskon > 0) teks += `Diskon: -Rp ${o.diskon.toLocaleString('id-ID')}\n`;
-            teks += `*TOTAL: Rp ${o.total.toLocaleString('id-ID')} (${o.metode})*\n`;
-            if (o.metode === 'Tunai') teks += `Tunai: Rp ${o.uangDiterima.toLocaleString('id-ID')} | Kembali: Rp ${o.kembalian.toLocaleString('id-ID')}\n`;
-            if (o.custCatatan !== '-') teks += `Catatan: ${o.custCatatan}\n`;
-            teks += `\nTerima kasih sudah jajan di Goozy! 🍵☕`;
-
-            window.open(`https://wa.me/${noWA}?text=${encodeURIComponent(teks)}`, '_blank');
+            const o = lastOrder; let no = o.custWA || prompt('No WA Pembeli:'); if(!no) return;
+            no = no.replace(/[^0-9]/g, ''); if(no.startsWith('0')) no = '62' + no.slice(1);
+            let t = `*STRUK GOOZY.CO*\nNama: ${o.custNama}\n`; o.items.forEach(i => { t += `• ${i.qty}x ${i.nama} = Rp ${(i.harga * i.qty).toLocaleString('id-ID')}\n`; });
+            t += `*TOTAL: Rp ${o.total.toLocaleString('id-ID')}*`; window.open(`https://wa.me/${no}?text=${encodeURIComponent(t)}`, '_blank');
         }
-
-        // 8. KELOLA MENU & CANCEL STRUK
         function renderStok() {
             document.getElementById('stokList').innerHTML = products.map(p => `
-                <div class="py-3 flex justify-between items-center">
-                    <div>
-                        <p class="font-bold text-stone-800">${p.nama_produk} <span class="text-xs font-normal text-stone-400">(${p.kategori})</span></p>
-                        <p class="text-xs text-amber-700 font-semibold">Reg: Rp ${p.harga.toLocaleString('id-ID')} | Large: Rp ${(p.harga + 5000).toLocaleString('id-ID')}</p>
-                    </div>
-                    <button onclick="hapusProduk(${p.id})" class="text-xs bg-red-50 text-red-600 px-3 py-1.5 rounded-lg font-semibold hover:bg-red-100">Hapus</button>
+                <div class="py-3 flex justify-between items-center text-xs">
+                    <div><b>${p.nama_produk}</b> (${p.kategori})<br><span class="text-amber-700">Reg: Rp ${p.harga.toLocaleString('id-ID')}</span></div>
+                    <button onclick="hapusProduk(${p.id})" class="text-red-500 font-bold">Hapus</button>
                 </div>
             `).join('');
         }
-
         async function tambahProduk(e) {
             e.preventDefault();
-            const nama_produk = document.getElementById('prodNama').value;
-            const kategori = document.getElementById('prodKategori').value;
-            const harga = parseInt(document.getElementById('prodHarga').value);
-            await db.from('products').insert([{ nama_produk, kategori, harga, stok: 999 }]);
-            e.target.reset();
-            loadAllData();
+            await db.from('products').insert([{ nama_produk: document.getElementById('prodNama').value, kategori: document.getElementById('prodKategori').value, harga: parseInt(document.getElementById('prodHarga').value), stok: 999 }]);
+            e.target.reset(); loadAllData();
         }
-
-        async function hapusProduk(id) {
-            if (!confirm('Hapus menu ini?')) return;
-            await db.from('products').delete().eq('id', id);
-            loadAllData();
+        async function hapusProduk(id) { await db.from('products').delete().eq('id', id); loadAllData(); }
+        async function kirimMasukan(e) {
+            e.preventDefault();
+            await db.from('feedbacks').insert([{ nama: document.getElementById('nama').value || 'Anonim', kategori: document.getElementById('kategori').value, pesan: document.getElementById('pesan').value }]);
+            alert('Terkirim!'); document.getElementById('feedbackForm').reset();
         }
-
-        async function cancelTransaksi(id) {
-            const { data: trans } = await db.from('transactions').select('*').eq('id', id).single();
-            if (!trans || !confirm(`Batalkan struk ini?\n"${trans.rincian_item}"`)) return;
-
-            if (trans.items_json) {
-                try {
-                    const items = JSON.parse(trans.items_json);
-                    for (const item of items) {
-                        const resepMenu = recipes.filter(r => r.product_id === item.id);
-                        for (const r of resepMenu) {
-                            const bahan = ingredients.find(i => i.id === r.ingredient_id);
-                            if (bahan) {
-                                const stokKembali = Number(bahan.stok_bahan) + (Number(r.jumlah_pakai) * item.qty);
-                                bahan.stok_bahan = stokKembali;
-                                await db.from('ingredients').update({ stok_bahan: stokKembali }).eq('id', bahan.id);
-                            }
-                        }
-                    }
-                } catch (e) {}
-            }
-            await db.from('transactions').delete().eq('id', id);
-            loadAllData();
-        }
-
         function renderFeedback(data) {
-            const list = document.getElementById('feedbackList');
-            list.innerHTML = data.length === 0 ? '<p class="text-xs text-stone-400 py-2">Belum ada masukan.</p>' : data.map(f => `
-                <div class="py-2.5">
-                    <div class="flex justify-between items-center">
-                        <span class="font-bold text-xs">${f.nama}</span>
-                        <span class="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded">${f.kategori}</span>
-                    </div>
-                    <p class="text-xs text-stone-600 mt-1">${f.pesan}</p>
-                </div>
-            `).join('');
+            document.getElementById('feedbackList').innerHTML = data.length === 0 ? '<p class="text-xs text-stone-400 py-2">Kosong</p>' : data.map(f => `<div class="py-2"><p class="font-bold text-xs">${f.nama}</p><p class="text-xs text-stone-600">${f.pesan}</p></div>`).join('');
         }
     </script>
 </body>
