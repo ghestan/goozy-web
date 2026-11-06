@@ -263,14 +263,21 @@
             </div>
         </div>
 
-        <!-- 5. TAB KEUANGAN -->
+        <!-- 5. TAB KEUANGAN (DENGAN TOMBOL KIRIM REKAP KE WA) -->
         <div id="content-rekap" class="hidden space-y-6">
             <div class="flex flex-wrap justify-between items-center gap-3 bg-white p-4 rounded-2xl border shadow-sm">
                 <div class="flex gap-2">
                     <button onclick="setFilterRekap('today')" id="btnFilterToday" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-stone-900 text-white">Hari Ini</button>
                     <button onclick="setFilterRekap('all')" id="btnFilterAll" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-stone-100 text-stone-600">Semua</button>
                 </div>
-                <button onclick="exportLaporanCSV()" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 text-white">📥 Download Excel (.CSV)</button>
+                <div class="flex gap-2">
+                    <button onclick="kirimRekapShiftWA()" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white">
+                        📲 Kirim Rekap Shift ke WA
+                    </button>
+                    <button onclick="exportLaporanCSV()" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-stone-800 hover:bg-stone-700 text-white">
+                        📥 Download Excel (.CSV)
+                    </button>
+                </div>
             </div>
 
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -750,6 +757,35 @@
             link.download = `Laporan_${rekapFilter}.csv`; link.click();
         }
 
+        // --- FITUR BARU: KIRIM REKAP SHIFT KE WA OWNER ---
+        function kirimRekapShiftWA() {
+            const tF = rekapFilter === 'today' ? allTransactions.filter(t => isToday(t.created_at)) : allTransactions;
+            const eF = rekapFilter === 'today' ? allExpenses.filter(e => isToday(e.created_at)) : allExpenses;
+            let omzet = 0, tunai = 0, qris = 0;
+            tF.forEach(t => { omzet += t.total_harga; if (t.metode_bayar === 'Tunai') tunai += t.total_harga; else qris += t.total_harga; });
+            const totalExp = eF.reduce((s, e) => s + e.nominal, 0);
+            const bersih = omzet - totalExp;
+
+            let noOwner = prompt('Masukkan Nomor WhatsApp Owner (08...):');
+            if (!noOwner) return;
+            noOwner = noOwner.replace(/[^0-9]/g, '');
+            if (noOwner.startsWith('0')) noOwner = '62' + noOwner.slice(1);
+
+            let t = `*📊 REKAP SHIFT / OMZET GOOZY.CO*\n`;
+            t += `Waktu: ${new Date().toLocaleString('id-ID')}\n`;
+            t += `Pelapor: ${userRole}\n`;
+            t += `------------------------\n`;
+            t += `• Total Omzet Kotor: Rp ${omzet.toLocaleString('id-ID')}\n`;
+            t += `• Tunai (Laci): Rp ${tunai.toLocaleString('id-ID')}\n`;
+            t += `• QRIS (Rekening): Rp ${qris.toLocaleString('id-ID')}\n`;
+            t += `• Total Pengeluaran: Rp ${totalExp.toLocaleString('id-ID')}\n`;
+            t += `------------------------\n`;
+            t += `*💰 SISA KAS BERSIH: Rp ${ bersih.toLocaleString('id-ID') }*\n`;
+            t += `\nLaporan shift otomatis dari sistem Goozy.co 🚀`;
+
+            window.open(`https://wa.me/${noOwner}?text=${encodeURIComponent(t)}`, '_blank');
+        }
+
         // --- PRINTER & CETAK ---
         async function connectPrinter(type) {
             if (!navigator.bluetooth) return alert('Gunakan Chrome.');
@@ -806,8 +842,7 @@
             if (await sendTextToBluetooth('label', text)) return;
             window.print();
         }
-        
-        // FORMAT WHATSAPP YANG RAPI SEPERTI SEMULA
+
         function kirimStrukWA() {
             const o = lastOrder; 
             let no = o.custWA || prompt('No WA Pembeli (08...):'); 
