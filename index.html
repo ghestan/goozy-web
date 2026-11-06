@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* Pengaturan Khusus Saat Print Struk & Label Cup */
+        /* Cadangan Print Browser jika Bluetooth belum dikonek */
         @media print {
             body * { visibility: hidden; }
             #printArea, #printArea * { visibility: visible; }
@@ -15,7 +15,7 @@
                 position: absolute;
                 left: 0;
                 top: 0;
-                width: 58mm; /* Ukuran standar printer thermal kasir/stiker */
+                width: 58mm;
                 font-family: monospace;
                 color: #000;
                 background: #fff;
@@ -79,20 +79,40 @@
         </div>
     </main>
 
-    <!-- ================= HALAMAN INTERNAL (KASIR, STOK, REKAP) ================= -->
+    <!-- ================= HALAMAN INTERNAL (KASIR, MENU, REKAP) ================= -->
     <main id="staffView" class="hidden max-w-5xl mx-auto w-full px-4 py-6 flex-1">
+        
+        <!-- Panel Koneksi 2 Printer Bluetooth -->
+        <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-stone-200 mb-5 flex flex-wrap gap-3 justify-between items-center">
+            <div class="text-xs">
+                <span class="font-bold text-stone-800">📡 Koneksi Dual Printer Bluetooth</span>
+                <p class="text-[11px] text-stone-400">Gunakan browser Chrome di HP/Laptop untuk sambung ke 2 printer berbeda.</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <button onclick="connectPrinter('receipt')" id="btnPrinterStruk" class="text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 px-3 py-2 rounded-xl font-semibold border border-stone-300 transition">
+                    🖨️ Printer Struk: <span class="text-red-600">Terputus</span>
+                </button>
+                <button onclick="connectPrinter('label')" id="btnPrinterLabel" class="text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 px-3 py-2 rounded-xl font-semibold border border-stone-300 transition">
+                    🏷️ Printer Stiker: <span class="text-red-600">Terputus</span>
+                </button>
+            </div>
+        </div>
+
         <!-- Navigasi Tab Internal -->
         <div class="flex gap-2 mb-6 border-b border-stone-200 pb-3 overflow-x-auto">
             <button onclick="switchTab('pos')" id="tab-pos" class="px-4 py-2 rounded-lg text-sm font-semibold bg-stone-900 text-white">🛒 Kasir (POS)</button>
-            <button onclick="switchTab('stok')" id="tab-stok" class="px-4 py-2 rounded-lg text-sm font-semibold bg-white text-stone-600 border border-stone-200">📦 Kelola Stok & Menu</button>
-            <button onclick="switchTab('rekap')" id="tab-rekap" class="px-4 py-2 rounded-lg text-sm font-semibold bg-white text-stone-600 border border-stone-200">📊 Riwayat & Masukan</button>
+            <button onclick="switchTab('stok')" id="tab-stok" class="px-4 py-2 rounded-lg text-sm font-semibold bg-white text-stone-600 border border-stone-200">📋 Kelola Daftar Menu</button>
+            <button onclick="switchTab('rekap')" id="tab-rekap" class="px-4 py-2 rounded-lg text-sm font-semibold bg-white text-stone-600 border border-stone-200">📊 Riwayat & Cancel Struk</button>
         </div>
 
         <!-- 1. TAB KASIR (POS) -->
         <div id="content-pos" class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Daftar Menu -->
             <div class="md:col-span-2">
-                <h3 class="font-bold text-base mb-3">Pilih Menu Pesanan</h3>
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-bold text-base">Pilih Menu Pesanan</h3>
+                    <span class="text-[11px] text-stone-400">Mode Tanpa Stok Manual (Siap Integrasi Resep)</span>
+                </div>
                 <div id="posMenuGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
             </div>
 
@@ -110,8 +130,8 @@
                         <input type="text" id="custNama" placeholder="Contoh: Kak Dinda" class="w-full px-2.5 py-1.5 border border-stone-300 rounded-lg text-xs">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-medium text-stone-600 mb-0.5">Catatan Pesanan (Less Sugar, Es Sedikit, dll)</label>
-                        <input type="text" id="custCatatan" placeholder="Contoh: Matcha Less Sugar" class="w-full px-2.5 py-1.5 border border-stone-300 rounded-lg text-xs">
+                        <label class="block text-[11px] font-medium text-stone-600 mb-0.5">Catatan Pesanan (Less Sugar, Extra Shot, dll)</label>
+                        <input type="text" id="custCatatan" placeholder="Contoh: Less Sugar, Es Sedikit" class="w-full px-2.5 py-1.5 border border-stone-300 rounded-lg text-xs">
                     </div>
                     <div>
                         <label class="block text-[11px] font-medium text-stone-600 mb-0.5">No. WhatsApp (Opsional utk Kirim Struk)</label>
@@ -138,14 +158,14 @@
             </div>
         </div>
 
-        <!-- 2. TAB KELOLA STOK & MENU -->
+        <!-- 2. TAB KELOLA DAFTAR MENU (TANPA STOK MANUAL) -->
         <div id="content-stok" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200 h-fit">
-                <h3 class="font-bold text-base mb-3">Tambah Produk Baru</h3>
+                <h3 class="font-bold text-base mb-3">Tambah Menu Baru</h3>
                 <form onsubmit="tambahProduk(event)" class="space-y-3">
                     <div>
-                        <label class="block text-xs text-stone-600 mb-1">Nama Produk</label>
-                        <input type="text" id="prodNama" required placeholder="Contoh: Croissant" class="w-full px-3 py-2 border rounded-lg text-sm">
+                        <label class="block text-xs text-stone-600 mb-1">Nama Menu</label>
+                        <input type="text" id="prodNama" required placeholder="Contoh: Butterscotch Latte" class="w-full px-3 py-2 border rounded-lg text-sm">
                     </div>
                     <div>
                         <label class="block text-xs text-stone-600 mb-1">Kategori</label>
@@ -157,29 +177,28 @@
                     </div>
                     <div>
                         <label class="block text-xs text-stone-600 mb-1">Harga Jual (Rp)</label>
-                        <input type="number" id="prodHarga" required placeholder="15000" class="w-full px-3 py-2 border rounded-lg text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-stone-600 mb-1">Stok Awal</label>
-                        <input type="number" id="prodStok" required placeholder="20" class="w-full px-3 py-2 border rounded-lg text-sm">
+                        <input type="number" id="prodHarga" required placeholder="18000" class="w-full px-3 py-2 border rounded-lg text-sm">
                     </div>
                     <button type="submit" class="w-full bg-stone-900 hover:bg-stone-700 text-white font-semibold py-2 rounded-lg text-sm">
-                        + Simpan Produk
+                        + Simpan Menu
                     </button>
                 </form>
             </div>
 
             <div class="md:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-stone-200">
-                <h3 class="font-bold text-base mb-3">Daftar Stok Menu Aktif</h3>
+                <h3 class="font-bold text-base mb-3">Daftar Menu Goozy</h3>
                 <div id="stokList" class="divide-y divide-stone-100 text-sm"></div>
             </div>
         </div>
 
-        <!-- 3. TAB RIWAYAT TRANSAKSI & MASUKAN -->
+        <!-- 3. TAB RIWAYAT TRANSAKSI (DENGAN FITUR CANCEL STRUK) & MASUKAN -->
         <div id="content-rekap" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200">
                 <div class="flex justify-between items-center mb-3">
-                    <h3 class="font-bold text-base">Riwayat Transaksi</h3>
+                    <div>
+                        <h3 class="font-bold text-base">Riwayat Transaksi</h3>
+                        <p class="text-[11px] text-stone-400">Klik "Cancel Struk" jika ada salah input di kasir.</p>
+                    </div>
                     <span id="totalOmzet" class="text-xs font-bold bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full">Omzet: Rp 0</span>
                 </div>
                 <div id="transaksiList" class="divide-y divide-stone-100 text-sm max-h-96 overflow-y-auto"></div>
@@ -206,10 +225,10 @@
             <!-- 3 Tombol Aksi Utama -->
             <div class="space-y-2 pt-1">
                 <button onclick="cetakStruk()" class="w-full bg-stone-900 hover:bg-stone-700 text-white font-semibold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2">
-                    🖨️ Cetak Struk Kasir (Thermal)
+                    🖨️ Cetak ke Printer Struk
                 </button>
                 <button onclick="cetakLabelCup()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2">
-                    🏷️ Cetak Stiker Label Cup (Per Gelas)
+                    🏷️ Cetak ke Printer Stiker Cup
                 </button>
                 <button onclick="kirimStrukWA()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2">
                     💬 Kirim Struk ke WhatsApp
@@ -222,7 +241,7 @@
         </div>
     </div>
 
-    <!-- AREA KHUSUS PRINT (Tersembunyi di layar, hanya muncul saat diprint) -->
+    <!-- AREA CADANGAN PRINT BROWSER -->
     <div id="printArea" class="hidden"></div>
 
     <footer class="text-center py-6 text-xs text-stone-400">
@@ -237,9 +256,76 @@
         let isStaff = false;
         let products = [];
         let cart = [];
-        let lastOrder = null; // Menyimpan data transaksi terakhir untuk cetak struk/label/WA
+        let lastOrder = null;
 
-        // 1. FUNGSI KIRIM MASUKAN PELANGGAN
+        // MEMORI KONEKSI 2 PRINTER BLUETOOTH BERBEDA
+        let btPrinters = {
+            receipt: { device: null, characteristic: null },
+            label: { device: null, characteristic: null }
+        };
+
+        // 1. FUNGSI KONEKSI WEB BLUETOOTH (2 PRINTER TERPISAH)
+        async function connectPrinter(type) {
+            if (!navigator.bluetooth) {
+                return alert('Browser ini belum mendukung Web Bluetooth. Gunakan Google Chrome di HP Android atau Laptop/PC.');
+            }
+            try {
+                const device = await navigator.bluetooth.requestDevice({
+                    acceptAllDevices: true,
+                    optionalServices: [
+                        '000018f0-0000-1000-8000-00805f9b34fb',
+                        'e7810a71-73ae-499d-8c15-faa9aef0c3f2',
+                        '49535343-fe7d-4ae5-8fa9-9fafd205e455'
+                    ]
+                });
+                const server = await device.gatt.connect();
+                const services = await server.getPrimaryServices();
+                let writeChar = null;
+
+                for (const service of services) {
+                    const chars = await service.getCharacteristics();
+                    for (const c of chars) {
+                        if (c.properties.write || c.properties.writeWithoutResponse) {
+                            writeChar = c;
+                            break;
+                        }
+                    }
+                    if (writeChar) break;
+                }
+
+                if (!writeChar) throw new Error('Karakteristik cetak tidak ditemukan pada printer ini.');
+
+                btPrinters[type] = { device, characteristic: writeChar };
+                const btnId = type === 'receipt' ? 'btnPrinterStruk' : 'btnPrinterLabel';
+                const labelTeks = type === 'receipt' ? '🖨️ Printer Struk' : '🏷️ Printer Stiker';
+                document.getElementById(btnId).innerHTML = `${labelTeks}: <span class="text-emerald-600 font-bold">${device.name || 'Terhubung'}</span>`;
+                alert(`${labelTeks} berhasil tersambung ke ${device.name || 'Printer'}!`);
+            } catch (err) {
+                alert('Gagal menyambungkan printer: ' + err.message);
+            }
+        }
+
+        // Fungsi Kirim Teks Mentah (ESC/POS) ke Printer Bluetooth
+        async function sendTextToBluetooth(type, textData) {
+            const printer = btPrinters[type];
+            if (!printer || !printer.characteristic) return false;
+            try {
+                const encoder = new TextEncoder();
+                const bytes = encoder.encode(textData);
+                // Kirim per 100 byte agar buffer printer Bluetooth tidak penuh
+                const chunkSize = 100;
+                for (let i = 0; i < bytes.length; i += chunkSize) {
+                    const chunk = bytes.slice(i, i + chunkSize);
+                    await printer.characteristic.writeValue(chunk);
+                }
+                return true;
+            } catch (err) {
+                alert('Koneksi printer terputus, beralih ke layar print standar: ' + err.message);
+                return false;
+            }
+        }
+
+        // 2. FUNGSI KIRIM MASUKAN PELANGGAN
         async function kirimMasukan(e) {
             e.preventDefault();
             const btn = document.getElementById('btnSubmitFeedback');
@@ -262,7 +348,7 @@
             }
         }
 
-        // 2. LOGIN STAFF MODE (PIN: 1234)
+        // 3. LOGIN STAFF MODE (PIN: 1234)
         function toggleStaffMode() {
             if (!isStaff) {
                 const pin = prompt('Masukkan PIN Staff Goozy (Default: 1234):');
@@ -305,22 +391,22 @@
             renderFeedback(fbData || []);
         }
 
-        // 3. LOGIKA KASIR (POS)
+        // 4. LOGIKA KASIR (TANPA STOK MANUAL)
         function renderPOS() {
             const grid = document.getElementById('posMenuGrid');
             if (products.length === 0) {
-                grid.innerHTML = `<p class="text-xs text-stone-400 col-span-3">Belum ada produk. Tambahkan di tab Kelola Stok.</p>`;
+                grid.innerHTML = `<p class="text-xs text-stone-400 col-span-3">Belum ada menu. Tambahkan di tab Kelola Daftar Menu.</p>`;
                 return;
             }
             grid.innerHTML = products.map(p => `
-                <button onclick="addToCart(${p.id})" ${p.stok <= 0 ? 'disabled' : ''} class="p-3 rounded-xl border text-left transition flex flex-col justify-between ${p.stok <= 0 ? 'bg-stone-100 opacity-50 cursor-not-allowed' : 'bg-white hover:border-amber-600 shadow-sm'}">
+                <button onclick="addToCart(${p.id})" class="p-3.5 rounded-xl border bg-white hover:border-amber-600 shadow-sm text-left transition flex flex-col justify-between">
                     <div>
                         <span class="text-[10px] font-semibold px-2 py-0.5 bg-stone-100 rounded text-stone-600">${p.kategori}</span>
                         <h4 class="font-bold text-sm mt-1.5 text-stone-800">${p.nama_produk}</h4>
                     </div>
                     <div class="mt-3 flex justify-between items-center w-full">
                         <span class="text-xs font-bold text-amber-700">Rp ${p.harga.toLocaleString('id-ID')}</span>
-                        <span class="text-[11px] ${p.stok <= 5 ? 'text-red-600 font-bold' : 'text-stone-400'}">Stok: ${p.stok}</span>
+                        <span class="text-[10px] text-emerald-600 font-semibold">+ Pilih</span>
                     </div>
                 </button>
             `).join('');
@@ -328,13 +414,12 @@
 
         function addToCart(id) {
             const prod = products.find(p => p.id === id);
-            if (!prod || prod.stok <= 0) return;
+            if (!prod) return;
             const item = cart.find(c => c.id === id);
             if (item) {
-                if (item.qty >= prod.stok) return alert('Stok tidak mencukupi!');
                 item.qty++;
             } else {
-                cart.push({ id: prod.id, nama: prod.nama_produk, harga: prod.harga, qty: 1, sisaStok: prod.stok });
+                cart.push({ id: prod.id, nama: prod.nama_produk, harga: prod.harga, qty: 1 });
             }
             renderCart();
         }
@@ -400,17 +485,13 @@
             const rincianDB = `${custNama}: ` + cart.map(c => `${c.nama} (${c.qty}x)`).join(', ') + (custCatatan !== '-' ? ` [Note: ${custCatatan}]` : '');
             const total = cart.reduce((sum, c) => sum + (c.harga * c.qty), 0);
 
-            // Simpan ke Supabase
+            // Simpan transaksi ke Supabase tanpa memotong stok manual
             const { error } = await db.from('transactions').insert([{ rincian_item: rincianDB, total_harga: total, metode_bayar: metode }]);
-            for (const item of cart) {
-                await db.from('products').update({ stok: item.sisaStok - item.qty }).eq('id', item.id);
-            }
 
             btn.innerText = 'Bayar & Proses';
             btn.disabled = false;
 
             if (!error) {
-                // Simpan ke memori sementara untuk dicetak / dikirim WA
                 lastOrder = {
                     waktu,
                     custNama,
@@ -428,7 +509,7 @@
             }
         }
 
-        // 4. LOGIKA CETAK STRUK, LABEL CUP & KIRIM WA
+        // 5. LOGIKA CETAK KE 2 PRINTER BLUETOOTH & KIRIM WA
         function tampilkanModalStruk() {
             const o = lastOrder;
             const preview = document.getElementById('modalPreview');
@@ -450,8 +531,30 @@
             document.getElementById('receiptModal').classList.add('hidden');
         }
 
-        function cetakStruk() {
+        async function cetakStruk() {
             const o = lastOrder;
+            // Format Teks ESC/POS untuk Printer Bluetooth Struk
+            let rawText = `\x1B\x40`; // Reset printer
+            rawText += `        GOOZY.CO\n`;
+            rawText += `Specialty Beverage & Bakery\n`;
+            rawText += `--------------------------------\n`;
+            rawText += `Tgl  : ${o.waktu}\n`;
+            rawText += `Nama : ${o.custNama}\n`;
+            rawText += `Bayar: ${o.metode}\n`;
+            rawText += `--------------------------------\n`;
+            o.items.forEach(i => {
+                rawText += `${i.nama}\n`;
+                rawText += `${i.qty} x Rp ${i.harga.toLocaleString('id-ID')} = Rp ${(i.harga * i.qty).toLocaleString('id-ID')}\n`;
+            });
+            rawText += `--------------------------------\n`;
+            rawText += `TOTAL: Rp ${o.total.toLocaleString('id-ID')}\n`;
+            if (o.custCatatan !== '-') rawText += `Note : ${o.custCatatan}\n`;
+            rawText += `\nTerima kasih sudah jajan!\n\n\n`;
+
+            const berhasilBT = await sendTextToBluetooth('receipt', rawText);
+            if (berhasilBT) return;
+
+            // Cadangan jika Bluetooth belum dikonek: Buka dialog print standar
             const printArea = document.getElementById('printArea');
             printArea.classList.remove('hidden');
             printArea.innerHTML = `
@@ -480,20 +583,33 @@
             printArea.classList.add('hidden');
         }
 
-        function cetakLabelCup() {
+        async function cetakLabelCup() {
             const o = lastOrder;
-            const printArea = document.getElementById('printArea');
-            printArea.classList.remove('hidden');
-
-            // Pecah setiap kuantitas item menjadi 1 stiker per cup/item
             let daftarLabel = [];
             o.items.forEach(item => {
                 for (let i = 0; i < item.qty; i++) {
                     daftarLabel.push(item.nama);
                 }
             });
-
             const totalCup = daftarLabel.length;
+
+            // Format Teks untuk Printer Bluetooth Stiker Label Cup
+            let rawLabel = `\x1B\x40`;
+            daftarLabel.forEach((namaMenu, idx) => {
+                rawLabel += `GOOZY.CO        Cup ${idx + 1}/${totalCup}\n`;
+                rawLabel += `${o.custNama}\n`;
+                rawLabel += `------------------------\n`;
+                rawLabel += `${namaMenu}\n`;
+                if (o.custCatatan !== '-') rawLabel += `* ${o.custCatatan}\n`;
+                rawLabel += `${o.waktu}\n\n\n`;
+            });
+
+            const berhasilBT = await sendTextToBluetooth('label', rawLabel);
+            if (berhasilBT) return;
+
+            // Cadangan jika Bluetooth Stiker belum dikonek
+            const printArea = document.getElementById('printArea');
+            printArea.classList.remove('hidden');
             printArea.innerHTML = daftarLabel.map((namaMenu, idx) => `
                 <div class="page-break" style="padding:4px 0; font-family:sans-serif;">
                     <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:bold;">
@@ -506,7 +622,6 @@
                     <div style="font-size:8px; margin-top:4px; color:#555;">${o.waktu}</div>
                 </div>
             `).join('');
-
             window.print();
             printArea.classList.add('hidden');
         }
@@ -516,7 +631,6 @@
             let noWA = o.custWA || prompt('Masukkan Nomor WhatsApp Pembeli (contoh: 08123456789):');
             if (!noWA) return;
 
-            // Ubah awalan 08 menjadi 628 (format resmi WA)
             noWA = noWA.replace(/[^0-9]/g, '');
             if (noWA.startsWith('0')) noWA = '62' + noWA.slice(1);
 
@@ -536,7 +650,7 @@
             window.open(url, '_blank');
         }
 
-        // 5. LOGIKA KELOLA STOK & PRODUK
+        // 6. LOGIKA KELOLA MENU (TANPA STOK MANUAL)
         function renderStok() {
             const list = document.getElementById('stokList');
             list.innerHTML = products.map(p => `
@@ -545,13 +659,7 @@
                         <p class="font-bold text-stone-800">${p.nama_produk} <span class="text-xs font-normal text-stone-400">(${p.kategori})</span></p>
                         <p class="text-xs text-amber-700 font-semibold">Rp ${p.harga.toLocaleString('id-ID')}</p>
                     </div>
-                    <div class="flex items-center gap-1.5">
-                        <button onclick="ubahStok(${p.id}, ${p.stok - 1})" class="px-2.5 py-1 bg-stone-100 hover:bg-stone-200 rounded text-xs font-bold">-1</button>
-                        <span class="w-10 text-center font-bold text-xs ${p.stok <= 5 ? 'text-red-600' : ''}">${p.stok}</span>
-                        <button onclick="ubahStok(${p.id}, ${p.stok + 1})" class="px-2.5 py-1 bg-stone-100 hover:bg-stone-200 rounded text-xs font-bold">+1</button>
-                        <button onclick="ubahStok(${p.id}, ${p.stok + 5})" class="px-2 py-1 bg-amber-100 text-amber-800 hover:bg-amber-200 rounded text-xs font-bold">+5</button>
-                        <button onclick="hapusProduk(${p.id})" class="ml-2 text-xs text-red-500 hover:underline">Hapus</button>
-                    </div>
+                    <button onclick="hapusProduk(${p.id})" class="text-xs bg-red-50 text-red-600 px-3 py-1.5 rounded-lg font-semibold hover:bg-red-100">Hapus Menu</button>
                 </div>
             `).join('');
         }
@@ -561,26 +669,19 @@
             const nama_produk = document.getElementById('prodNama').value;
             const kategori = document.getElementById('prodKategori').value;
             const harga = parseInt(document.getElementById('prodHarga').value);
-            const stok = parseInt(document.getElementById('prodStok').value);
 
-            await db.from('products').insert([{ nama_produk, kategori, harga, stok }]);
+            await db.from('products').insert([{ nama_produk, kategori, harga, stok: 999 }]);
             e.target.reset();
             loadAllData();
         }
 
-        async function ubahStok(id, stokBaru) {
-            if (stokBaru < 0) return;
-            await db.from('products').update({ stok: stokBaru }).eq('id', id);
-            loadAllData();
-        }
-
         async function hapusProduk(id) {
-            if (!confirm('Hapus menu ini?')) return;
+            if (!confirm('Hapus menu ini dari daftar?')) return;
             await db.from('products').delete().eq('id', id);
             loadAllData();
         }
 
-        // 6. LOGIKA REKAP TRANSAKSI & MASUKAN
+        // 7. LOGIKA RIWAYAT TRANSAKSI, CANCEL STRUK, & MASUKAN
         function renderTransaksi(data) {
             const list = document.getElementById('transaksiList');
             let omzet = 0;
@@ -593,19 +694,36 @@
                 omzet += t.total_harga;
                 const waktu = new Date(t.created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' });
                 return `
-                    <div class="py-2.5">
-                        <div class="flex justify-between font-semibold text-xs">
-                            <span>${t.rincian_item}</span>
-                            <span class="text-emerald-700">Rp ${t.total_harga.toLocaleString('id-ID')}</span>
+                    <div class="py-3 flex justify-between items-start gap-2">
+                        <div class="flex-1">
+                            <p class="font-semibold text-xs text-stone-800">${t.rincian_item}</p>
+                            <div class="flex items-center gap-2 text-[11px] text-stone-400 mt-0.5">
+                                <span>${waktu}</span>
+                                <span>•</span>
+                                <span class="font-medium text-stone-600">${t.metode_bayar}</span>
+                                <span>•</span>
+                                <span class="font-bold text-emerald-700">Rp ${t.total_harga.toLocaleString('id-ID')}</span>
+                            </div>
                         </div>
-                        <div class="flex justify-between text-[11px] text-stone-400 mt-0.5">
-                            <span>${waktu}</span>
-                            <span class="font-medium text-stone-600">${t.metode_bayar}</span>
-                        </div>
+                        <button onclick="cancelTransaksi(${t.id}, '${t.rincian_item.replace(/'/g, "")}')" class="text-[11px] bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-2.5 py-1 rounded-lg border border-red-200 shrink-0">
+                            ❌ Cancel Struk
+                        </button>
                     </div>
                 `;
             }).join('');
             document.getElementById('totalOmzet').innerText = 'Omzet: Rp ' + omzet.toLocaleString('id-ID');
+        }
+
+        async function cancelTransaksi(id, rincian) {
+            const yakin = confirm(`Batalkan & hapus struk transaksi ini?\n"${rincian}"\n\nTotal omzet akan otomatis dikurangi.`);
+            if (!yakin) return;
+
+            const { error } = await db.from('transactions').delete().eq('id', id);
+            if (error) {
+                alert('Gagal membatalkan struk: ' + error.message);
+            } else {
+                loadAllData();
+            }
         }
 
         function renderFeedback(data) {
