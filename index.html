@@ -263,7 +263,7 @@
             </div>
         </div>
 
-        <!-- 5. TAB KEUANGAN (DENGAN TOMBOL KIRIM REKAP KE WA) -->
+        <!-- 5. TAB KEUANGAN -->
         <div id="content-rekap" class="hidden space-y-6">
             <div class="flex flex-wrap justify-between items-center gap-3 bg-white p-4 rounded-2xl border shadow-sm">
                 <div class="flex gap-2">
@@ -757,7 +757,7 @@
             link.download = `Laporan_${rekapFilter}.csv`; link.click();
         }
 
-        // --- FITUR BARU: KIRIM REKAP SHIFT KE WA OWNER ---
+        // --- FORMAT REKAP SHIFT KE WA DALAM BENTUK STRUK TEKS RAPI ---
         function kirimRekapShiftWA() {
             const tF = rekapFilter === 'today' ? allTransactions.filter(t => isToday(t.created_at)) : allTransactions;
             const eF = rekapFilter === 'today' ? allExpenses.filter(e => isToday(e.created_at)) : allExpenses;
@@ -771,17 +771,17 @@
             noOwner = noOwner.replace(/[^0-9]/g, '');
             if (noOwner.startsWith('0')) noOwner = '62' + noOwner.slice(1);
 
-            let t = `*📊 REKAP SHIFT / OMZET GOOZY.CO*\n`;
+            let t = `*REKAP SHIFT GOOZY.CO*\n`;
             t += `Waktu: ${new Date().toLocaleString('id-ID')}\n`;
             t += `Pelapor: ${userRole}\n`;
             t += `------------------------\n`;
-            t += `• Total Omzet Kotor: Rp ${omzet.toLocaleString('id-ID')}\n`;
+            t += `• Total Omzet: Rp ${omzet.toLocaleString('id-ID')}\n`;
             t += `• Tunai (Laci): Rp ${tunai.toLocaleString('id-ID')}\n`;
             t += `• QRIS (Rekening): Rp ${qris.toLocaleString('id-ID')}\n`;
-            t += `• Total Pengeluaran: Rp ${totalExp.toLocaleString('id-ID')}\n`;
+            t += `• Pengeluaran: Rp ${totalExp.toLocaleString('id-ID')}\n`;
             t += `------------------------\n`;
-            t += `*💰 SISA KAS BERSIH: Rp ${ bersih.toLocaleString('id-ID') }*\n`;
-            t += `\nLaporan shift otomatis dari sistem Goozy.co 🚀`;
+            t += `*SISA KAS BERSIH: Rp ${bersih.toLocaleString('id-ID')}*\n`;
+            t += `\nTerima kasih! Laporan shift harian Goozy.co 🚀`;
 
             window.open(`https://wa.me/${noOwner}?text=${encodeURIComponent(t)}`, '_blank');
         }
