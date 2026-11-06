@@ -311,13 +311,8 @@
                     <select id="absenNama" class="w-full px-3 py-2 border rounded-xl text-sm bg-white font-semibold"></select>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-stone-600 mb-1">PIN Karyawan (Aldi: 2211 | Rani: 3322)</label>
+                    <label class="block text-xs font-medium text-stone-600 mb-1">PIN Karyawan</label>
                     <input type="password" id="absenPin" placeholder="Masukkan PIN..." class="w-full px-3 py-2 border rounded-xl text-sm font-bold text-center tracking-widest">
-                </div>
-                <div class="p-3 bg-stone-50 rounded-xl border text-xs text-stone-600 space-y-1">
-                    <p><b>Jam Kerja:</b> 06:00 - 07:45 (Rp 75.000)</p>
-                    <p><b>Telat > 07:45:</b> Potong Rp 15.000 (Rp 60.000)</p>
-                    <p><b>Izin:</b> Potong penuh (Rp 0)</p>
                 </div>
                 <div class="grid grid-cols-2 gap-2 pt-2">
                     <button onclick="submitAbsen('hadir')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs">✅ Check-In Hadir</button>
@@ -352,7 +347,7 @@
         const SUPABASE_KEY = 'sb_publishable_KsCXOP4a6kjsFBB5G_MHYQ_WhQltPdU';
         const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let userRole = null; // 'owner' atau nama karyawan ('Aldi', 'Rani')
+        let userRole = null; 
         let products = [], ingredients = [], recipes = [], allTransactions = [], allExpenses = [], employees = [], attendances = [];
         let cart = [], activeCategory = 'Semua', rekapFilter = 'today', lastOrder = null;
         let btPrinters = { receipt: { device: null, characteristic: null }, label: { device: null, characteristic: null } };
@@ -384,7 +379,6 @@
             `).join('');
         }
 
-        // --- ABSENSI & PIN KARYAWAN ---
         async function bukaModalAbsen() {
             const { data } = await db.from('employees').select('*');
             employees = data || [];
@@ -416,7 +410,6 @@
             else alert('Gagal: ' + error.message);
         }
 
-        // --- MULTI-ROLE LOGIN (OWNER VS KARYAWAN) ---
         async function toggleStaffMode() {
             if (!userRole) {
                 const inputPin = prompt('Masukkan PIN Anda (Owner: 1234 / Karyawan: PIN Masing-masing):');
@@ -508,7 +501,6 @@
             }, 0);
         }
 
-        // --- KASIR POS ---
         function setCategoryFilter(cat) { activeCategory = cat; renderPOS(); }
         function renderPOS() {
             const cats = ['Semua', ...new Set(products.map(p => p.kategori))];
@@ -653,7 +645,6 @@
             } else alert('Error: ' + error.message);
         }
 
-        // --- ADMIN & REKAP (KHUSUS OWNER) ---
         function renderAbsensiKaryawan() {
             document.getElementById('employeeManagerList').innerHTML = employees.map(e => `
                 <div class="flex justify-between items-center bg-stone-50 p-3 rounded-xl border text-xs">
@@ -815,12 +806,33 @@
             if (await sendTextToBluetooth('label', text)) return;
             window.print();
         }
+        
+        // FORMAT WHATSAPP YANG RAPI SEPERTI SEMULA
         function kirimStrukWA() {
-            const o = lastOrder; let no = o.custWA || prompt('No WA Pembeli:'); if(!no) return;
-            no = no.replace(/[^0-9]/g, ''); if(no.startsWith('0')) no = '62' + no.slice(1);
-            let t = `*STRUK GOOZY.CO*\nKasir: ${userRole}\nNama: ${o.custNama}\n`; o.items.forEach(i => { t += `• ${i.qty}x ${i.nama} = Rp ${(i.harga * i.qty).toLocaleString('id-ID')}\n`; });
-            t += `*TOTAL: Rp ${o.total.toLocaleString('id-ID')}*`; window.open(`https://wa.me/${no}?text=${encodeURIComponent(t)}`, '_blank');
+            const o = lastOrder; 
+            let no = o.custWA || prompt('No WA Pembeli (08...):'); 
+            if(!no) return;
+            no = no.replace(/[^0-9]/g, ''); 
+            if(no.startsWith('0')) no = '62' + no.slice(1);
+
+            let t = `*STRUK PEMBELIAN GOOZY.CO*\n`;
+            t += `Waktu: ${o.waktu}\n`;
+            t += `Pelanggan: ${o.custNama}\n`;
+            t += `Kasir: ${userRole}\n`;
+            t += `------------------------\n`;
+            o.items.forEach(i => { 
+                t += `• ${i.qty}x ${i.nama} = Rp ${(i.harga * i.qty).toLocaleString('id-ID')}\n`; 
+            });
+            t += `------------------------\n`;
+            if (o.diskon > 0) t += `Diskon: -Rp ${o.diskon.toLocaleString('id-ID')}\n`;
+            t += `*TOTAL: Rp ${o.total.toLocaleString('id-ID')} (${o.metode})*\n`;
+            if (o.metode === 'Tunai') t += `Tunai: Rp ${o.uangDiterima.toLocaleString('id-ID')} | Kembali: Rp ${o.kembalian.toLocaleString('id-ID')}\n`;
+            if (o.custCatatan !== '-') t += `Catatan: ${o.custCatatan}\n`;
+            t += `\nTerima kasih sudah jajan di Goozy! 🍵☕`;
+
+            window.open(`https://wa.me/${no}?text=${encodeURIComponent(t)}`, '_blank');
         }
+
         function renderStok() {
             document.getElementById('stokList').innerHTML = products.map(p => `
                 <div class="py-3 flex justify-between items-center text-xs">
