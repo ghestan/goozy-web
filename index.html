@@ -374,7 +374,7 @@
         </div>
     </main>
 
-    <!-- ================= MODAL CUSTOMIZATION (CUP SIZE, ICE, SUGAR, TOPPING & EXTRA SHOT) ================= -->
+    <!-- ================= MODAL CUSTOMIZATION ================= -->
     <div id="customModal" class="hidden fixed inset-0 bg-stone-900/30 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="glass-modal rounded-3xl max-w-sm w-full p-6 space-y-4">
             <div class="flex justify-between items-center border-b border-stone-200/70 pb-3">
@@ -386,7 +386,6 @@
             </div>
 
             <div class="space-y-3.5 text-xs">
-                <!-- Pilihan Ukuran Cup -->
                 <div>
                     <label class="block font-bold text-stone-700 mb-1.5">Ukuran Cup (Size):</label>
                     <div class="grid grid-cols-2 gap-2.5">
@@ -399,7 +398,6 @@
                     </div>
                 </div>
 
-                <!-- Pilihan Es & Gula -->
                 <div class="grid grid-cols-2 gap-2.5">
                     <div>
                         <label class="block font-bold text-stone-700 mb-1">Level Es:</label>
@@ -420,7 +418,6 @@
                     </div>
                 </div>
 
-                <!-- Add-on Tambahan (+5K) -->
                 <div>
                     <label class="block font-bold text-stone-700 mb-1.5">Add-on & Extra Topping:</label>
                     <div class="space-y-2 bg-white/50 p-3 rounded-2xl border border-white/80">
@@ -478,7 +475,7 @@
                 <h3 class="font-bold text-base text-emerald-700">✅ Transaksi Berhasil!</h3>
                 <button onclick="tutupModal()" class="w-7 h-7 rounded-full bg-stone-200/70 text-xs text-stone-600 font-bold">✕</button>
             </div>
-            <div id="modalPreview" class="bg-white/70 p-3.5 rounded-2xl font-mono text-xs space-y-1 border border-white max-h-52 overflow-y-auto"></div>
+            <div id="modalPreview" class="bg-white/90 p-3.5 rounded-2xl font-mono text-[11px] leading-snug border border-stone-200 max-h-64 overflow-y-auto whitespace-pre overflow-x-auto"></div>
             <div class="space-y-2 pt-1">
                 <button onclick="cetakStruk()" class="w-full bg-stone-900 text-white font-semibold py-2.5 rounded-xl text-xs">🖨️ Cetak Struk</button>
                 <button onclick="cetakLabelCup()" class="w-full bg-amber-600 text-white font-semibold py-2.5 rounded-xl text-xs">🏷️ Cetak Stiker Cup</button>
@@ -666,7 +663,6 @@
             }).join('');
         }
 
-        // --- MANAJEMEN VARIAN, SIZE CUP (REG/LARGE +5K), EXTRA TOPPING (+5K) & EXTRA SHOT (+5K) ---
         function bukaModalCustom(id) {
             selectedMenuForCustom = products.find(p => p.id === id);
             if (!selectedMenuForCustom) return;
@@ -740,7 +736,6 @@
             renderCart();
         }
 
-        // Bisa ganti Reg/Large langsung dari keranjang kasir juga
         function toggleSizeCart(cartKey) {
             const item = cart.find(c => c.cartKey === cartKey);
             if (!item) return;
@@ -803,12 +798,23 @@
 
         async function prosesBayar() {
             if (cart.length === 0) return alert('Pilih menu dulu!');
-            const total = getGrandTotal(), metode = document.getElementById('metodeBayar').value, terima = parseInt(document.getElementById('uangDiterima').value) || total;
+            const subtotal = cart.reduce((s, c) => s + (c.hargaFinal * c.qty), 0);
+            const diskon = parseInt(document.getElementById('inputDiskon').value) || 0;
+            const total = Math.max(0, subtotal - diskon);
+            const metode = document.getElementById('metodeBayar').value;
+            const terima = parseInt(document.getElementById('uangDiterima').value) || total;
             if (metode === 'Tunai' && terima < total) return alert('Uang tunai kurang!');
 
             const custNama = document.getElementById('custNama').value.trim() || 'Pelanggan';
             const custCatatan = document.getElementById('custCatatan').value.trim() || '-';
-            const waktu = new Date().toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' });
+            
+            const now = new Date();
+            const bulanIndo = ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES'];
+            const tglStr = `${now.getDate()} ${bulanIndo[now.getMonth()]} ${now.getFullYear()}`;
+            const jamStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+            const waktu = now.toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' });
+            const orderId = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}${String(allTransactions.length + 1).padStart(4,'0')}`;
+
             const rincianDB = `${custNama} (Kasir: ${userRole}): ` + cart.map(c => `${c.namaAsli} [${c.size}] (${c.catatanCustom}) (${c.qty}x)`).join(', ') + (custCatatan !== '-' ? ` [Note: ${custCatatan}]` : '');
 
             try {
@@ -829,12 +835,19 @@
             }
 
             lastOrder = {
-                waktu, custNama, custCatatan,
+                orderId, tglStr, jamStr, waktu, custNama, custCatatan,
                 custWA: document.getElementById('custWA').value.trim(),
-                metode, diskon: parseInt(document.getElementById('inputDiskon').value) || 0,
-                total, uangDiterima: metode === 'Tunai' ? terima : total,
+                metode, subtotal, diskon, total,
+                uangDiterima: metode === 'Tunai' ? terima : total,
                 kembalian: metode === 'Tunai' ? (terima - total) : 0,
-                items: cart.map(c => ({ nama: `${c.namaAsli} (${c.size}) - ${c.catatanCustom}`, harga: c.hargaFinal, qty: c.qty }))
+                items: cart.map(c => ({
+                    namaAsli: c.namaAsli.replace(/[^\x00-\x7F]/g, '').trim(),
+                    size: c.size,
+                    catatanCustom: c.catatanCustom,
+                    nama: `${c.namaAsli} (${c.size}) - ${c.catatanCustom}`,
+                    harga: c.hargaFinal,
+                    qty: c.qty
+                }))
             };
             tampilkanModalStruk(); clearCart(); loadAllData();
         }
@@ -956,8 +969,92 @@
             window.open(`https://api.whatsapp.com/send?phone=${noOwner}&text=${encodeURIComponent(t)}`, '_blank');
         }
 
+        // --- HELPER FORMAT STRUK 32 KARAKTER PERSIS CONTOH ---
+        function formatLine32(left, right) {
+            const W = 32;
+            left = String(left || '');
+            right = String(right || '');
+            const space = W - left.length - right.length;
+            if (space >= 1) {
+                return left + ' '.repeat(space) + right + '\n';
+            } else {
+                const maxRightFirst = W - left.length - 1;
+                if (maxRightFirst > 4) {
+                    const r1 = right.slice(0, maxRightFirst);
+                    const r2 = right.slice(maxRightFirst);
+                    return left + ' ' + r1 + '\n' + ' '.repeat(Math.max(0, W - r2.length)) + r2 + '\n';
+                }
+                return left + '\n' + ' '.repeat(Math.max(0, W - right.length)) + right + '\n';
+            }
+        }
+
+        function formatDescWrap(text, indent = 3) {
+            const W = 32;
+            const maxLen = W - indent;
+            const pad = ' '.repeat(indent);
+            let res = '';
+            let rem = String(text || '');
+            while (rem.length > 0) {
+                res += pad + rem.slice(0, maxLen) + '\n';
+                rem = rem.slice(maxLen);
+            }
+            return res;
+        }
+
+        function buildFormattedReceipt(o, withEscPos = false) {
+            const INIT = withEscPos ? '\x1B\x40' : '';
+            const CENTER = withEscPos ? '\x1B\x61\x01' : '';
+            const LEFT = withEscPos ? '\x1B\x61\x00' : '';
+            const BOLD_ON = withEscPos ? '\x1B\x45\x01' : '';
+            const BOLD_OFF = withEscPos ? '\x1B\x45\x00' : '';
+            const SEP = '--------------------------------\n';
+
+            let out = INIT;
+            if (withEscPos) {
+                out += CENTER + BOLD_ON + 'GOOZY.CO\n' + BOLD_OFF + LEFT;
+            } else {
+                out += '            GOOZY.CO            \n';
+            }
+            out += SEP;
+            out += formatLine32('Order ID', o.orderId);
+            out += formatLine32('Tanggal Transaksi', o.tglStr);
+            out += formatLine32('Waktu Transaksi', o.jamStr);
+            out += formatLine32('Kasir', (userRole || 'STAFF').toUpperCase());
+            out += formatLine32('Tipe Transaksi', o.metode.toUpperCase());
+            out += SEP;
+            out += formatLine32('Pelanggan', o.custNama);
+            out += SEP;
+            out += BOLD_ON + 'Rincian Transaksi\n' + BOLD_OFF;
+
+            o.items.forEach((item, idx) => {
+                const leftItem = `${item.qty} ${item.namaAsli.toUpperCase()}`;
+                const rightPrice = `Rp${(item.harga * item.qty).toLocaleString('id-ID')}`;
+                out += formatLine32(leftItem, rightPrice);
+                const desc = `#${idx + 1} ${item.size.toUpperCase()}, ${item.catatanCustom.toUpperCase()}`;
+                out += formatDescWrap(desc, 3);
+            });
+
+            if (o.custCatatan && o.custCatatan !== '-') {
+                out += formatDescWrap(`* NOTE: ${o.custCatatan.toUpperCase()}`, 3);
+            }
+
+            out += SEP;
+            out += formatLine32('Total Harga', `Rp${o.subtotal.toLocaleString('id-ID')}`);
+            out += formatLine32('Potongan Harga', `Rp${o.diskon.toLocaleString('id-ID')}`);
+            out += formatLine32('Pajak', 'Rp0');
+            out += SEP;
+            out += BOLD_ON + formatLine32('Total Pembayaran', `Rp${o.total.toLocaleString('id-ID')}`) + BOLD_OFF;
+            if (o.metode === 'Tunai') {
+                out += formatLine32('Tunai', `Rp${o.uangDiterima.toLocaleString('id-ID')}`);
+                out += formatLine32('Kembalian', `Rp${o.kembalian.toLocaleString('id-ID')}`);
+            }
+            out += SEP;
+            if (withEscPos) out += '\n\n\n';
+            return out;
+        }
+
         async function connectPrinter(type) {
-            if (!navigator.bluetooth) return alert('Gunakan Chrome.');
+            if (!navigator.bluetooth) return alert('Di iPhone gunakan aplikasi browser "Bluefy" dari App Store. Di Android/Laptop gunakan Google Chrome.');
             try {
                 const device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb', 'e7810a71-73ae-499d-8c15-faa9aef0c3f2', '49535343-fe7d-4ae5-8fa9-9fafd205e455'] });
                 const server = await device.gatt.connect();
@@ -983,34 +1080,49 @@
 
         function tampilkanModalStruk() {
             const o = lastOrder;
-            document.getElementById('modalPreview').innerHTML = `<div class="text-center font-bold border-b pb-1 mb-1">GOOZY.CO</div><div>Waktu: ${o.waktu} | Kasir: ${userRole}</div><div>Nama: ${o.custNama}</div><div class="border-b my-1"></div>${o.items.map(i => `<div class="flex justify-between"><span>${i.qty}x ${i.nama}</span><span>Rp ${(i.harga * i.qty).toLocaleString('id-ID')}</span></div>`).join('')}<div class="border-b my-1"></div><div class="font-bold flex justify-between"><span>TOTAL</span><span>Rp ${o.total.toLocaleString('id-ID')}</span></div>`;
+            document.getElementById('modalPreview').innerText = buildFormattedReceipt(o, false);
             document.getElementById('receiptModal').classList.remove('hidden');
         }
         function tutupModal() { document.getElementById('receiptModal').classList.add('hidden'); }
+
         async function cetakStruk() {
-            const o = lastOrder; let text = `\x1B\x40 GOOZY.CO\nKasir: ${userRole}\n--------------------------------\nTgl: ${o.waktu}\nNama: ${o.custNama}\n--------------------------------\n`;
-            o.items.forEach(i => { text += `${i.nama}\n${i.qty} x Rp ${i.harga.toLocaleString('id-ID')} = Rp ${(i.harga * i.qty).toLocaleString('id-ID')}\n`; });
-            text += `--------------------------------\nTOTAL: Rp ${o.total.toLocaleString('id-ID')}\n\n\n`;
-            if (await sendTextToBluetooth('receipt', text)) return; window.print();
+            const o = lastOrder;
+            const rawEscPos = buildFormattedReceipt(o, true);
+            if (await sendTextToBluetooth('receipt', rawEscPos)) return;
+
+            const plainReceipt = buildFormattedReceipt(o, false);
+            const printArea = document.getElementById('printArea');
+            printArea.classList.remove('hidden');
+            printArea.innerHTML = `<pre style="font-family:monospace; font-size:11px; line-height:1.25; margin:0;">${plainReceipt}</pre>`;
+            window.print();
+            printArea.classList.add('hidden');
         }
+
         async function cetakLabelCup() {
-            const o = lastOrder; let labels = []; o.items.forEach(i => { for(let k=0; k<i.qty; k++) labels.push(i.nama); });
-            let text = `\x1B\x40`; labels.forEach((n, idx) => { text += `GOOZY.CO Cup ${idx+1}/${labels.length}\n${o.custNama}\n----\n${n}\n\n\n`; });
-            if (await sendTextToBluetooth('label', text)) return; window.print();
+            const o = lastOrder;
+            let labels = [];
+            o.items.forEach(i => { for(let k=0; k<i.qty; k++) labels.push(i); });
+            let text = `\x1B\x40`;
+            labels.forEach((item, idx) => {
+                text += formatLine32('GOOZY.CO', `Cup ${idx+1}/${labels.length}`);
+                text += `${o.custNama}\n--------------------------------\n`;
+                text += `${item.namaAsli} (${item.size})\n`;
+                text += `* ${item.catatanCustom}\n`;
+                if (o.custCatatan !== '-') text += `Note: ${o.custCatatan}\n`;
+                text += `${o.waktu}\n\n\n`;
+            });
+            if (await sendTextToBluetooth('label', text)) return;
+            window.print();
         }
+
         function kirimStrukWA() {
             const o = lastOrder; let no = o.custWA || prompt('No WA Pembeli (08...):'); if(!no) return;
             no = no.replace(/[^0-9]/g, ''); if(no.startsWith('0')) no = '62' + no.slice(1);
-            let t = `*STRUK PEMBELIAN GOOZY.CO*\nWaktu: ${o.waktu}\nPelanggan: ${o.custNama}\nKasir: ${userRole}\n------------------------\n`;
-            o.items.forEach(i => { t += `• ${i.qty}x ${i.nama} = Rp ${(i.harga * i.qty).toLocaleString('id-ID')}\n`; });
-            t += `------------------------\n`;
-            if (o.diskon > 0) t += `Diskon: -Rp ${o.diskon.toLocaleString('id-ID')}\n`;
-            t += `*TOTAL: Rp ${o.total.toLocaleString('id-ID')} (${o.metode})*\n`;
-            if (o.metode === 'Tunai') t += `Tunai: Rp ${o.uangDiterima.toLocaleString('id-ID')} | Kembali: Rp ${o.kembalian.toLocaleString('id-ID')}\n`;
-            if (o.custCatatan !== '-') t += `Catatan: ${o.custCatatan}\n`;
-            t += `\nTerima kasih sudah jajan di Goozy! 🍵☕`;
+            const plainReceipt = buildFormattedReceipt(o, false);
+            const t = "```\n" + plainReceipt + "```\nTerima kasih sudah jajan di Goozy.co! 🍵☕";
             window.open(`https://api.whatsapp.com/send?phone=${no}&text=${encodeURIComponent(t)}`, '_blank');
         }
+
         function renderStok() {
             document.getElementById('stokList').innerHTML = products.map(p => `<div class="py-3 flex justify-between items-center text-xs"><div><b>${p.nama_produk}</b> (${p.kategori})<br><span class="text-amber-700 font-semibold">Reg: Rp ${p.harga.toLocaleString('id-ID')} | Large: Rp ${(p.harga+5000).toLocaleString('id-ID')}</span></div><button onclick="hapusProduk(${p.id})" class="text-red-500 font-bold bg-red-500/10 px-3 py-1.5 rounded-xl">Hapus</button></div>`).join('');
         }
