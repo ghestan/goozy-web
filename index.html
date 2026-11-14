@@ -166,7 +166,7 @@
             <button onclick="switchTab('pelanggan')" id="tab-pelanggan" class="px-4 py-2 rounded-xl text-xs font-bold text-stone-600 hover:bg-white/50 shrink-0 transition">👥 Loyalitas Pelanggan</button>
             <button onclick="switchTab('bestseller')" id="tab-bestseller" class="owner-only px-4 py-2 rounded-xl text-xs font-bold text-stone-600 hover:bg-white/50 shrink-0 transition">🔥 Menu Terlaris</button>
             <button onclick="switchTab('stok')" id="tab-stok" class="owner-only px-4 py-2 rounded-xl text-xs font-bold text-stone-600 hover:bg-white/50 shrink-0 transition">📋 Daftar Menu</button>
-            <button onclick="switchTab('resep')" id="tab-resep" class="owner-only px-4 py-2 rounded-xl text-xs font-bold text-stone-600 hover:bg-white/50 shrink-0 transition">🧪 Bahan & Resep</button>
+            <button onclick="switchTab('resep')" id="tab-resep" class="owner-only px-4 py-2 rounded-xl text-xs font-bold text-stone-600 hover:bg-white/50 shrink-0 transition">🧪 Bahan, Resep & HPP</button>
             <button onclick="switchTab('absen')" id="tab-absen" class="owner-only px-4 py-2 rounded-xl text-xs font-bold text-stone-600 hover:bg-white/50 shrink-0 transition">🕒 Absen & Gaji</button>
             <button onclick="switchTab('rekap')" id="tab-rekap" class="owner-only px-4 py-2 rounded-xl text-xs font-bold text-stone-600 hover:bg-white/50 shrink-0 transition">📊 Keuangan</button>
         </div>
@@ -277,7 +277,7 @@
             </div>
         </div>
 
-        <!-- 2. TAB BUKU KASBON (REMINDER BELUM BAYAR) -->
+        <!-- 2. TAB BUKU KASBON -->
         <div id="content-kasbon" class="hidden space-y-6">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="glass-panel p-5 rounded-3xl border-l-4 border-l-red-500">
@@ -344,32 +344,43 @@
             </div>
         </div>
 
-        <!-- 6. TAB BAHAN & RESEP -->
+        <!-- 6. TAB BAHAN, RESEP & HPP -->
         <div id="content-resep" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="glass-panel p-5 rounded-3xl">
-                <h3 class="font-bold text-base mb-3">Gudang Bahan Baku</h3>
-                <form onsubmit="tambahBahan(event)" class="space-y-2.5">
-                    <input type="text" id="ingNama" required placeholder="Nama Bahan (Susu UHT, Cup, dll)" class="w-full px-3.5 py-2 rounded-xl text-xs glass-input">
-                    <select id="ingSatuan" class="w-full px-3.5 py-2 rounded-xl text-xs glass-input">
-                        <option value="gram">gram</option>
-                        <option value="ml">ml</option>
-                        <option value="pcs">pcs</option>
-                    </select>
-                    <input type="number" step="any" id="ingStok" required placeholder="Stok Awal" class="w-full px-3.5 py-2 rounded-xl text-xs glass-input">
-                    <input type="number" step="any" id="ingHargaSatuan" required placeholder="Modal per satuan (Rp)" class="w-full px-3.5 py-2 rounded-xl text-xs glass-input">
-                    <button type="submit" class="w-full bg-stone-900 text-white font-bold py-2 rounded-xl text-xs">+ Simpan Bahan</button>
-                </form>
-                <div id="ingredientList" class="divide-y divide-stone-200/50 text-xs mt-4 max-h-60 overflow-y-auto"></div>
+            <div class="space-y-5">
+                <div class="glass-panel p-5 rounded-3xl">
+                    <h3 class="font-bold text-base mb-1">Gudang Bahan Baku</h3>
+                    <p class="text-[11px] text-stone-500 mb-3">Klik tombol <b>+ Restock</b> pada bahan di bawah untuk menambah stok gudang.</p>
+                    <form onsubmit="tambahBahan(event)" class="space-y-2.5">
+                        <input type="text" id="ingNama" required placeholder="Nama Bahan (Susu UHT, Matcha Powder, dll)" class="w-full px-3.5 py-2 rounded-xl text-xs glass-input">
+                        <div class="grid grid-cols-3 gap-2">
+                            <select id="ingSatuan" class="px-3 py-2 rounded-xl text-xs glass-input">
+                                <option value="gram">gram</option>
+                                <option value="ml">ml</option>
+                                <option value="pcs">pcs</option>
+                            </select>
+                            <input type="number" step="any" id="ingStok" required placeholder="Stok Awal" class="px-3 py-2 rounded-xl text-xs glass-input">
+                            <input type="number" step="any" id="ingHargaSatuan" required placeholder="Rp / satuan" class="px-3 py-2 rounded-xl text-xs glass-input">
+                        </div>
+                        <button type="submit" class="w-full bg-stone-900 text-white font-bold py-2 rounded-xl text-xs">+ Simpan Bahan Baru</button>
+                    </form>
+                    <div id="ingredientList" class="divide-y divide-stone-200/50 text-xs mt-4 max-h-80 overflow-y-auto pr-1"></div>
+                </div>
             </div>
-            <div class="glass-panel p-5 rounded-3xl">
-                <h3 class="font-bold text-base mb-3">Rakit Resep & HPP</h3>
-                <form onsubmit="tambahResep(event)" class="space-y-2.5">
-                    <select id="recProduct" required class="w-full px-3.5 py-2 rounded-xl text-xs glass-input"></select>
-                    <select id="recIngredient" required class="w-full px-3.5 py-2 rounded-xl text-xs glass-input"></select>
-                    <input type="number" step="any" id="recJumlah" required placeholder="Takaran per cup" class="w-full px-3.5 py-2 rounded-xl text-xs glass-input">
-                    <button type="submit" class="w-full bg-amber-600 text-white font-bold py-2 rounded-xl text-xs">+ Sambungkan Resep</button>
-                </form>
-                <div id="recipeList" class="space-y-2 text-xs mt-4 max-h-60 overflow-y-auto"></div>
+
+            <div class="space-y-5">
+                <div class="glass-panel p-5 rounded-3xl">
+                    <h3 class="font-bold text-base mb-1">Rakit Resep & Analisa HPP</h3>
+                    <p class="text-[11px] text-stone-500 mb-3">Aturan Large Otomatis: Bubuk +5gr, Susu +20ml, Sirup +10ml, Kopi +15ml, SKM +5gr | Add-on +10gr.</p>
+                    <form onsubmit="tambahResep(event)" class="space-y-2.5">
+                        <select id="recProduct" required class="w-full px-3.5 py-2 rounded-xl text-xs glass-input font-semibold"></select>
+                        <div class="grid grid-cols-2 gap-2">
+                            <select id="recIngredient" required class="w-full px-3.5 py-2 rounded-xl text-xs glass-input"></select>
+                            <input type="number" step="any" id="recJumlah" required placeholder="Takaran Reg" class="w-full px-3.5 py-2 rounded-xl text-xs glass-input">
+                        </div>
+                        <button type="submit" class="w-full bg-amber-600 text-white font-bold py-2 rounded-xl text-xs">+ Sambungkan ke Resep</button>
+                    </form>
+                    <div id="recipeList" class="space-y-2.5 text-xs mt-4 max-h-96 overflow-y-auto pr-1"></div>
+                </div>
             </div>
         </div>
 
@@ -460,10 +471,10 @@
                     <label class="block font-bold text-stone-700 mb-1.5">Ukuran Cup (Size):</label>
                     <div class="grid grid-cols-2 gap-2.5">
                         <button type="button" id="btnSizeReg" onclick="selectCustomSize('Reg')" class="p-2.5 rounded-2xl border-2 border-amber-600 bg-amber-500/15 text-amber-900 font-bold text-center transition">
-                            🥤 Regular<br><span class="text-[10px] font-normal">Harga Normal</span>
+                            🥤 Regular<br><span class="text-[10px] font-normal">Takaran Standar</span>
                         </button>
                         <button type="button" id="btnSizeLarge" onclick="selectCustomSize('Large')" class="p-2.5 rounded-2xl border border-stone-300 bg-white/60 text-stone-700 font-bold text-center transition">
-                            🧋 Large (Upsize)<br><span class="text-[10px] text-amber-700 font-bold">+Rp 5.000</span>
+                            🧋 Large (+Rp 5.000)<br><span class="text-[10px] text-amber-700 font-bold">Upsize Bahan & Shot</span>
                         </button>
                     </div>
                 </div>
@@ -494,14 +505,14 @@
                         <label class="flex items-center justify-between cursor-pointer">
                             <span class="flex items-center gap-2 font-semibold text-stone-800">
                                 <input type="checkbox" id="optExtraTopping" onchange="updateModalPricePreview()" class="w-4 h-4 accent-amber-600 rounded">
-                                🧀 Extra Topping (Cheese / Oreo / Crumb)
+                                🧀 Extra Topping / Oreo (10 gr)
                             </span>
                             <span class="text-amber-700 font-bold">+Rp 5.000</span>
                         </label>
                         <label class="flex items-center justify-between cursor-pointer pt-1.5 border-t border-stone-200/50">
                             <span class="flex items-center gap-2 font-semibold text-stone-800">
                                 <input type="checkbox" id="optExtraShot" onchange="updateModalPricePreview()" class="w-4 h-4 accent-amber-600 rounded">
-                                ☕ Extra Shot Espresso
+                                ☕ Extra Shot Espresso (+15 ml)
                             </span>
                             <span class="text-amber-700 font-bold">+Rp 5.000</span>
                         </label>
@@ -696,14 +707,26 @@
         }
 
         function checkLowStockAlert() {
-            const lowItems = ingredients.filter(i => Number(i.stok_bahan) <= 5);
+            const lowItems = ingredients.filter(i => Number(i.stok_bahan) <= 50);
             const alertBox = document.getElementById('lowStockAlert');
             if (lowItems.length > 0 && userRole === 'owner') {
                 alertBox.classList.remove('hidden');
-                document.getElementById('lowStockText').innerText = `⚠️ Stok Menipis: ${lowItems.map(i => i.nama_bahan + ' (' + i.stok_bahan + ' ' + i.satuan + ')').join(', ')}`;
+                document.getElementById('lowStockText').innerText = `⚠️ Stok Menipis: ${lowItems.map(i => i.nama_bahan + ' (' + Math.round(i.stok_bahan) + ' ' + i.satuan + ')').join(', ')}`;
             } else {
                 alertBox.classList.add('hidden');
             }
+        }
+
+        // --- RUMUS TAMBAHAN TAKARAN OTOMATIS UNTUK CUP LARGE ---
+        // Bubuk +5gr, Susu +20ml, Sirup +10ml, Kopi/Espresso +15ml (1 shot), SKM +5gr
+        function getExtraDoseForLarge(namaBahan) {
+            const n = (namaBahan || '').toLowerCase();
+            if (n.includes('espresso') || n.includes('kopi')) return 15;
+            if (n.includes('fresh milk') || n.includes('susu uht')) return 20;
+            if (n.includes('skm') || n.includes('kental manis')) return 5;
+            if (n.includes('syrup') || n.includes('sirup')) return 10;
+            if (n.includes('powder') || n.includes('bubuk')) return 5;
+            return 0;
         }
 
         function hitungStokPorsi(productId) {
@@ -717,6 +740,27 @@
                 if (bP < maxP) maxP = bP;
             }
             return maxP;
+        }
+
+        function hitungHPPMenu(productId, size = 'Reg') {
+            const resepMenu = recipes.filter(r => r.product_id === productId);
+            if (resepMenu.length === 0) return 0;
+            let totalHPP = 0;
+            for (const r of resepMenu) {
+                const b = ingredients.find(i => i.id === r.ingredient_id);
+                if (!b) continue;
+                let pakai = Number(r.jumlah_pakai);
+                if (size === 'Large') {
+                    if (b.nama_bahan.toLowerCase().includes('cup regular')) {
+                        const cupLarge = ingredients.find(x => x.nama_bahan.toLowerCase().includes('cup large'));
+                        totalHPP += (cupLarge ? Number(cupLarge.harga_satuan || 0) : Number(b.harga_satuan || 0));
+                        continue;
+                    }
+                    pakai += getExtraDoseForLarge(b.nama_bahan);
+                }
+                totalHPP += pakai * Number(b.harga_satuan || 0);
+            }
+            return Math.round(totalHPP);
         }
 
         function resetSearchPOS() {
@@ -840,6 +884,8 @@
                     namaAsli: p.nama_produk,
                     hargaDasar: p.harga,
                     addonCost: addonCost,
+                    extraTopping: extraTopping,
+                    extraShot: extraShot,
                     size: selectedCustomSize,
                     hargaFinal: hargaFinal,
                     catatanCustom: catatanStr,
@@ -968,7 +1014,6 @@
 
             const rincianDB = `${custNama} (Kasir: ${userRole}): ` + cart.map(c => `${c.namaAsli} [${c.size}] (${c.catatanCustom}) (${c.qty}x)`).join(', ') + (custCatatan !== '-' ? ` [Note: ${custCatatan}]` : '') + (custWA ? ` [WA: ${custWA}]` : '');
 
-            // Simpan seluruh detail struktur item di items_json agar bisa dicetak ulang 100% persis kapan saja
             const detailedItems = cart.map(c => ({
                 id: c.id,
                 qty: c.qty,
@@ -997,10 +1042,52 @@
                 alert('Internet terputus! Transaksi disimpan di Mode Offline HP.');
             }
 
+            // LOGIKA PEMOTONGAN STOK OTOMATIS (TERMASUK LARGE UPSIZE & ADD-ON)
+            const stockUpdates = {};
+            const addDeduction = (ingId, amount) => {
+                if (!ingId || amount <= 0) return;
+                stockUpdates[ingId] = (stockUpdates[ingId] || 0) + amount;
+            };
+
             for (const item of cart) {
-                for (const r of recipes.filter(r => r.product_id === item.id)) {
+                const menuRecipes = recipes.filter(r => r.product_id === item.id);
+                for (const r of menuRecipes) {
                     const b = ingredients.find(i => i.id === r.ingredient_id);
-                    if (b) await db.from('ingredients').update({ stok_bahan: Math.max(0, Number(b.stok_bahan) - (Number(r.jumlah_pakai) * item.qty)) }).eq('id', b.id);
+                    if (!b) continue;
+
+                    // Jika ukuran Large, alihkan pemotongan Cup Regular ke Cup Large
+                    if (item.size === 'Large' && b.nama_bahan.toLowerCase().includes('cup regular')) {
+                        const cupLarge = ingredients.find(x => x.nama_bahan.toLowerCase().includes('cup large'));
+                        if (cupLarge) {
+                            addDeduction(cupLarge.id, 1 * item.qty);
+                            continue;
+                        }
+                    }
+
+                    let pakaiPerCup = Number(r.jumlah_pakai);
+                    if (item.size === 'Large') {
+                        pakaiPerCup += getExtraDoseForLarge(b.nama_bahan);
+                    }
+                    addDeduction(b.id, pakaiPerCup * item.qty);
+                }
+
+                // Potong stok untuk Add-on Extra Topping (10 gr)
+                if (item.extraTopping || item.catatanCustom.includes('+Topping')) {
+                    const topIng = ingredients.find(x => x.nama_bahan.toLowerCase().includes('topping') || x.nama_bahan.toLowerCase().includes('oreo'));
+                    if (topIng) addDeduction(topIng.id, 10 * item.qty);
+                }
+                // Potong stok untuk Add-on Extra Shot (+15 ml Espresso)
+                if (item.extraShot || item.catatanCustom.includes('+ExtraShot')) {
+                    const espIng = ingredients.find(x => x.nama_bahan.toLowerCase().includes('espresso'));
+                    if (espIng) addDeduction(espIng.id, 15 * item.qty);
+                }
+            }
+
+            for (const [ingIdStr, totalDeduct] of Object.entries(stockUpdates)) {
+                const b = ingredients.find(i => i.id === parseInt(ingIdStr));
+                if (b) {
+                    const sisaStok = Math.max(0, Number((Number(b.stok_bahan) - totalDeduct).toFixed(2)));
+                    await db.from('ingredients').update({ stok_bahan: sisaStok }).eq('id', b.id);
                 }
             }
 
@@ -1016,7 +1103,6 @@
             tampilkanModalStruk(); clearCart(); loadAllData();
         }
 
-        // --- FITUR CETAK ULANG STRUK DARI RIWAYAT TRANSAKSI / STRUK TERAKHIR ---
         function bukaStrukTerakhir() {
             if (lastOrder) {
                 document.getElementById('receiptModalTitle').innerText = '🧾 Cetak Ulang Struk Terakhir';
@@ -1044,7 +1130,6 @@
             let custCatatan = '-';
             let custWA = '';
 
-            // Ekstrak info dari rincian_item untuk transaksi lama
             const matchHeader = t.rincian_item.match(/^(.+?)\s*\(Kasir:\s*(.+?)\):\s*/);
             if (matchHeader) {
                 custNama = matchHeader[1].trim();
@@ -1080,7 +1165,6 @@
                             if (raw[0].uangDiterima !== undefined) uangDiterima = raw[0].uangDiterima;
                             if (raw[0].kembalian !== undefined) kembalian = raw[0].kembalian;
                         } else {
-                            // Format transaksi lama (hanya simpan id & qty)
                             parsedItems = raw.map(item => {
                                 const prod = products.find(p => p.id === item.id);
                                 return {
@@ -1119,7 +1203,6 @@
             tampilkanModalStruk();
         }
 
-        // --- FITUR BUKU KASBON & REMINDER BELUM BAYAR ---
         function renderKasbonList() {
             const kasbonItems = allTransactions.filter(t => t.metode_bayar === 'Kasbon');
             const totalPiutang = kasbonItems.reduce((s, t) => s + t.total_harga, 0);
@@ -1261,16 +1344,63 @@
         async function tambahKaryawanBaru() { const n = prompt('Nama:'), p = prompt('PIN:'); if (n && p) { await db.from('employees').insert([{ nama_karyawan: n.trim(), pin: p.trim() }]); loadAllData(); } }
 
         function renderBahanDanResep() {
-            document.getElementById('ingredientList').innerHTML = ingredients.map(i => `<div class="py-2 flex justify-between text-xs"><span><b>${i.nama_bahan}</b> (${i.stok_bahan} ${i.satuan})</span><button onclick="hapusBahan(${i.id})" class="text-red-500 font-bold">✕</button></div>`).join('');
+            document.getElementById('ingredientList').innerHTML = ingredients.map(i => `
+                <div class="py-2.5 flex justify-between items-center text-xs gap-2">
+                    <div>
+                        <b>${i.nama_bahan}</b><br>
+                        <span class="text-stone-500">Stok: <b class="${i.stok_bahan <= 50 ? 'text-red-600' : 'text-emerald-700'}">${Number(i.stok_bahan).toLocaleString('id-ID')} ${i.satuan}</b> • Rp ${Number(i.harga_satuan || 0).toLocaleString('id-ID')}/${i.satuan}</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="restockBahan(${i.id}, '${i.nama_bahan}', ${i.stok_bahan})" class="px-2.5 py-1 bg-emerald-500/15 text-emerald-800 font-bold rounded-lg">+ Restock</button>
+                        <button onclick="hapusBahan(${i.id})" class="text-red-500 font-bold px-2 py-1">✕</button>
+                    </div>
+                </div>
+            `).join('');
+
             document.getElementById('recProduct').innerHTML = products.map(p => `<option value="${p.id}">${p.nama_produk}</option>`).join('');
             document.getElementById('recIngredient').innerHTML = ingredients.map(i => `<option value="${i.id}">${i.nama_bahan} (${i.satuan})</option>`).join('');
-            document.getElementById('recipeList').innerHTML = recipes.map(r => {
-                const p = products.find(x => x.id === r.product_id), i = ingredients.find(x => x.id === r.ingredient_id);
-                return `<div class="flex justify-between text-xs py-1"><span><b>${p?.nama_produk}</b> pakai ${r.jumlah_pakai} ${i?.nama_bahan}</span><button onclick="hapusResep(${r.id})" class="text-red-500 font-bold">✕</button></div>`;
+
+            // Kelompokkan tampilan Resep per Produk lengkap dengan hitungan HPP Reg & Large
+            document.getElementById('recipeList').innerHTML = products.map(p => {
+                const pRecipes = recipes.filter(r => r.product_id === p.id);
+                if (pRecipes.length === 0) return '';
+                const hppReg = hitungHPPMenu(p.id, 'Reg');
+                const hppLarge = hitungHPPMenu(p.id, 'Large');
+                const marginReg = p.harga - hppReg;
+                return `
+                    <div class="p-3.5 rounded-2xl glass-card space-y-2">
+                        <div class="flex justify-between items-start border-b border-stone-200/60 pb-2">
+                            <div>
+                                <h5 class="font-extrabold text-xs text-stone-900">${p.nama_produk}</h5>
+                                <p class="text-[10px] text-amber-800 font-semibold">HPP Reg: Rp ${hppReg.toLocaleString('id-ID')} (Untung Rp ${marginReg.toLocaleString('id-ID')}) • HPP Large: Rp ${hppLarge.toLocaleString('id-ID')}</p>
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            ${pRecipes.map(r => {
+                                const ing = ingredients.find(x => x.id === r.ingredient_id);
+                                return `
+                                    <div class="flex justify-between items-center text-[11px] text-stone-600">
+                                        <span>• ${ing ? ing.nama_bahan : 'Bahan'}: <b>${r.jumlah_pakai} ${ing ? ing.satuan : ''}</b></span>
+                                        <button onclick="hapusResep(${r.id})" class="text-red-500 font-bold">✕</button>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
             }).join('');
         }
+
+        async function restockBahan(id, nama, stokSekarang) {
+            const tambah = prompt(`Masukkan jumlah tambahan stok untuk ${nama} (Stok saat ini: ${stokSekarang}):`);
+            if (!tambah || isNaN(parseFloat(tambah))) return;
+            const stokBaru = Number(stokSekarang) + parseFloat(tambah);
+            await db.from('ingredients').update({ stok_bahan: stokBaru }).eq('id', id);
+            loadAllData();
+        }
+
         async function tambahBahan(e) { e.preventDefault(); await db.from('ingredients').insert([{ nama_bahan: document.getElementById('ingNama').value, satuan: document.getElementById('ingSatuan').value, stok_bahan: parseFloat(document.getElementById('ingStok').value), harga_satuan: parseFloat(document.getElementById('ingHargaSatuan').value)||0 }]); e.target.reset(); loadAllData(); }
-        async function hapusBahan(id) { await db.from('ingredients').delete().eq('id', id); loadAllData(); }
+        async function hapusBahan(id) { if(confirm('Hapus bahan baku ini?')) { await db.from('ingredients').delete().eq('id', id); loadAllData(); } }
         async function tambahResep(e) { e.preventDefault(); await db.from('recipes').insert([{ product_id: parseInt(document.getElementById('recProduct').value), ingredient_id: parseInt(document.getElementById('recIngredient').value), jumlah_pakai: parseFloat(document.getElementById('recJumlah').value) }]); loadAllData(); }
         async function hapusResep(id) { await db.from('recipes').delete().eq('id', id); loadAllData(); }
 
@@ -1358,7 +1488,6 @@
             window.open(`https://api.whatsapp.com/send?phone=${noOwner}&text=${encodeURIComponent(t)}`, '_blank');
         }
 
-        // --- HELPER FORMAT STRUK 32 KARAKTER PERSIS CONTOH ---
         function formatLine32(left, right) {
             const W = 32;
             left = String(left || '');
