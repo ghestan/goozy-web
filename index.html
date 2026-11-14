@@ -15,7 +15,6 @@
             background-image: radial-gradient(at 0% 0%, rgba(251, 191, 36, 0.12) 0px, transparent 50%),
                               radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.10) 0px, transparent 50%);
         }
-        /* Blur hanya dipakai di Navbar & Modal agar 100% bebas lag saat scroll */
         .glass-nav {
             background: rgba(255, 255, 255, 0.88);
             backdrop-filter: blur(12px);
@@ -88,15 +87,13 @@
         </div>
     </nav>
 
-    <!-- ================= HALAMAN PUBLIK (RINGAN & ESTETIK TANPA BADGE READY) ================= -->
+    <!-- ================= HALAMAN PUBLIK ================= -->
     <main id="publicView" class="max-w-4xl mx-auto w-full px-4 sm:px-6 py-8 space-y-8">
-        <!-- Hero Banner -->
         <div class="text-center max-w-2xl mx-auto glass-panel p-6 sm:p-8 rounded-3xl space-y-3">
             <span class="bg-amber-100 text-amber-800 text-[11px] font-bold px-3.5 py-1 rounded-full">Specialty Coffee • Authentic Matcha • Refresher</span>
             <h2 class="text-2xl sm:text-3xl font-extrabold text-stone-900 tracking-tight">Daily Dose of Goozy.co</h2>
             <p class="text-xs sm:text-sm text-stone-500">Racikan kopi creamy, matcha autentik, dan minuman segar setiap hari. Tersedia ukuran <b>Regular</b> & <b>Large (+5K)</b>.</p>
             
-            <!-- 3 Signature Highlight -->
             <div class="grid grid-cols-3 gap-2.5 pt-3 text-left">
                 <div class="p-3 rounded-2xl bg-amber-50/70 border border-amber-200/60">
                     <span class="text-[10px] font-bold text-amber-700">⭐ SIGNATURE</span>
@@ -116,7 +113,6 @@
             </div>
         </div>
 
-        <!-- Daftar Menu Gaya Buku Kafe Minimalis (Tanpa Kotak Ready Berat) -->
         <div id="publicMenuContainer" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
 
         <!-- Form Masukan Pelanggan -->
@@ -157,13 +153,16 @@
             <button onclick="switchTab('resep')" class="underline font-bold text-xs bg-white px-2.5 py-1 rounded-lg border">Cek Gudang</button>
         </div>
 
-        <!-- Bar Printer & Status -->
+        <!-- Bar Printer, Status & Tombol Cepat Waste -->
         <div class="glass-panel p-4 rounded-2xl mb-5 flex flex-wrap gap-3 justify-between items-center">
             <div class="text-xs">
-                <span class="font-bold text-stone-800">📡 Koneksi Dual Printer Bluetooth & Offline Mode</span>
+                <span class="font-bold text-stone-800">📡 Koneksi Printer Bluetooth & Operasional Barista</span>
                 <p id="connectionStatus" class="text-[11px] text-emerald-700 font-semibold mt-0.5">● Status: Online (Sinkron)</p>
             </div>
             <div class="flex flex-wrap gap-2">
+                <button onclick="bukaModalWaste()" class="text-xs bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 px-3.5 py-2 rounded-xl font-bold transition">
+                    🗑️ Catat Waste / Tester
+                </button>
                 <button onclick="connectPrinter('receipt')" id="btnPrinterStruk" class="text-xs glass-card px-3.5 py-2 rounded-xl font-semibold">🖨️ Struk: <span class="text-red-600 font-bold">Terputus</span></button>
                 <button onclick="connectPrinter('label')" id="btnPrinterLabel" class="text-xs glass-card px-3.5 py-2 rounded-xl font-semibold">🏷️ Stiker: <span class="text-red-600 font-bold">Terputus</span></button>
             </div>
@@ -178,112 +177,122 @@
             <button onclick="switchTab('pelanggan')" id="tab-pelanggan" class="px-4 py-2 rounded-xl text-xs font-bold text-stone-600 hover:bg-stone-100 shrink-0 transition">👥 Loyalitas Pelanggan</button>
             <button onclick="switchTab('bestseller')" id="tab-bestseller" class="owner-only px-4 py-2 rounded-xl text-xs font-bold text-stone-600 hover:bg-stone-100 shrink-0 transition">🔥 Menu Terlaris</button>
             <button onclick="switchTab('stok')" id="tab-stok" class="owner-only px-4 py-2 rounded-xl text-xs font-bold text-stone-600 hover:bg-stone-100 shrink-0 transition">📋 Daftar Menu</button>
-            <button onclick="switchTab('resep')" id="tab-resep" class="owner-only px-4 py-2 rounded-xl text-xs font-bold text-stone-600 hover:bg-stone-100 shrink-0 transition">🧪 Bahan, Resep & HPP</button>
+            <button onclick="switchTab('resep')" id="tab-resep" class="owner-only px-4 py-2 rounded-xl text-xs font-bold text-stone-600 hover:bg-stone-100 shrink-0 transition">🧪 Bahan, Resep & Waste</button>
             <button onclick="switchTab('absen')" id="tab-absen" class="owner-only px-4 py-2 rounded-xl text-xs font-bold text-stone-600 hover:bg-stone-100 shrink-0 transition">🕒 Absen & Gaji</button>
             <button onclick="switchTab('rekap')" id="tab-rekap" class="owner-only px-4 py-2 rounded-xl text-xs font-bold text-stone-600 hover:bg-stone-100 shrink-0 transition">📊 Keuangan</button>
         </div>
 
         <!-- 1. TAB KASIR -->
-        <div id="content-pos" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="lg:col-span-2">
-                <!-- Search Bar Cepat & Tombol Scroll ke Bawah -->
-                <div class="flex gap-2 mb-3">
-                    <div class="relative flex-1">
-                        <input type="text" id="posSearchInput" oninput="renderPOS()" placeholder="🔍 Cari nama minuman / menu..." class="w-full pl-3.5 pr-8 py-2.5 rounded-2xl text-xs font-semibold glass-input">
-                        <button onclick="resetSearchPOS()" id="btnClearSearch" class="hidden absolute right-2.5 top-2.5 text-stone-400 hover:text-stone-700 text-xs font-bold">✕</button>
+        <div id="content-pos" class="space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2">
+                    <div class="flex gap-2 mb-3">
+                        <div class="relative flex-1">
+                            <input type="text" id="posSearchInput" oninput="renderPOS()" placeholder="🔍 Cari nama minuman / menu..." class="w-full pl-3.5 pr-8 py-2.5 rounded-2xl text-xs font-semibold glass-input">
+                            <button onclick="resetSearchPOS()" id="btnClearSearch" class="hidden absolute right-2.5 top-2.5 text-stone-400 hover:text-stone-700 text-xs font-bold">✕</button>
+                        </div>
+                        <button onclick="scrollToCartSection()" class="lg:hidden bg-stone-900 text-white px-3.5 py-2.5 rounded-2xl text-xs font-bold flex items-center gap-1.5 shadow-sm shrink-0">
+                            ⬇️ Ke Struk
+                        </button>
                     </div>
-                    <button onclick="scrollToCartSection()" class="lg:hidden bg-stone-900 text-white px-3.5 py-2.5 rounded-2xl text-xs font-bold flex items-center gap-1.5 shadow-sm shrink-0">
-                        ⬇️ Ke Struk
-                    </button>
+
+                    <div id="posCategoryFilter" class="flex gap-2 overflow-x-auto pb-3 mb-2"></div>
+                    <div id="posMenuGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
                 </div>
 
-                <!-- Filter Kategori -->
-                <div id="posCategoryFilter" class="flex gap-2 overflow-x-auto pb-3 mb-2"></div>
-                <!-- Grid Menu -->
-                <div id="posMenuGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+                <!-- Panel Keranjang Kasir -->
+                <div id="cartSection" class="glass-panel p-5 rounded-3xl h-fit lg:sticky lg:top-20 scroll-mt-20">
+                    <div class="flex justify-between items-center border-b border-stone-200 pb-3 mb-3 gap-2">
+                        <div>
+                            <h3 class="font-extrabold text-base text-stone-900">Keranjang Kasir</h3>
+                            <p class="text-[10px] text-stone-500">Gunakan tombol [-] [+] untuk atur jumlah pcs</p>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="bukaStrukTerakhir()" title="Cetak Ulang Struk Terakhir" class="text-[10px] bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold px-2.5 py-1 rounded-full border transition">
+                                🧾 Struk Terakhir
+                            </button>
+                            <span id="activeUserBadge" class="text-[10px] bg-amber-100 text-amber-900 border border-amber-300 font-bold px-2.5 py-1 rounded-full">Kasir</span>
+                        </div>
+                    </div>
+
+                    <div id="cartList" class="space-y-2 text-sm mb-4 min-h-[90px] max-h-[300px] overflow-y-auto text-stone-400 flex items-center justify-center">
+                        Belum ada item dipilih
+                    </div>
+
+                    <div class="border-t border-stone-200 pt-3.5 space-y-3">
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <div>
+                                <label class="block text-[11px] font-semibold text-stone-600 mb-1">Nama Pembeli</label>
+                                <input type="text" id="custNama" placeholder="Wajib diisi jika Kasbon" class="w-full px-3 py-1.5 rounded-xl text-xs font-bold glass-input">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-stone-600 mb-1">No. WA (Untuk Panggil Ready)</label>
+                                <input type="tel" id="custWA" placeholder="0812..." class="w-full px-3 py-1.5 rounded-xl text-xs glass-input">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-stone-600 mb-1">Catatan Pesanan Tambahan</label>
+                            <input type="text" id="custCatatan" placeholder="Contoh: Ambil jam istirahat ke-2" class="w-full px-3 py-1.5 rounded-xl text-xs glass-input">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <div>
+                                <label class="block text-[11px] font-semibold text-stone-600 mb-1">Metode Bayar</label>
+                                <select id="metodeBayar" onchange="toggleCashSection()" class="w-full px-3 py-1.5 rounded-xl text-xs font-bold glass-input">
+                                    <option value="QRIS">QRIS</option>
+                                    <option value="Tunai">Tunai (Cash)</option>
+                                    <option value="Kasbon">📒 Kasbon (Bayar Besok)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-stone-600 mb-1">Diskon (Rp)</label>
+                                <input type="number" id="inputDiskon" value="0" min="0" oninput="renderCart()" class="w-full px-3 py-1.5 rounded-xl text-xs glass-input">
+                            </div>
+                        </div>
+
+                        <div id="kasbonNotice" class="hidden bg-amber-50 border border-amber-200 text-amber-900 p-2.5 rounded-2xl text-[11px] font-semibold">
+                            📌 Mode Kasbon aktif: Pesanan akan masuk ke <b>Buku Kasbon</b> dan belum dihitung ke uang laci hari ini sampai dilunasi.
+                        </div>
+
+                        <div id="cashCalculator" class="hidden bg-stone-50 p-3 rounded-2xl border border-stone-200 space-y-2">
+                            <div class="flex justify-between items-center">
+                                <label class="text-[11px] font-bold text-stone-700">Uang Tunai Diterima</label>
+                                <button type="button" onclick="setUangCepat('pas')" class="text-[10px] bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full font-bold">Uang Pas</button>
+                            </div>
+                            <input type="number" id="uangDiterima" placeholder="Nominal..." oninput="hitungKembalian()" class="w-full px-3 py-1.5 rounded-xl text-xs font-bold glass-input">
+                            <div class="grid grid-cols-4 gap-1.5">
+                                <button type="button" onclick="setUangCepat(20000)" class="glass-card rounded-lg py-1 text-[10px] font-bold">20K</button>
+                                <button type="button" onclick="setUangCepat(50000)" class="glass-card rounded-lg py-1 text-[10px] font-bold">50K</button>
+                                <button type="button" onclick="setUangCepat(100000)" class="glass-card rounded-lg py-1 text-[10px] font-bold">100K</button>
+                                <button type="button" onclick="setUangCepat(0)" class="glass-card rounded-lg py-1 text-[10px] font-bold text-red-600">Clear</button>
+                            </div>
+                            <div class="flex justify-between items-center text-xs font-bold pt-1 border-t border-stone-200">
+                                <span>Kembalian:</span>
+                                <span id="teksKembalian" class="text-emerald-700">Rp 0</span>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center font-extrabold text-base pt-2.5 border-t border-stone-200">
+                            <span>Total Tagihan:</span>
+                            <span id="cartTotal" class="text-amber-700 text-lg">Rp 0</span>
+                        </div>
+
+                        <div class="flex gap-2 pt-1">
+                            <button onclick="clearCart()" class="w-1/3 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold py-2.5 rounded-xl text-xs transition">Reset</button>
+                            <button onclick="prosesBayar()" id="btnBayar" class="w-2/3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-sm shadow-sm transition">Bayar & Proses</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Panel Keranjang Kasir -->
-            <div id="cartSection" class="glass-panel p-5 rounded-3xl h-fit lg:sticky lg:top-20 scroll-mt-20">
-                <div class="flex justify-between items-center border-b border-stone-200 pb-3 mb-3 gap-2">
+            <!-- Panel Antrean Pesanan Hari Ini (Untuk Panggil WA Ready & Cetak Ulang oleh Kasir) -->
+            <div class="glass-panel p-5 rounded-3xl">
+                <div class="flex justify-between items-center mb-3">
                     <div>
-                        <h3 class="font-extrabold text-base text-stone-900">Keranjang Kasir</h3>
-                        <p class="text-[10px] text-stone-500">Gunakan tombol [-] [+] untuk atur jumlah pcs</p>
-                    </div>
-                    <div class="flex items-center gap-1.5">
-                        <button onclick="bukaStrukTerakhir()" title="Cetak Ulang Struk Terakhir" class="text-[10px] bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold px-2.5 py-1 rounded-full border transition">
-                            🧾 Struk Terakhir
-                        </button>
-                        <span id="activeUserBadge" class="text-[10px] bg-amber-100 text-amber-900 border border-amber-300 font-bold px-2.5 py-1 rounded-full">Kasir</span>
+                        <h3 class="font-extrabold text-sm text-stone-900">🔔 Antrean Pesanan terbaru (Panggil Ready via WA)</h3>
+                        <p class="text-[11px] text-stone-500">Klik <b>🔔 Panggil Ready WA</b> begitu minuman selesai dibuat barista agar pelanggan langsung mengambil ke booth.</p>
                     </div>
                 </div>
-
-                <div id="cartList" class="space-y-2 text-sm mb-4 min-h-[90px] max-h-[300px] overflow-y-auto text-stone-400 flex items-center justify-center">
-                    Belum ada item dipilih
-                </div>
-
-                <div class="border-t border-stone-200 pt-3.5 space-y-3">
-                    <div class="grid grid-cols-2 gap-2.5">
-                        <div>
-                            <label class="block text-[11px] font-semibold text-stone-600 mb-1">Nama Pembeli</label>
-                            <input type="text" id="custNama" placeholder="Wajib diisi jika Kasbon" class="w-full px-3 py-1.5 rounded-xl text-xs font-bold glass-input">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-semibold text-stone-600 mb-1">No. WA (Opsional)</label>
-                            <input type="tel" id="custWA" placeholder="0812..." class="w-full px-3 py-1.5 rounded-xl text-xs glass-input">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-semibold text-stone-600 mb-1">Catatan Pesanan Tambahan</label>
-                        <input type="text" id="custCatatan" placeholder="Contoh: Ambil jam istirahat ke-2" class="w-full px-3 py-1.5 rounded-xl text-xs glass-input">
-                    </div>
-                    <div class="grid grid-cols-2 gap-2.5">
-                        <div>
-                            <label class="block text-[11px] font-semibold text-stone-600 mb-1">Metode Bayar</label>
-                            <select id="metodeBayar" onchange="toggleCashSection()" class="w-full px-3 py-1.5 rounded-xl text-xs font-bold glass-input">
-                                <option value="QRIS">QRIS</option>
-                                <option value="Tunai">Tunai (Cash)</option>
-                                <option value="Kasbon">📒 Kasbon (Bayar Besok)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-semibold text-stone-600 mb-1">Diskon (Rp)</label>
-                            <input type="number" id="inputDiskon" value="0" min="0" oninput="renderCart()" class="w-full px-3 py-1.5 rounded-xl text-xs glass-input">
-                        </div>
-                    </div>
-
-                    <div id="kasbonNotice" class="hidden bg-amber-50 border border-amber-200 text-amber-900 p-2.5 rounded-2xl text-[11px] font-semibold">
-                        📌 Mode Kasbon aktif: Pesanan akan masuk ke <b>Buku Kasbon</b> dan belum dihitung ke uang laci hari ini sampai dilunasi.
-                    </div>
-
-                    <div id="cashCalculator" class="hidden bg-stone-50 p-3 rounded-2xl border border-stone-200 space-y-2">
-                        <div class="flex justify-between items-center">
-                            <label class="text-[11px] font-bold text-stone-700">Uang Tunai Diterima</label>
-                            <button type="button" onclick="setUangCepat('pas')" class="text-[10px] bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full font-bold">Uang Pas</button>
-                        </div>
-                        <input type="number" id="uangDiterima" placeholder="Nominal..." oninput="hitungKembalian()" class="w-full px-3 py-1.5 rounded-xl text-xs font-bold glass-input">
-                        <div class="grid grid-cols-4 gap-1.5">
-                            <button type="button" onclick="setUangCepat(20000)" class="glass-card rounded-lg py-1 text-[10px] font-bold">20K</button>
-                            <button type="button" onclick="setUangCepat(50000)" class="glass-card rounded-lg py-1 text-[10px] font-bold">50K</button>
-                            <button type="button" onclick="setUangCepat(100000)" class="glass-card rounded-lg py-1 text-[10px] font-bold">100K</button>
-                            <button type="button" onclick="setUangCepat(0)" class="glass-card rounded-lg py-1 text-[10px] font-bold text-red-600">Clear</button>
-                        </div>
-                        <div class="flex justify-between items-center text-xs font-bold pt-1 border-t border-stone-200">
-                            <span>Kembalian:</span>
-                            <span id="teksKembalian" class="text-emerald-700">Rp 0</span>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-between items-center font-extrabold text-base pt-2.5 border-t border-stone-200">
-                        <span>Total Tagihan:</span>
-                        <span id="cartTotal" class="text-amber-700 text-lg">Rp 0</span>
-                    </div>
-
-                    <div class="flex gap-2 pt-1">
-                        <button onclick="clearCart()" class="w-1/3 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold py-2.5 rounded-xl text-xs transition">Reset</button>
-                        <button onclick="prosesBayar()" id="btnBayar" class="w-2/3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-sm shadow-sm transition">Bayar & Proses</button>
-                    </div>
-                </div>
+                <div id="posRecentOrders" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
             </div>
         </div>
 
@@ -354,11 +363,16 @@
             </div>
         </div>
 
-        <!-- 6. TAB BAHAN, RESEP & HPP -->
+        <!-- 6. TAB BAHAN, RESEP & WASTE LOG -->
         <div id="content-resep" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-5">
                 <div class="glass-panel p-5 rounded-3xl">
-                    <h3 class="font-bold text-base mb-1">Gudang Bahan Baku</h3>
+                    <div class="flex justify-between items-center mb-1">
+                        <h3 class="font-bold text-base">Gudang Bahan Baku</h3>
+                        <button onclick="bukaModalWaste()" class="text-[11px] bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 px-3 py-1 rounded-xl font-bold">
+                            🗑️ + Catat Waste / Tester
+                        </button>
+                    </div>
                     <p class="text-[11px] text-stone-500 mb-3">Klik tombol <b>+ Restock</b> pada bahan di bawah untuk menambah stok gudang.</p>
                     <form onsubmit="tambahBahan(event)" class="space-y-2.5">
                         <input type="text" id="ingNama" required placeholder="Nama Bahan (Susu UHT, Matcha Powder, dll)" class="w-full px-3.5 py-2 rounded-xl text-xs glass-input">
@@ -375,6 +389,13 @@
                     </form>
                     <div id="ingredientList" class="divide-y divide-stone-200 text-xs mt-4 max-h-80 overflow-y-auto pr-1"></div>
                 </div>
+
+                <!-- Riwayat Waste / Spillage / Tester -->
+                <div class="glass-panel p-5 rounded-3xl">
+                    <h3 class="font-bold text-base mb-1 text-red-700">🗑️ Riwayat Waste / Tester / Spillage</h3>
+                    <p class="text-[11px] text-stone-500 mb-3">Catatan bahan tumpah, basi (lewat masa simpan chiller), salah racik, atau tester.</p>
+                    <div id="wasteLogList" class="divide-y divide-stone-200 text-xs max-h-60 overflow-y-auto"></div>
+                </div>
             </div>
 
             <div class="space-y-5">
@@ -389,7 +410,7 @@
                         </div>
                         <button type="submit" class="w-full bg-amber-600 text-white font-bold py-2 rounded-xl text-xs">+ Sambungkan ke Resep</button>
                     </form>
-                    <div id="recipeList" class="space-y-2.5 text-xs mt-4 max-h-96 overflow-y-auto pr-1"></div>
+                    <div id="recipeList" class="space-y-2.5 text-xs mt-4 max-h-[520px] overflow-y-auto pr-1"></div>
                 </div>
             </div>
         </div>
@@ -428,7 +449,7 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3.5">
                 <div class="glass-panel p-4 rounded-2xl"><p class="text-[11px] text-stone-500 font-medium">Omzet Lunas</p><p id="statOmzet" class="text-lg font-extrabold mt-1">Rp 0</p></div>
                 <div class="glass-panel p-4 rounded-2xl"><p class="text-[11px] text-stone-500 font-medium">Tunai vs QRIS</p><p id="statMetode" class="text-xs font-bold text-amber-800 mt-1.5">Tunai: Rp 0</p></div>
-                <div class="glass-panel p-4 rounded-2xl"><p class="text-[11px] text-stone-500 font-medium">Pengeluaran</p><p id="statPengeluaran" class="text-lg font-extrabold text-red-600 mt-1">Rp 0</p></div>
+                <div class="glass-panel p-4 rounded-2xl"><p class="text-[11px] text-stone-500 font-medium">Pengeluaran & Waste</p><p id="statPengeluaran" class="text-lg font-extrabold text-red-600 mt-1">Rp 0</p></div>
                 <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200"><p class="text-[11px] text-emerald-800 font-bold">Kas Bersih</p><p id="statBersih" class="text-lg font-extrabold text-emerald-900 mt-1">Rp 0</p></div>
             </div>
 
@@ -436,7 +457,7 @@
                 <div class="glass-panel p-5 rounded-3xl">
                     <div class="mb-2">
                         <h3 class="font-bold text-base">Riwayat Struk</h3>
-                        <p class="text-[10px] text-stone-500">Klik 🖨️ Cetak Ulang untuk print struk/stiker lagi</p>
+                        <p class="text-[10px] text-stone-500">Klik 🔔 Panggil WA atau 🖨️ Cetak Ulang</p>
                     </div>
                     <div id="transaksiList" class="divide-y divide-stone-200 text-sm max-h-96 overflow-y-auto"></div>
                 </div>
@@ -464,6 +485,82 @@
         </div>
         <span class="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center text-sm font-bold">⬇️</span>
     </button>
+
+    <!-- ================= MODAL CATAT WASTE / TESTER / SPILLAGE ================= -->
+    <div id="wasteModal" class="hidden fixed inset-0 bg-stone-900/40 z-50 flex items-center justify-center p-4">
+        <div class="glass-modal rounded-3xl max-w-sm w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b border-stone-200 pb-3">
+                <div>
+                    <h3 class="font-extrabold text-base text-red-700">🗑️ Catat Waste / Tester</h3>
+                    <p class="text-[11px] text-stone-500">Otomatis memotong stok gudang agar tetap akurat</p>
+                </div>
+                <button onclick="tutupModalWaste()" class="w-7 h-7 rounded-full bg-stone-200 hover:bg-stone-300 text-xs text-stone-600 font-bold flex items-center justify-center">✕</button>
+            </div>
+
+            <form onsubmit="simpanWaste(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-stone-700 mb-1">Jenis yang Terbuang / Dipakai:</label>
+                    <select id="wasteTipe" onchange="toggleWasteTipe()" class="w-full p-2.5 rounded-xl glass-input font-bold">
+                        <option value="bahan">🧪 Bahan Baku Tunggal (Susu, Bubuk, Cup, dll)</option>
+                        <option value="menu">🥤 1 Cup Menu Utuh (Salah Racik / Tester)</option>
+                    </select>
+                </div>
+
+                <!-- Pilihan Bahan Tunggal -->
+                <div id="wasteBahanBox" class="space-y-2.5">
+                    <div>
+                        <label class="block font-bold text-stone-700 mb-1">Pilih Bahan Baku:</label>
+                        <select id="wasteIngredientId" class="w-full p-2.5 rounded-xl glass-input font-semibold"></select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-stone-700 mb-1">Jumlah Terbuang (gram / ml / pcs):</label>
+                        <input type="number" step="any" id="wasteQtyBahan" placeholder="Contoh: 100" class="w-full p-2.5 rounded-xl glass-input font-bold">
+                    </div>
+                </div>
+
+                <!-- Pilihan Menu Utuh -->
+                <div id="wasteMenuBox" class="hidden space-y-2.5">
+                    <div>
+                        <label class="block font-bold text-stone-700 mb-1">Pilih Menu:</label>
+                        <select id="wasteProductId" class="w-full p-2.5 rounded-xl glass-input font-semibold"></select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-bold text-stone-700 mb-1">Ukuran Cup:</label>
+                            <select id="wasteMenuSize" class="w-full p-2.5 rounded-xl glass-input font-bold">
+                                <option value="Reg">Regular</option>
+                                <option value="Large">Large</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-stone-700 mb-1">Jumlah Cup:</label>
+                            <input type="number" id="wasteQtyMenu" value="1" min="1" class="w-full p-2.5 rounded-xl glass-input font-bold">
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-stone-700 mb-1">Alasan / Keterangan:</label>
+                    <select id="wasteAlasan" class="w-full p-2.5 rounded-xl glass-input font-semibold">
+                        <option value="Tester / R&D Menu">🧪 Tester / R&D Barista</option>
+                        <option value="Tumpah / Spillage">💧 Tumpah / Spillage</option>
+                        <option value="Salah Racik">⚠️ Salah Racik Pesanan</option>
+                        <option value="Expired / Lewat Masa Chiller">🕒 Expired / Lewat Masa Simpan Chiller</option>
+                        <option value="Cup / Kemasan Rusak">📦 Cup / Kemasan Rusak</option>
+                    </select>
+                </div>
+
+                <label class="flex items-center gap-2 pt-1 cursor-pointer">
+                    <input type="checkbox" id="wasteCatatKeuangan" checked class="w-4 h-4 accent-red-600 rounded">
+                    <span class="text-[11px] font-semibold text-stone-600">Catat nilai HPP ke laporan Pengeluaran/Waste</span>
+                </label>
+
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-2xl shadow-md transition mt-2">
+                    Potong Stok & Simpan Waste
+                </button>
+            </form>
+        </div>
+    </div>
 
     <!-- ================= MODAL CUSTOMIZATION ================= -->
     <div id="customModal" class="hidden fixed inset-0 bg-stone-900/40 z-50 flex items-center justify-center p-4">
@@ -575,11 +672,14 @@
                 <h3 id="receiptModalTitle" class="font-bold text-base text-emerald-700">✅ Transaksi Berhasil!</h3>
                 <button onclick="tutupModal()" class="w-7 h-7 rounded-full bg-stone-200 text-xs text-stone-600 font-bold">✕</button>
             </div>
-            <div id="modalPreview" class="bg-stone-50 p-3.5 rounded-2xl font-mono text-[11px] leading-snug border border-stone-200 max-h-64 overflow-y-auto whitespace-pre overflow-x-auto"></div>
+            <div id="modalPreview" class="bg-stone-50 p-3.5 rounded-2xl font-mono text-[11px] leading-snug border border-stone-200 max-h-60 overflow-y-auto whitespace-pre overflow-x-auto"></div>
             <div class="space-y-2 pt-1">
                 <button onclick="cetakStruk()" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-semibold py-2.5 rounded-xl text-xs transition">🖨️ Cetak Struk</button>
                 <button onclick="cetakLabelCup()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2.5 rounded-xl text-xs transition">🏷️ Cetak Stiker Cup</button>
-                <button onclick="kirimStrukWA()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl text-xs transition">💬 Kirim ke WhatsApp</button>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="kirimStrukWA()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl text-xs transition">💬 Struk WA</button>
+                    <button onclick="panggilReadyOrderAktif()" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-semibold py-2.5 rounded-xl text-xs transition">🔔 Panggil Ready</button>
+                </div>
             </div>
             <button onclick="tutupModal()" class="w-full bg-stone-100 text-stone-700 font-semibold py-2 rounded-xl text-xs border">Tutup</button>
         </div>
@@ -600,7 +700,6 @@
 
         window.addEventListener('DOMContentLoaded', loadPublicCatalog);
 
-        // Filter otomatis agar menu duplikat (seperti Triple Peach / Caramel Matcha kembar) hanya muncul 1 kali
         function deduplicateProducts(rawList) {
             const seen = new Set();
             return (rawList || []).filter(p => {
@@ -617,7 +716,6 @@
             renderPublicMenu();
         }
 
-        // Tampilan Buku Menu Kafe Minimalis (Super Ringan & Tanpa Badge Ready)
         function renderPublicMenu() {
             const container = document.getElementById('publicMenuContainer');
             if (products.length === 0) {
@@ -721,7 +819,7 @@
                 employees = emp.data || []; attendances = att.data || []; customerOrders = cust.data || [];
                 
                 checkLowStockAlert();
-                renderPOS(); renderKasbonList(); renderCustomerHistory(); renderBestSeller();
+                renderPOS(); renderRecentOrdersPOS(); renderKasbonList(); renderCustomerHistory(); renderBestSeller();
                 if (userRole === 'owner') {
                     renderStok(); renderBahanDanResep(); renderAbsensiKaryawan(); renderKeuanganDanRiwayat();
                     renderFeedback(f.data || []);
@@ -785,6 +883,169 @@
                 totalHPP += pakai * Number(b.harga_satuan || 0);
             }
             return Math.round(totalHPP);
+        }
+
+        // --- FITUR 1: PANGGILAN PESANAN READY VIA WHATSAPP ---
+        function panggilReadyWA(id) {
+            const t = allTransactions.find(x => x.id === id);
+            if (!t) return alert('Data pesanan tidak ditemukan.');
+
+            let custNama = 'Kak';
+            let savedWA = '';
+            let daftarMenu = t.rincian_item;
+
+            const matchHeader = t.rincian_item.match(/^(.+?)\s*\(Kasir:\s*(.+?)\):\s*(.+)$/);
+            if (matchHeader) {
+                custNama = matchHeader[1].trim();
+                daftarMenu = matchHeader[3].replace(/\[WA:\s*[0-9+]+\]/g, '').trim();
+            }
+            const waMatch = t.rincian_item.match(/\[WA:\s*([0-9+]+)\]/);
+            if (waMatch) savedWA = waMatch[1].trim();
+
+            if (!savedWA && t.items_json) {
+                try {
+                    const parsed = JSON.parse(t.items_json);
+                    if (Array.isArray(parsed) && parsed[0]?.custWA) savedWA = parsed[0].custWA;
+                } catch (e) {}
+            }
+
+            let no = savedWA || prompt(`Masukkan Nomor WA ${custNama} untuk panggil pesanan ready (08...):`);
+            if (!no) return;
+            no = no.replace(/[^0-9]/g, '');
+            if (no.startsWith('0')) no = '62' + no.slice(1);
+
+            let pesan = `Halo kak *${custNama}*! 🥤✨\n\n`;
+            pesan += `Pesanan *Goozy.co* kamu sudah *READY (Siap Diambil)* di booth/kantin ya:\n`;
+            pesan += `🧾 *${daftarMenu}*\n\n`;
+            pesan += `Silakan diambil selagi segar dan dingin. Terima kasih sudah jajan di Goozy.co! 🍵☕`;
+
+            window.open(`https://api.whatsapp.com/send?phone=${no}&text=${encodeURIComponent(pesan)}`, '_blank');
+        }
+
+        function panggilReadyOrderAktif() {
+            if (!lastOrder) return;
+            let no = lastOrder.custWA || prompt(`Masukkan Nomor WA ${lastOrder.custNama} untuk panggil pesanan ready (08...):`);
+            if (!no) return;
+            no = no.replace(/[^0-9]/g, '');
+            if (no.startsWith('0')) no = '62' + no.slice(1);
+
+            const menuRingkas = lastOrder.items.map(i => `${i.qty}x ${i.namaAsli} (${i.size})`).join(', ');
+            let pesan = `Halo kak *${lastOrder.custNama}*! 🥤✨\n\n`;
+            pesan += `Pesanan *Goozy.co* kamu sudah *READY (Siap Diambil)* di booth/kantin ya:\n`;
+            pesan += `🧾 *${menuRingkas}*\n\n`;
+            pesan += `Silakan diambil selagi segar dan dingin. Terima kasih sudah jajan di Goozy.co! 🍵☕`;
+
+            window.open(`https://api.whatsapp.com/send?phone=${no}&text=${encodeURIComponent(pesan)}`, '_blank');
+        }
+
+        function renderRecentOrdersPOS() {
+            const container = document.getElementById('posRecentOrders');
+            if (!container) return;
+            const recent = allTransactions.slice(0, 6);
+            if (recent.length === 0) {
+                container.innerHTML = `<p class="text-xs text-stone-400 col-span-full">Belum ada antrean pesanan hari ini.</p>`;
+                return;
+            }
+            container.innerHTML = recent.map(t => {
+                const jam = new Date(t.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                return `
+                    <div class="p-3.5 rounded-2xl glass-card flex flex-col justify-between gap-2.5">
+                        <div>
+                            <div class="flex justify-between items-center text-[10px] text-stone-400 font-bold mb-1">
+                                <span>#${t.id} • ${jam}</span>
+                                <span class="px-2 py-0.5 rounded-full ${t.metode_bayar === 'Kasbon' ? 'bg-red-50 text-red-700' : 'bg-emerald-50 text-emerald-800'}">${t.metode_bayar}</span>
+                            </div>
+                            <p class="text-xs font-bold text-stone-800 line-clamp-2">${t.rincian_item.replace(/\[WA:\s*[0-9+]+\]/g, '')}</p>
+                        </div>
+                        <div class="flex gap-1.5 pt-2 border-t border-stone-100">
+                            <button onclick="panggilReadyWA(${t.id})" class="flex-1 bg-teal-600 hover:bg-teal-700 text-white font-bold py-1.5 px-2.5 rounded-xl text-[11px] transition">
+                                🔔 Panggil Ready WA
+                            </button>
+                            <button onclick="cetakUlangTransaksi(${t.id})" class="bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold py-1.5 px-2.5 rounded-xl text-[11px] border transition">
+                                🖨️ Struk
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // --- FITUR 2: MANAJEMEN WASTE / TESTER / SPILLAGE ---
+        function bukaModalWaste() {
+            document.getElementById('wasteIngredientId').innerHTML = ingredients.map(i => `<option value="${i.id}">${i.nama_bahan} (Sisa: ${i.stok_bahan} ${i.satuan})</option>`).join('');
+            document.getElementById('wasteProductId').innerHTML = products.map(p => `<option value="${p.id}">${p.nama_produk}</option>`).join('');
+            document.getElementById('wasteQtyBahan').value = '';
+            document.getElementById('wasteQtyMenu').value = '1';
+            toggleWasteTipe();
+            document.getElementById('wasteModal').classList.remove('hidden');
+        }
+
+        function tutupModalWaste() {
+            document.getElementById('wasteModal').classList.add('hidden');
+        }
+
+        function toggleWasteTipe() {
+            const tipe = document.getElementById('wasteTipe').value;
+            document.getElementById('wasteBahanBox').classList.toggle('hidden', tipe !== 'bahan');
+            document.getElementById('wasteMenuBox').classList.toggle('hidden', tipe !== 'menu');
+        }
+
+        async function simpanWaste(e) {
+            e.preventDefault();
+            const tipe = document.getElementById('wasteTipe').value;
+            const alasan = document.getElementById('wasteAlasan').value;
+            const catatKeuangan = document.getElementById('wasteCatatKeuangan').checked;
+            let deskripsiWaste = '';
+            let nilaiKerugianHPP = 0;
+
+            if (tipe === 'bahan') {
+                const ingId = parseInt(document.getElementById('wasteIngredientId').value);
+                const qty = parseFloat(document.getElementById('wasteQtyBahan').value);
+                if (!qty || qty <= 0) return alert('Masukkan jumlah bahan yang valid!');
+                const b = ingredients.find(i => i.id === ingId);
+                if (!b) return;
+
+                const sisaBaru = Math.max(0, Number((Number(b.stok_bahan) - qty).toFixed(2)));
+                await db.from('ingredients').update({ stok_bahan: sisaBaru }).eq('id', b.id);
+                nilaiKerugianHPP = Math.round(qty * Number(b.harga_satuan || 0));
+                deskripsiWaste = `[WASTE: ${alasan}] ${b.nama_bahan} (${qty} ${b.satuan}) - Oleh: ${userRole || 'Staff'}`;
+            } else {
+                const prodId = parseInt(document.getElementById('wasteProductId').value);
+                const size = document.getElementById('wasteMenuSize').value;
+                const qtyCup = parseInt(document.getElementById('wasteQtyMenu').value) || 1;
+                const prod = products.find(p => p.id === prodId);
+                if (!prod) return;
+
+                const menuRecipes = recipes.filter(r => r.product_id === prodId);
+                for (const r of menuRecipes) {
+                    const b = ingredients.find(i => i.id === r.ingredient_id);
+                    if (!b) continue;
+                    if (size === 'Large' && b.nama_bahan.toLowerCase().includes('cup regular')) {
+                        const cupLarge = ingredients.find(x => x.nama_bahan.toLowerCase().includes('cup large'));
+                        if (cupLarge) {
+                            const sisaCup = Math.max(0, Number(cupLarge.stok_bahan) - qtyCup);
+                            await db.from('ingredients').update({ stok_bahan: sisaCup }).eq('id', cupLarge.id);
+                            continue;
+                        }
+                    }
+                    let pakai = Number(r.jumlah_pakai);
+                    if (size === 'Large') pakai += getExtraDoseForLarge(b.nama_bahan);
+                    const sisa = Math.max(0, Number((Number(b.stok_bahan) - (pakai * qtyCup)).toFixed(2)));
+                    await db.from('ingredients').update({ stok_bahan: sisa }).eq('id', b.id);
+                }
+                nilaiKerugianHPP = hitungHPPMenu(prodId, size) * qtyCup;
+                deskripsiWaste = `[WASTE: ${alasan}] ${qtyCup}x ${prod.nama_produk} (${size}) - Oleh: ${userRole || 'Staff'}`;
+            }
+
+            // Simpan ke tabel expenses dengan prefix [WASTE] agar terekam di log & laporan
+            await db.from('expenses').insert([{
+                keterangan: deskripsiWaste,
+                nominal: catatKeuangan ? nilaiKerugianHPP : 0
+            }]);
+
+            tutupModalWaste();
+            alert(`✅ Tercatat! Stok gudang otomatis dipotong.\n${deskripsiWaste}\nEstimasi Nilai HPP: Rp ${nilaiKerugianHPP.toLocaleString('id-ID')}`);
+            loadAllData();
         }
 
         function resetSearchPOS() {
@@ -1260,6 +1521,9 @@
                             <p class="text-sm font-extrabold text-red-600">Tagihan: Rp ${t.total_harga.toLocaleString('id-ID')}</p>
                         </div>
                         <div class="flex flex-wrap gap-1.5 shrink-0 w-full sm:w-auto">
+                            <button onclick="panggilReadyWA(${t.id})" class="flex-1 sm:flex-initial px-3 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition">
+                                🔔 Ready WA
+                            </button>
                             <button onclick="cetakUlangTransaksi(${t.id})" class="flex-1 sm:flex-initial px-3 py-2 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-xl text-xs font-bold transition">
                                 🖨️ Struk
                             </button>
@@ -1374,6 +1638,21 @@
                 </div>
             `).join('');
 
+            // Render Waste Log dari tabel expenses yang diawali [WASTE
+            const wasteLogs = allExpenses.filter(e => (e.keterangan || '').startsWith('[WASTE'));
+            const wasteContainer = document.getElementById('wasteLogList');
+            if (wasteContainer) {
+                wasteContainer.innerHTML = wasteLogs.length === 0 ? '<p class="text-stone-400 py-2">Belum ada catatan waste / tester.</p>' : wasteLogs.map(w => `
+                    <div class="py-2 flex justify-between items-center gap-2">
+                        <div>
+                            <b class="text-stone-800">${w.keterangan}</b><br>
+                            <span class="text-[10px] text-stone-400">${new Date(w.created_at).toLocaleString('id-ID')} • HPP: Rp ${Number(w.nominal || 0).toLocaleString('id-ID')}</span>
+                        </div>
+                        <button onclick="hapusExp(${w.id})" class="text-stone-400 hover:text-red-600 font-bold">✕</button>
+                    </div>
+                `).join('');
+            }
+
             document.getElementById('recProduct').innerHTML = products.map(p => `<option value="${p.id}">${p.nama_produk}</option>`).join('');
             document.getElementById('recIngredient').innerHTML = ingredients.map(i => `<option value="${i.id}">${i.nama_bahan} (${i.satuan})</option>`).join('');
 
@@ -1454,7 +1733,8 @@
                         <b>${t.rincian_item}</b><br>
                         <span class="text-stone-400">${new Date(t.created_at).toLocaleString('id-ID')} • <b class="${t.metode_bayar === 'Kasbon' ? 'text-red-600' : 'text-stone-600'}">${t.metode_bayar}</b> • Rp ${t.total_harga.toLocaleString('id-ID')}</span>
                     </div>
-                    <div class="flex flex-col sm:flex-row gap-1 shrink-0">
+                    <div class="flex flex-col gap-1 shrink-0">
+                        <button onclick="panggilReadyWA(${t.id})" class="text-[10px] bg-teal-600 hover:bg-teal-700 text-white font-bold px-2.5 py-1 rounded-lg transition">🔔 Ready WA</button>
                         <button onclick="cetakUlangTransaksi(${t.id})" class="text-[10px] bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold px-2.5 py-1 rounded-lg border transition">🖨️ Cetak Ulang</button>
                         <button onclick="cancelTransaksi(${t.id})" class="text-[10px] bg-red-50 hover:bg-red-100 text-red-600 font-bold px-2.5 py-1 rounded-lg transition">❌ Cancel</button>
                     </div>
@@ -1500,7 +1780,7 @@
             let noOwner = prompt('Masukkan Nomor WhatsApp Owner (08...):');
             if (!noOwner) return;
             noOwner = noOwner.replace(/[^0-9]/g, ''); if (noOwner.startsWith('0')) noOwner = '62' + noOwner.slice(1);
-            let t = `*REKAP SHIFT GOOZY.CO*\nWaktu: ${new Date().toLocaleString('id-ID')}\nPelapor: ${userRole}\n------------------------\n• Total Omzet Lunas: Rp ${omzet.toLocaleString('id-ID')}\n• Tunai (Laci): Rp ${tunai.toLocaleString('id-ID')}\n• QRIS (Rekening): Rp ${qris.toLocaleString('id-ID')}\n• Piutang Kasbon: Rp ${kasbon.toLocaleString('id-ID')}\n• Pengeluaran: Rp ${eF.reduce((s, e) => s + e.nominal, 0).toLocaleString('id-ID')}\n------------------------\n*SISA KAS BERSIH: Rp ${bersih.toLocaleString('id-ID')}*\n\nTerima kasih! Laporan shift harian Goozy.co 🚀`;
+            let t = `*REKAP SHIFT GOOZY.CO*\nWaktu: ${new Date().toLocaleString('id-ID')}\nPelapor: ${userRole}\n------------------------\n• Total Omzet Lunas: Rp ${omzet.toLocaleString('id-ID')}\n• Tunai (Laci): Rp ${tunai.toLocaleString('id-ID')}\n• QRIS (Rekening): Rp ${qris.toLocaleString('id-ID')}\n• Piutang Kasbon: Rp ${kasbon.toLocaleString('id-ID')}\n• Pengeluaran/Waste: Rp ${eF.reduce((s, e) => s + e.nominal, 0).toLocaleString('id-ID')}\n------------------------\n*SISA KAS BERSIH: Rp ${bersih.toLocaleString('id-ID')}*\n\nTerima kasih! Laporan shift harian Goozy.co 🚀`;
             window.open(`https://api.whatsapp.com/send?phone=${noOwner}&text=${encodeURIComponent(t)}`, '_blank');
         }
 
@@ -1666,4 +1946,4 @@
         async function kirimMasukan(e) { e.preventDefault(); await db.from('feedbacks').insert([{ nama: document.getElementById('nama').value || 'Anonim', kategori: document.getElementById('kategori').value, pesan: document.getElementById('pesan').value }]); alert('Terima kasih! Masukanmu sudah terkirim.'); document.getElementById('feedbackForm').reset(); }
     </script>
 </body>
-</html>`
+</html>
