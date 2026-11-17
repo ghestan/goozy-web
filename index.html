@@ -114,7 +114,6 @@
     <!-- ================= HALAMAN PUBLIK (EDITORIAL PERIWINKLE & SAGE THEME) ================= -->
     <main id="publicView" class="max-w-4xl mx-auto w-full px-4 sm:px-6 py-8 space-y-8">
         
-        <!-- Hero Banner Ala Referensi Running Club (#6463B1 + #ECEED6 + #B0C59C) -->
         <div class="space-y-4">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-2 px-1">
                 <div>
@@ -128,7 +127,6 @@
                 </p>
             </div>
 
-            <!-- Kartu Utama Ungu Periwinkle (#6463B1) & Kartu Aksen Hijau Sage (#B0C59C) -->
             <div class="bg-peri text-cream rounded-3xl p-6 sm:p-8 shadow-lg grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
                 <div class="md:col-span-2 space-y-4">
                     <h3 class="font-editorial italic text-2xl sm:text-3xl font-semibold text-cream leading-snug">
@@ -156,7 +154,6 @@
                     </div>
                 </div>
 
-                <!-- Feature Look Card (Aksen #ECEED6 & #B0C59C) -->
                 <div class="bg-cream text-stone-800 p-4 rounded-2xl border-2 border-cream shadow-md text-center space-y-3">
                     <div class="bg-sage rounded-xl py-6 px-4 text-sage-text flex flex-col items-center justify-center">
                         <span class="text-3xl">🧋</span>
@@ -1924,19 +1921,45 @@
             return out;
         }
 
+        // --- KONEKSI PRINTER BLUETOOTH (DENGAN DUKUNGAN PENUH STIKER TSPL & IPHONE CHUNK 20 BYTE) ---
         async function connectPrinter(type) {
-            if (!navigator.bluetooth) return alert('Di iPhone gunakan aplikasi browser "Bluefy" dari App Store. Di Android/Laptop gunakan Google Chrome.');
+            if (!navigator.bluetooth) {
+                return alert('Browser ini tidak mendukung Web Bluetooth. Di iPhone wajib buka web ini lewat aplikasi "Bluefy" (unduh gratis di App Store). Di Android/Laptop gunakan Google Chrome.');
+            }
             try {
-                const device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb', 'e7810a71-73ae-499d-8c15-faa9aef0c3f2', '49535343-fe7d-4ae5-8fa9-9fafd205e455'] });
+                const device = await navigator.bluetooth.requestDevice({
+                    acceptAllDevices: true,
+                    optionalServices: [
+                        '000018f0-0000-1000-8000-00805f9b34fb',
+                        'e7810a71-73ae-499d-8c15-faa9aef0c3f2',
+                        '49535343-fe7d-4ae5-8fa9-9fafd205e455',
+                        '0000ff00-0000-1000-8000-00805f9b34fb',
+                        '0000ffe0-0000-1000-8000-00805f9b34fb'
+                    ]
+                });
                 const server = await device.gatt.connect();
                 let writeChar = null;
-                for (const s of await server.getPrimaryServices()) {
-                    for (const c of await s.getCharacteristics()) { if (c.properties.write || c.properties.writeWithoutResponse) { writeChar = c; break; } }
+                const services = await server.getPrimaryServices();
+                for (const s of services) {
+                    const chars = await s.getCharacteristics();
+                    for (const c of chars) {
+                        if (c.properties.writeWithoutResponse || c.properties.write) {
+                            writeChar = c;
+                            break;
+                        }
+                    }
                     if (writeChar) break;
                 }
+                if (!writeChar) return alert('Printer terdeteksi tapi saluran cetak tidak ditemukan. Pastikan printer dalam mode Bluetooth BLE.');
                 btPrinters[type] = { device, characteristic: writeChar };
-                document.getElementById(type === 'receipt' ? 'btnPrinterStruk' : 'btnPrinterLabel').innerHTML = `Terhubung: <span class="text-sage-text font-bold">${device.name}</span>`;
-            } catch (err) { alert('Gagal: ' + err.message); }
+                document.getElementById(type === 'receipt' ? 'btnPrinterStruk' : 'btnPrinterLabel').innerHTML = `Terhubung: <span class="text-sage-text font-bold">${device.name || 'Printer'}</span>`;
+            } catch (err) {
+                if (err.name === 'NotFoundError') {
+                    alert('Batal menyambungkan: Pastikan printer menyala, Bluetooth HP lain sudah diputus dari printer, lalu klik nama printer di daftar pop-up dan tekan Pair.');
+                } else {
+                    alert('Gagal menyambungkan: ' + err.message);
+                }
+            }
         }
 
         async function sendTextToBluetooth(type, textData) {
@@ -1944,9 +1967,21 @@
             if (!p || !p.characteristic) return false;
             try {
                 const bytes = new TextEncoder().encode(textData);
-                for (let i = 0; i < bytes.length; i += 100) await p.characteristic.writeValue(bytes.slice(i, i + 100));
+                const chunkSize = 20;
+                for (let i = 0; i < bytes.length; i += chunkSize) {
+                    const slice = bytes.slice(i, i + chunkSize);
+                    if (p.characteristic.properties.writeWithoutResponse) {
+                        await p.characteristic.writeValueWithoutResponse(slice);
+                    } else {
+                        await p.characteristic.writeValue(slice);
+                    }
+                    await new Promise(r => setTimeout(r, 15));
+                }
                 return true;
-            } catch (e) { return false; }
+            } catch (e) {
+                alert('Koneksi printer terputus saat mencetak. Silakan klik tombol sambungkan printer lagi.');
+                return false;
+            }
         }
 
         function tampilkanModalStruk() {
@@ -1960,6 +1995,7 @@
             const o = lastOrder;
             const rawEscPos = buildFormattedReceipt(o, true);
             if (await sendTextToBluetooth('receipt', rawEscPos)) return;
+            if (await sendTextToBluetooth('label', rawEscPos)) return;
 
             const plainReceipt = buildFormattedReceipt(o, false);
             const printArea = document.getElementById('printArea');
@@ -1971,18 +2007,47 @@
 
         async function cetakLabelCup() {
             const o = lastOrder;
+            if (!o) return;
             let labels = [];
-            o.items.forEach(i => { for(let k=0; k<i.qty; k++) labels.push(i); });
-            let text = `\x1B\x40`;
-            labels.forEach((item, idx) => {
-                text += formatLine32('GOOZY.CO', `Cup ${idx+1}/${labels.length}`);
-                text += `${o.custNama}\n--------------------------------\n`;
-                text += `${item.namaAsli} (${item.size})\n`;
-                text += `* ${item.catatanCustom}\n`;
-                if (o.custCatatan !== '-') text += `Note: ${o.custCatatan}\n`;
-                text += `${o.waktu}\n\n\n`;
-            });
-            if (await sendTextToBluetooth('label', text)) return;
+            o.items.forEach(i => { for (let k = 0; k < i.qty; k++) labels.push(i); });
+
+            const modeTSPL = confirm('Klik OK jika memakai Kertas Stiker Label (Algoo / Gap).\nKlik Cancel jika memakai kertas struk biasa.');
+
+            let payload = '';
+            if (modeTSPL) {
+                labels.forEach((item, idx) => {
+                    const cleanMenu = (item.namaAsli || 'MENU').replace(/"/g, '');
+                    const cleanCust = (o.custNama || 'Pelanggan').replace(/"/g, '').slice(0, 18);
+                    const cleanCustom = (item.catatanCustom || '').replace(/"/g, '');
+                    payload += `SIZE 40 mm,30 mm\r\n`;
+                    payload += `GAP 2 mm,0 mm\r\n`;
+                    payload += `DIRECTION 1\r\n`;
+                    payload += `CLS\r\n`;
+                    payload += `TEXT 15,15,"2",0,1,1,"GOOZY.CO (${idx + 1}/${labels.length})"\r\n`;
+                    payload += `TEXT 15,42,"2",0,1,1,"${cleanCust}"\r\n`;
+                    payload += `BAR 15,66,280,2\r\n`;
+                    payload += `TEXT 15,78,"2",0,1,1,"${cleanMenu} [${item.size}]"\r\n`;
+                    payload += `TEXT 15,105,"1",0,1,1,"${cleanCustom.slice(0, 28)}"\r\n`;
+                    if (cleanCustom.length > 28) {
+                        payload += `TEXT 15,125,"1",0,1,1,"${cleanCustom.slice(28, 56)}"\r\n`;
+                    }
+                    payload += `TEXT 15,155,"1",0,1,1,"${o.jamStr}"\r\n`;
+                    payload += `PRINT 1,1\r\n`;
+                });
+            } else {
+                payload = `\x1B\x40`;
+                labels.forEach((item, idx) => {
+                    payload += formatLine32('GOOZY.CO', `Cup ${idx + 1}/${labels.length}`);
+                    payload += `${o.custNama}\n--------------------------------\n`;
+                    payload += `${item.namaAsli} (${item.size})\n`;
+                    payload += `* ${item.catatanCustom}\n`;
+                    if (o.custCatatan !== '-') payload += `Note: ${o.custCatatan}\n`;
+                    payload += `${o.waktu}\n\n\n`;
+                });
+            }
+
+            if (await sendTextToBluetooth('label', payload)) return;
+            if (await sendTextToBluetooth('receipt', payload)) return;
             window.print();
         }
 
