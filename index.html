@@ -111,7 +111,7 @@
         </div>
     </nav>
 
-    <!-- ================= HALAMAN PUBLIK (EDITORIAL PERIWINKLE & SAGE THEME) ================= -->
+    <!-- ================= HALAMAN PUBLIK ================= -->
     <main id="publicView" class="max-w-4xl mx-auto w-full px-4 sm:px-6 py-8 space-y-8">
         
         <div class="space-y-4">
@@ -171,7 +171,6 @@
             </div>
         </div>
 
-        <!-- Daftar Menu Gaya Buku Kafe Minimalis -->
         <div id="publicMenuContainer" class="grid grid-cols-1 md:grid-cols-2 gap-5 scroll-mt-20"></div>
 
         <!-- Form Masukan Pelanggan -->
@@ -206,7 +205,6 @@
     <!-- ================= HALAMAN INTERNAL ================= -->
     <main id="staffView" class="hidden max-w-6xl mx-auto w-full px-4 py-6 flex-1 pb-24 lg:pb-8">
         
-        <!-- Peringatan Low-Stock Alert -->
         <div id="lowStockAlert" class="hidden bg-red-50 border border-red-200 text-red-800 p-3.5 rounded-2xl mb-4 text-xs font-semibold flex items-center justify-between shadow-sm">
             <span id="lowStockText">⚠️ Perhatian: Beberapa bahan baku hampir habis! Segera lakukan restock.</span>
             <button onclick="switchTab('resep')" class="underline font-bold text-xs bg-white px-2.5 py-1 rounded-lg border">Cek Gudang</button>
@@ -230,11 +228,7 @@
         <!-- Tab Navigation -->
         <div class="flex gap-2 mb-6 p-1.5 glass-panel rounded-2xl overflow-x-auto w-fit max-w-full">
             <button onclick="switchTab('pos')" id="tab-pos" class="px-4 py-2 rounded-xl text-xs font-bold bg-peri text-white shadow-sm shrink-0 transition">🛒 Kasir (POS)</button>
-            <button onclick="switchTab('kasbon')" id="tab-kasbon" class="px-4 py-2 rounded-xl text-xs font-bold text-stone-700 hover:bg-cream shrink-0 transition flex items-center gap-1.5">
-                📒 Buku Kasbon <span id="badgeKasbonCount" class="hidden bg-red-600 text-white text-[10px] px-1.5 py-0.2 rounded-full">0</span>
-            </button>
             <button onclick="switchTab('pelanggan')" id="tab-pelanggan" class="px-4 py-2 rounded-xl text-xs font-bold text-stone-700 hover:bg-cream shrink-0 transition">👥 Loyalitas Pelanggan</button>
-            <button onclick="switchTab('bestseller')" id="tab-bestseller" class="owner-only px-4 py-2 rounded-xl text-xs font-bold text-stone-700 hover:bg-cream shrink-0 transition">🔥 Menu Terlaris</button>
             <button onclick="switchTab('stok')" id="tab-stok" class="owner-only px-4 py-2 rounded-xl text-xs font-bold text-stone-700 hover:bg-cream shrink-0 transition">📋 Daftar Menu</button>
             <button onclick="switchTab('resep')" id="tab-resep" class="owner-only px-4 py-2 rounded-xl text-xs font-bold text-stone-700 hover:bg-cream shrink-0 transition">🧪 Bahan, Resep & Waste</button>
             <button onclick="switchTab('absen')" id="tab-absen" class="owner-only px-4 py-2 rounded-xl text-xs font-bold text-stone-700 hover:bg-cream shrink-0 transition">🕒 Absen & Gaji</button>
@@ -282,7 +276,7 @@
                         <div class="grid grid-cols-2 gap-2.5">
                             <div>
                                 <label class="block text-[11px] font-semibold text-stone-600 mb-1">Nama Pembeli</label>
-                                <input type="text" id="custNama" placeholder="Wajib diisi jika Kasbon" class="w-full px-3 py-1.5 rounded-xl text-xs font-bold glass-input">
+                                <input type="text" id="custNama" placeholder="Nama pelanggan..." class="w-full px-3 py-1.5 rounded-xl text-xs font-bold glass-input">
                             </div>
                             <div>
                                 <label class="block text-[11px] font-semibold text-stone-600 mb-1">No. WA (Untuk Panggil Ready)</label>
@@ -299,17 +293,12 @@
                                 <select id="metodeBayar" onchange="toggleCashSection()" class="w-full px-3 py-1.5 rounded-xl text-xs font-bold glass-input">
                                     <option value="QRIS">QRIS</option>
                                     <option value="Tunai">Tunai (Cash)</option>
-                                    <option value="Kasbon">📒 Kasbon (Bayar Besok)</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="block text-[11px] font-semibold text-stone-600 mb-1">Diskon (Rp)</label>
                                 <input type="number" id="inputDiskon" value="0" min="0" oninput="renderCart()" class="w-full px-3 py-1.5 rounded-xl text-xs glass-input">
                             </div>
-                        </div>
-
-                        <div id="kasbonNotice" class="hidden bg-peri-light border border-peri/30 text-peri-dark p-2.5 rounded-2xl text-[11px] font-semibold">
-                            📌 Mode Kasbon aktif: Pesanan akan masuk ke <b>Buku Kasbon</b> dan belum dihitung ke uang laci hari ini sampai dilunasi.
                         </div>
 
                         <div id="cashCalculator" class="hidden bg-white p-3 rounded-2xl border border-cream-border space-y-2">
@@ -355,32 +344,7 @@
             </div>
         </div>
 
-        <!-- 2. TAB BUKU KASBON -->
-        <div id="content-kasbon" class="hidden space-y-6">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="glass-panel p-5 rounded-3xl border-l-4 border-l-red-500">
-                    <p class="text-xs font-bold text-stone-500">Total Piutang Kasbon Belum Dibayar</p>
-                    <p id="statTotalKasbon" class="text-2xl font-extrabold text-red-600 mt-1">Rp 0</p>
-                </div>
-                <div class="glass-panel p-5 rounded-3xl border-l-4 border-l-peri">
-                    <p class="text-xs font-bold text-stone-500">Jumlah Transaksi Kasbon Aktif</p>
-                    <p id="statCountKasbon" class="text-2xl font-extrabold text-peri mt-1">0 Orang / Nota</p>
-                </div>
-            </div>
-
-            <div class="glass-panel p-6 rounded-3xl">
-                <div class="flex flex-wrap justify-between items-center gap-2 mb-4">
-                    <div>
-                        <h3 class="font-bold text-base text-peri">📒 Daftar Reminder Anak Kantin Belum Bayar (Kasbon)</h3>
-                        <p class="text-xs text-stone-500">Klik <b>Lunasi Tunai</b> atau <b>Lunasi QRIS</b> saat mereka sudah bayar, atau klik <b>🖨️ Struk</b> untuk cetak ulang nota.</p>
-                    </div>
-                    <input type="text" id="kasbonSearch" oninput="renderKasbonList()" placeholder="🔍 Cari nama yang kasbon..." class="px-3.5 py-2 rounded-xl text-xs font-semibold glass-input">
-                </div>
-                <div id="kasbonListContainer" class="space-y-3 max-h-[520px] overflow-y-auto"></div>
-            </div>
-        </div>
-
-        <!-- 3. TAB LOYALITAS PELANGGAN -->
+        <!-- 2. TAB LOYALITAS PELANGGAN -->
         <div id="content-pelanggan" class="hidden space-y-6">
             <div class="glass-panel p-6 rounded-3xl">
                 <h3 class="font-bold text-base mb-1 text-peri">👥 Riwayat & Loyalitas Pelanggan</h3>
@@ -389,16 +353,7 @@
             </div>
         </div>
 
-        <!-- 4. TAB MENU TERLARIS -->
-        <div id="content-bestseller" class="hidden space-y-6">
-            <div class="glass-panel p-6 rounded-3xl">
-                <h3 class="font-bold text-base mb-1 text-peri">🔥 Analisis Menu Terlaris (Best Seller)</h3>
-                <p class="text-xs text-stone-500 mb-4">Peringkat produk yang paling sering dibeli berdasarkan data transaksi.</p>
-                <div id="bestSellerList" class="space-y-2.5"></div>
-            </div>
-        </div>
-
-        <!-- 5. TAB MENU -->
+        <!-- 3. TAB MENU -->
         <div id="content-stok" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="glass-panel p-5 rounded-3xl h-fit">
                 <h3 class="font-bold text-base mb-3 text-peri">Tambah Menu</h3>
@@ -422,7 +377,7 @@
             </div>
         </div>
 
-        <!-- 6. TAB BAHAN, RESEP & WASTE LOG -->
+        <!-- 4. TAB BAHAN, RESEP & WASTE LOG -->
         <div id="content-resep" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-5">
                 <div class="glass-panel p-5 rounded-3xl">
@@ -449,7 +404,6 @@
                     <div id="ingredientList" class="divide-y divide-cream-border text-xs mt-4 max-h-80 overflow-y-auto pr-1"></div>
                 </div>
 
-                <!-- Riwayat Waste / Spillage / Tester -->
                 <div class="glass-panel p-5 rounded-3xl">
                     <h3 class="font-bold text-base mb-1 text-red-700">🗑️ Riwayat Waste / Tester / Spillage</h3>
                     <p class="text-[11px] text-stone-500 mb-3">Catatan bahan tumpah, basi (lewat masa simpan chiller), salah racik, atau tester.</p>
@@ -474,7 +428,7 @@
             </div>
         </div>
 
-        <!-- 7. TAB ABSEN -->
+        <!-- 5. TAB ABSEN -->
         <div id="content-absen" class="hidden space-y-6">
             <div class="glass-panel p-5 rounded-3xl">
                 <div class="flex justify-between items-center mb-4">
@@ -492,7 +446,7 @@
             </div>
         </div>
 
-        <!-- 8. TAB KEUANGAN -->
+        <!-- 6. TAB KEUANGAN -->
         <div id="content-rekap" class="hidden space-y-6">
             <div class="flex flex-wrap justify-between items-center gap-3 glass-panel p-4 rounded-2xl">
                 <div class="flex gap-2">
@@ -505,11 +459,37 @@
                 </div>
             </div>
 
+            <!-- Ringkasan Nominal Keuangan -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3.5">
-                <div class="glass-panel p-4 rounded-2xl"><p class="text-[11px] text-stone-500 font-medium">Omzet Lunas</p><p id="statOmzet" class="text-lg font-extrabold text-peri mt-1">Rp 0</p></div>
+                <div class="glass-panel p-4 rounded-2xl"><p class="text-[11px] text-stone-500 font-medium">Total Omzet</p><p id="statOmzet" class="text-lg font-extrabold text-peri mt-1">Rp 0</p></div>
                 <div class="glass-panel p-4 rounded-2xl"><p class="text-[11px] text-stone-500 font-medium">Tunai vs QRIS</p><p id="statMetode" class="text-xs font-bold text-stone-700 mt-1.5">Tunai: Rp 0</p></div>
                 <div class="glass-panel p-4 rounded-2xl"><p class="text-[11px] text-stone-500 font-medium">Pengeluaran & Waste</p><p id="statPengeluaran" class="text-lg font-extrabold text-red-600 mt-1">Rp 0</p></div>
                 <div class="bg-sage-light p-4 rounded-2xl border border-sage"><p class="text-[11px] text-sage-text font-bold">Kas Bersih</p><p id="statBersih" class="text-lg font-extrabold text-sage-text mt-1">Rp 0</p></div>
+            </div>
+
+            <!-- Ringkasan Jumlah Terjual: Cup Reg, Cup Large, Bakery & Pastry -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                <div class="glass-panel p-4 rounded-2xl border-l-4 border-l-peri flex justify-between items-center">
+                    <div>
+                        <p class="text-[11px] text-stone-500 font-bold">🥤 Cup Regular Laku</p>
+                        <p id="statCupReg" class="text-xl font-extrabold text-peri mt-0.5">0 Cup</p>
+                    </div>
+                    <span class="text-2xl opacity-80">🥤</span>
+                </div>
+                <div class="glass-panel p-4 rounded-2xl border-l-4 border-l-sage-dark flex justify-between items-center">
+                    <div>
+                        <p class="text-[11px] text-stone-500 font-bold">🧋 Cup Large Laku</p>
+                        <p id="statCupLarge" class="text-xl font-extrabold text-sage-text mt-0.5">0 Cup</p>
+                    </div>
+                    <span class="text-2xl opacity-80">🧋</span>
+                </div>
+                <div class="glass-panel p-4 rounded-2xl border-l-4 border-l-amber-500 flex justify-between items-center">
+                    <div>
+                        <p class="text-[11px] text-stone-500 font-bold">🥐 Bakery & Pastry Laku</p>
+                        <p id="statBakery" class="text-xl font-extrabold text-amber-700 mt-0.5">0 Pcs</p>
+                    </div>
+                    <span class="text-2xl opacity-80">🥐</span>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -724,15 +704,24 @@
 
     <!-- MODAL STRUK -->
     <div id="receiptModal" class="hidden fixed inset-0 bg-stone-900/40 z-50 flex items-center justify-center p-4">
-        <div class="glass-modal rounded-3xl max-w-sm w-full p-6 space-y-4">
+        <div class="glass-modal rounded-3xl max-w-sm w-full p-6 space-y-3.5">
             <div class="flex justify-between items-center border-b border-cream-border pb-2">
                 <h3 id="receiptModalTitle" class="font-bold text-base text-peri">✅ Transaksi Berhasil!</h3>
                 <button onclick="tutupModal()" class="w-7 h-7 rounded-full bg-white text-xs text-stone-600 font-bold">✕</button>
             </div>
-            <div id="modalPreview" class="bg-white p-3.5 rounded-2xl font-mono text-[11px] leading-snug border border-cream-border max-h-60 overflow-y-auto whitespace-pre overflow-x-auto"></div>
-            <div class="space-y-2 pt-1">
-                <button onclick="cetakStruk()" class="w-full bg-peri hover:bg-peri-dark text-white font-semibold py-2.5 rounded-full text-xs transition">🖨️ Cetak Struk</button>
-                <button onclick="cetakLabelCup()" class="w-full bg-sage hover:bg-sage-dark text-sage-text font-semibold py-2.5 rounded-full text-xs transition">🏷️ Cetak Stiker Cup</button>
+            <div id="modalPreview" class="bg-white p-3.5 rounded-2xl font-mono text-[11px] leading-snug border border-cream-border max-h-52 overflow-y-auto whitespace-pre overflow-x-auto"></div>
+            
+            <div class="bg-white px-3 py-2 rounded-2xl border border-cream-border flex items-center justify-between text-[11px]">
+                <span class="font-bold text-stone-600">Mode Printer Stiker:</span>
+                <select id="labelModeSelect" class="font-bold text-peri bg-transparent focus:outline-none">
+                    <option value="escpos_gap">RPP02N / Stiker Auto-Cut (ESC/POS)</option>
+                    <option value="tspl">Algoo / Barcode Murni (TSPL)</option>
+                </select>
+            </div>
+
+            <div class="space-y-2 pt-0.5">
+                <button id="btnModalCetakStruk" onclick="cetakStruk()" class="w-full bg-peri hover:bg-peri-dark text-white font-semibold py-2.5 rounded-full text-xs transition">🖨️ Cetak Struk</button>
+                <button id="btnModalCetakLabel" onclick="cetakLabelCup()" class="w-full bg-sage hover:bg-sage-dark text-sage-text font-extrabold py-2.5 rounded-full text-xs transition shadow-sm">🏷️ Cetak Stiker Cup</button>
                 <div class="grid grid-cols-2 gap-2">
                     <button onclick="kirimStrukWA()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-full text-xs transition">💬 Struk WA</button>
                     <button onclick="panggilReadyOrderAktif()" class="w-full bg-stone-800 hover:bg-stone-900 text-white font-semibold py-2.5 rounded-full text-xs transition">🔔 Panggil Ready</button>
@@ -784,13 +773,13 @@
                 <div class="glass-panel p-5 rounded-3xl">
                     <div class="flex justify-between items-center border-b border-cream-border pb-2.5 mb-3">
                         <h3 class="font-editorial italic font-bold text-base text-peri">${cat}</h3>
-                        <span class="text-[10px] font-bold bg-sage px-2.5 py-0.5 rounded-full text-sage-text">REG / LARGE</span>
+                        <span class="text-[10px] font-bold bg-sage px-2.5 py-0.5 rounded-full text-sage-text">${cat === 'Bakery & Pastry' ? 'FRESH BAKED' : 'REG / LARGE'}</span>
                     </div>
                     <div class="divide-y divide-cream-border/60">
                         ${products.filter(p => p.kategori === cat).map(p => `
                             <div class="py-2 flex justify-between items-center text-xs">
                                 <span class="font-bold text-stone-800">${p.nama_produk}</span>
-                                <span class="font-extrabold text-peri shrink-0 ml-2">${p.harga/1000}K <span class="text-stone-400 font-normal">/ ${(p.harga+5000)/1000}K</span></span>
+                                <span class="font-extrabold text-peri shrink-0 ml-2">${cat === 'Bakery & Pastry' ? (p.harga/1000) + 'K' : (p.harga/1000) + 'K <span class="text-stone-400 font-normal">/ ' + ((p.harga+5000)/1000) + 'K</span>'}</span>
                             </div>
                         `).join('')}
                     </div>
@@ -847,7 +836,7 @@
         }
 
         function switchTab(tab) {
-            ['pos', 'kasbon', 'pelanggan', 'bestseller', 'stok', 'resep', 'absen', 'rekap'].forEach(t => {
+            ['pos', 'pelanggan', 'stok', 'resep', 'absen', 'rekap'].forEach(t => {
                 const btn = document.getElementById('tab-' + t), content = document.getElementById('content-' + t);
                 if (btn) btn.className = 'px-4 py-2 rounded-xl text-xs font-bold text-stone-700 hover:bg-cream shrink-0 transition flex items-center gap-1.5';
                 if (content) content.classList.add('hidden');
@@ -876,7 +865,7 @@
                 employees = emp.data || []; attendances = att.data || []; customerOrders = cust.data || [];
                 
                 checkLowStockAlert();
-                renderPOS(); renderRecentOrdersPOS(); renderKasbonList(); renderCustomerHistory(); renderBestSeller();
+                renderPOS(); renderRecentOrdersPOS(); renderCustomerHistory();
                 if (userRole === 'owner') {
                     renderStok(); renderBahanDanResep(); renderAbsensiKaryawan(); renderKeuanganDanRiwayat();
                     renderFeedback(f.data || []);
@@ -985,7 +974,7 @@
             no = no.replace(/[^0-9]/g, '');
             if (no.startsWith('0')) no = '62' + no.slice(1);
 
-            const menuRingkas = lastOrder.items.map(i => `${i.qty}x ${i.namaAsli} (${i.size})`).join(', ');
+            const menuRingkas = lastOrder.items.map(i => `${i.qty || 1}x ${i.namaAsli} (${i.size || 'REG'})`).join(', ');
             let pesan = `Halo kak *${lastOrder.custNama}*! 🥤✨\n\n`;
             pesan += `Pesanan *Goozy.co* kamu sudah *READY (Siap Diambil)* di booth/kantin ya:\n`;
             pesan += `🧾 *${menuRingkas}*\n\n`;
@@ -1009,7 +998,7 @@
                         <div>
                             <div class="flex justify-between items-center text-[10px] text-stone-400 font-bold mb-1">
                                 <span>#${t.id} • ${jam}</span>
-                                <span class="px-2 py-0.5 rounded-full ${t.metode_bayar === 'Kasbon' ? 'bg-red-50 text-red-700' : 'bg-sage-light text-sage-text'}">${t.metode_bayar}</span>
+                                <span class="px-2 py-0.5 rounded-full bg-sage-light text-sage-text">${t.metode_bayar}</span>
                             </div>
                             <p class="text-xs font-bold text-stone-800 line-clamp-2">${t.rincian_item.replace(/\[WA:\s*[0-9+]+\]/g, '')}</p>
                         </div>
@@ -1018,7 +1007,7 @@
                                 🔔 Panggil Ready WA
                             </button>
                             <button onclick="cetakUlangTransaksi(${t.id})" class="bg-cream-soft hover:bg-cream text-stone-800 font-bold py-1.5 px-2.5 rounded-xl text-[11px] border border-cream-border transition">
-                                🖨️ Struk
+                                🖨️ Struk & Stiker
                             </button>
                         </div>
                     </div>
@@ -1130,12 +1119,13 @@
 
             document.getElementById('posMenuGrid').innerHTML = filtered.length === 0 ? `<p class="text-xs text-stone-400 col-span-full py-4 text-center">Menu tidak ditemukan.</p>` : filtered.map(p => {
                 const sisa = hitungStokPorsi(p.id), habis = sisa !== null && sisa <= 0;
+                const isBakery = p.kategori === 'Bakery & Pastry';
                 return `
                     <button onclick="bukaModalCustom(${p.id})" ${habis ? 'disabled' : ''} class="p-3.5 rounded-2xl glass-card text-left flex flex-col justify-between ${habis ? 'opacity-40 cursor-not-allowed' : ''}">
                         <div>
                             <span class="text-[10px] font-bold px-2 py-0.5 bg-cream-soft rounded-full text-stone-600 border border-cream-border">${p.kategori}</span>
                             <h4 class="font-extrabold text-sm mt-1.5 text-stone-900">${p.nama_produk}</h4>
-                            <p class="text-[10px] text-stone-400 mt-0.5">Reg ${p.harga/1000}K • Large ${(p.harga+5000)/1000}K</p>
+                            <p class="text-[10px] text-stone-400 mt-0.5">${isBakery ? 'Bakery / Pastry' : 'Reg ' + (p.harga/1000) + 'K • Large ' + ((p.harga+5000)/1000) + 'K'}</p>
                         </div>
                         <div class="mt-3 pt-2 border-t border-cream-border flex justify-between items-center w-full">
                             <span class="text-xs font-extrabold text-peri">Rp ${p.harga.toLocaleString('id-ID')}</span>
@@ -1211,7 +1201,7 @@
 
             const sizeCost = selectedCustomSize === 'Large' ? 5000 : 0;
             const hargaFinal = p.harga + sizeCost + addonCost;
-            const catatanStr = notes.join(', ');
+            const catatanStr = p.kategori === 'Bakery & Pastry' ? 'Bakery & Pastry' : notes.join(', ');
 
             const existing = cart.find(c => c.id === p.id && c.size === selectedCustomSize && c.catatanCustom === catatanStr);
             if (existing) {
@@ -1220,6 +1210,7 @@
                 cart.push({
                     cartKey: `${p.id}_${Date.now()}`,
                     id: p.id,
+                    kategori: p.kategori,
                     namaAsli: p.nama_produk,
                     hargaDasar: p.harga,
                     addonCost: addonCost,
@@ -1288,9 +1279,7 @@
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center gap-1.5 flex-wrap">
                             <p class="font-bold text-xs text-stone-900 truncate">${c.namaAsli}</p>
-                            <button onclick="toggleSizeCart('${c.cartKey}')" class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${c.size === 'Large' ? 'bg-peri text-white border-peri' : 'bg-cream-soft text-stone-700 border-cream-border'}">
-                                ${c.size === 'Large' ? 'Large (+5K)' : 'Reg'}
-                            </button>
+                            ${c.kategori === 'Bakery & Pastry' ? '' : `<button onclick="toggleSizeCart('${c.cartKey}')" class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${c.size === 'Large' ? 'bg-peri text-white border-peri' : 'bg-cream-soft text-stone-700 border-cream-border'}">${c.size === 'Large' ? 'Large (+5K)' : 'Reg'}</button>`}
                         </div>
                         <p class="text-[10px] text-peri font-semibold mt-0.5">${c.catatanCustom}</p>
                         <span class="text-[11px] text-stone-500">@ Rp ${c.hargaFinal.toLocaleString('id-ID')} = <b class="text-stone-800">Rp ${(c.hargaFinal * c.qty).toLocaleString('id-ID')}</b></span>
@@ -1309,7 +1298,6 @@
         function toggleCashSection() {
             const metode = document.getElementById('metodeBayar').value;
             document.getElementById('cashCalculator').classList.toggle('hidden', metode !== 'Tunai');
-            document.getElementById('kasbonNotice').classList.toggle('hidden', metode !== 'Kasbon');
             hitungKembalian();
         }
 
@@ -1331,10 +1319,6 @@
             const terima = parseInt(document.getElementById('uangDiterima').value) || total;
             const custNamaInput = document.getElementById('custNama').value.trim();
 
-            if (metode === 'Kasbon' && !custNamaInput) {
-                document.getElementById('custNama').focus();
-                return alert('Untuk Kasbon, Nama Pembeli wajib diisi agar mudah ditagih besok!');
-            }
             if (metode === 'Tunai' && terima < total) return alert('Uang tunai kurang!');
 
             const custNama = custNamaInput || 'Pelanggan';
@@ -1348,11 +1332,12 @@
             const waktu = now.toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' });
             const orderId = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}${String(allTransactions.length + 1).padStart(4,'0')}`;
 
-            const rincianDB = `${custNama} (Kasir: ${userRole}): ` + cart.map(c => `${c.namaAsli} [${c.size}] (${c.catatanCustom}) (${c.qty}x)`).join(', ') + (custCatatan !== '-' ? ` [Note: ${custCatatan}]` : '') + (custWA ? ` [WA: ${custWA}]` : '');
+            const rincianDB = `${custNama} (Kasir: ${userRole}): ` + cart.map(c => `${c.namaAsli} [${c.kategori === 'Bakery & Pastry' ? 'Bakery' : c.size}] (${c.catatanCustom}) (${c.qty}x)`).join(', ') + (custCatatan !== '-' ? ` [Note: ${custCatatan}]` : '') + (custWA ? ` [WA: ${custWA}]` : '');
 
             const detailedItems = cart.map(c => ({
                 id: c.id,
-                qty: c.qty,
+                kategori: c.kategori || '',
+                qty: Number(c.qty) || 1,
                 namaAsli: c.namaAsli.replace(/[^\x00-\x7F]/g, '').trim(),
                 size: c.size,
                 catatanCustom: c.catatanCustom,
@@ -1485,29 +1470,28 @@
                 try {
                     const raw = JSON.parse(t.items_json);
                     if (Array.isArray(raw) && raw.length > 0) {
-                        if (raw[0].namaAsli) {
-                            parsedItems = raw;
-                            if (raw[0].orderId) orderId = raw[0].orderId;
-                            if (raw[0].custNama) custNama = raw[0].custNama;
-                            if (raw[0].custCatatan) custCatatan = raw[0].custCatatan;
-                            if (raw[0].custWA) custWA = raw[0].custWA;
-                            if (raw[0].kasir) kasir = raw[0].kasir;
-                            if (raw[0].subtotal !== undefined) subtotal = raw[0].subtotal;
-                            if (raw[0].diskon !== undefined) diskon = raw[0].diskon;
-                            if (raw[0].uangDiterima !== undefined) uangDiterima = raw[0].uangDiterima;
-                            if (raw[0].kembalian !== undefined) kembalian = raw[0].kembalian;
-                        } else {
-                            parsedItems = raw.map(item => {
-                                const prod = products.find(p => p.id === item.id);
-                                return {
-                                    namaAsli: prod ? prod.nama_produk.replace(/[^\x00-\x7F]/g, '').trim() : 'MENU GOOZY',
-                                    size: 'REG',
-                                    catatanCustom: 'NORMAL ICE, NORMAL SUGAR',
-                                    harga: prod ? prod.harga : Math.round(t.total_harga / (item.qty || 1)),
-                                    qty: item.qty || 1
-                                };
-                            });
-                        }
+                        parsedItems = raw.map(item => {
+                            const prod = products.find(p => p.id === item.id);
+                            const q = Math.max(1, parseInt(item.qty || item.jumlah || 1, 10) || 1);
+                            return {
+                                id: item.id,
+                                kategori: item.kategori || (prod ? prod.kategori : ''),
+                                qty: q,
+                                namaAsli: (item.namaAsli || item.nama || (prod ? prod.nama_produk : 'MENU GOOZY')).replace(/[^\x00-\x7F]/g, '').trim(),
+                                size: item.size || 'REG',
+                                catatanCustom: item.catatanCustom || 'NORMAL ICE, NORMAL SUGAR',
+                                harga: Number(item.harga || (prod ? prod.harga : Math.round(t.total_harga / q)))
+                            };
+                        });
+                        if (raw[0].orderId) orderId = raw[0].orderId;
+                        if (raw[0].custNama) custNama = raw[0].custNama;
+                        if (raw[0].custCatatan) custCatatan = raw[0].custCatatan;
+                        if (raw[0].custWA) custWA = raw[0].custWA;
+                        if (raw[0].kasir) kasir = raw[0].kasir;
+                        if (raw[0].subtotal !== undefined) subtotal = raw[0].subtotal;
+                        if (raw[0].diskon !== undefined) diskon = raw[0].diskon;
+                        if (raw[0].uangDiterima !== undefined) uangDiterima = raw[0].uangDiterima;
+                        if (raw[0].kembalian !== undefined) kembalian = raw[0].kembalian;
                     }
                 } catch (e) {}
             }
@@ -1535,103 +1519,6 @@
             tampilkanModalStruk();
         }
 
-        function renderKasbonList() {
-            const kasbonItems = allTransactions.filter(t => t.metode_bayar === 'Kasbon');
-            const totalPiutang = kasbonItems.reduce((s, t) => s + t.total_harga, 0);
-
-            const badge = document.getElementById('badgeKasbonCount');
-            if (badge) {
-                badge.innerText = kasbonItems.length;
-                badge.classList.toggle('hidden', kasbonItems.length === 0);
-            }
-            const statTotal = document.getElementById('statTotalKasbon');
-            const statCount = document.getElementById('statCountKasbon');
-            if (statTotal) statTotal.innerText = 'Rp ' + totalPiutang.toLocaleString('id-ID');
-            if (statCount) statCount.innerText = `${kasbonItems.length} Transaksi Belum Lunas`;
-
-            const container = document.getElementById('kasbonListContainer');
-            if (!container) return;
-
-            const q = (document.getElementById('kasbonSearch')?.value || '').toLowerCase().trim();
-            const filtered = q ? kasbonItems.filter(t => t.rincian_item.toLowerCase().includes(q)) : kasbonItems;
-
-            if (filtered.length === 0) {
-                container.innerHTML = `<div class="p-6 text-center text-xs text-stone-400">🎉 Tidak ada catatan kasbon yang belum dibayar.</div>`;
-                return;
-            }
-
-            container.innerHTML = filtered.map(t => {
-                const waktu = new Date(t.created_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
-                const waMatch = t.rincian_item.match(/\[WA:\s*([0-9+]+)\]/);
-                const savedWA = waMatch ? waMatch[1] : '';
-                return `
-                    <div class="p-4 rounded-2xl glass-card border-l-4 border-l-red-500 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                        <div class="space-y-1">
-                            <div class="flex items-center gap-2">
-                                <span class="px-2 py-0.5 bg-red-100 text-red-700 font-extrabold text-[10px] rounded-full">BELUM BAYAR</span>
-                                <span class="text-[11px] text-stone-400 font-semibold">${waktu}</span>
-                            </div>
-                            <p class="font-bold text-xs sm:text-sm text-stone-900">${t.rincian_item}</p>
-                            <p class="text-sm font-extrabold text-red-600">Tagihan: Rp ${t.total_harga.toLocaleString('id-ID')}</p>
-                        </div>
-                        <div class="flex flex-wrap gap-1.5 shrink-0 w-full sm:w-auto">
-                            <button onclick="panggilReadyWA(${t.id})" class="flex-1 sm:flex-initial px-3 py-2 bg-peri hover:bg-peri-dark text-white rounded-xl text-xs font-bold transition">
-                                🔔 Ready WA
-                            </button>
-                            <button onclick="cetakUlangTransaksi(${t.id})" class="flex-1 sm:flex-initial px-3 py-2 bg-cream-soft hover:bg-cream text-stone-800 rounded-xl text-xs font-bold transition">
-                                🖨️ Struk
-                            </button>
-                            <button onclick="ingatkanKasbonWA(${t.id}, '${savedWA}')" class="flex-1 sm:flex-initial px-3 py-2 bg-sage-light hover:bg-sage text-sage-text rounded-xl text-xs font-bold transition">
-                                💬 Tagih WA
-                            </button>
-                            <button onclick="lunasiKasbon(${t.id}, 'Tunai')" class="flex-1 sm:flex-initial px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition">
-                                ✅ Lunasi Tunai
-                            </button>
-                            <button onclick="lunasiKasbon(${t.id}, 'QRIS')" class="flex-1 sm:flex-initial px-3 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-bold shadow-sm transition">
-                                ✅ Lunasi QRIS
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        async function lunasiKasbon(id, metodePelunasan) {
-            const trans = allTransactions.find(t => t.id === id);
-            if (!trans) return;
-            if (!confirm(`Tandai kasbon ini sudah LUNAS via ${metodePelunasan}?\n\n${trans.rincian_item}\nNominal: Rp ${trans.total_harga.toLocaleString('id-ID')}`)) return;
-
-            const rincianBaru = trans.rincian_item.includes('[LUNAS') ? trans.rincian_item : `${trans.rincian_item} [LUNAS EX-KASBON]`;
-            const { error } = await db.from('transactions').update({
-                metode_bayar: metodePelunasan,
-                rincian_item: rincianBaru
-            }).eq('id', id);
-
-            if (!error) {
-                alert(`✅ Kasbon berhasil dilunasi via ${metodePelunasan}! Nominal otomatis masuk ke Omzet Kas.`);
-                loadAllData();
-            } else {
-                alert('Gagal melunasi: ' + error.message);
-            }
-        }
-
-        function ingatkanKasbonWA(id, savedWA) {
-            const trans = allTransactions.find(t => t.id === id);
-            if (!trans) return;
-            let no = savedWA || prompt('Masukkan Nomor WhatsApp yang mau diingatkan (08...):');
-            if (!no) return;
-            no = no.replace(/[^0-9]/g, '');
-            if (no.startsWith('0')) no = '62' + no.slice(1);
-
-            const waktu = new Date(trans.created_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
-            let t = `Halo kak! 👋 Sekadar mengingatkan catatan kasbon jajan di *Goozy.co* ya:\n\n`;
-            t += `📅 Waktu Order: ${waktu}\n`;
-            t += `🧾 Rincian: ${trans.rincian_item}\n`;
-            t += `💰 *Total Tagihan: Rp ${trans.total_harga.toLocaleString('id-ID')}*\n\n`;
-            t += `Bisa dibayar tunai di kantin/booth atau via QRIS ya kak. Terima kasih banyak! 🍵☕`;
-            window.open(`https://api.whatsapp.com/send?phone=${no}&text=${encodeURIComponent(t)}`, '_blank');
-        }
-
         function renderCustomerHistory() {
             const container = document.getElementById('customerHistoryList');
             if (customerOrders.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400">Belum ada riwayat order pelanggan.</p>`; return; }
@@ -1645,30 +1532,6 @@
                 const data = grouped[name];
                 return `<div class="p-4 rounded-2xl glass-card space-y-2"><div class="flex justify-between items-center border-b border-cream-border pb-2"><div><h4 class="font-bold text-sm uppercase text-peri">👤 ${name}</h4><p class="text-xs text-stone-600 font-semibold">Order: <b>${data.count}x</b> | Total: Rp ${data.totalSpent.toLocaleString('id-ID')}</p></div><span class="px-2.5 py-1 bg-sage-light text-sage-text text-[10px] font-bold rounded-full">Loyal</span></div><ul class="list-disc pl-4 text-xs space-y-0.5">${data.items.map(i => `<li>${i}</li>`).join('')}</ul></div>`;
             }).join('');
-        }
-
-        function renderBestSeller() {
-            const container = document.getElementById('bestSellerList');
-            const counts = {};
-            allTransactions.forEach(t => {
-                if (t.items_json) {
-                    try {
-                        JSON.parse(t.items_json).forEach(item => {
-                            const prod = products.find(p => p.id === item.id);
-                            const name = prod ? prod.nama_produk : item.namaAsli;
-                            if (name) { counts[name] = (counts[name] || 0) + (item.qty || 1); }
-                        });
-                    } catch(e) {}
-                }
-            });
-            const sorted = Object.keys(counts).sort((a,b) => counts[b] - counts[a]);
-            if (sorted.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400">Belum ada data penjualan.</p>`; return; }
-            container.innerHTML = sorted.map((name, idx) => `
-                <div class="p-3.5 rounded-2xl glass-card flex justify-between items-center text-xs">
-                    <div><span class="font-extrabold text-peri mr-2">#${idx+1}</span><b>${name}</b></div>
-                    <span class="px-3 py-1 bg-peri-light text-peri-dark font-bold rounded-full">Terjual: ${counts[name]} cup</span>
-                </div>
-            `).join('');
         }
 
         function renderAbsensiKaryawan() {
@@ -1760,31 +1623,61 @@
         }
         function isToday(dStr) { const d = new Date(dStr), now = new Date(); return d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); }
 
+        // Hitung jumlah Cup Reg, Cup Large, dan Bakery & Pastry dari daftar transaksi
+        function hitungStatistikProdukTerjual(transList) {
+            let cupReg = 0, cupLarge = 0, bakery = 0;
+            transList.forEach(t => {
+                if (t.items_json) {
+                    try {
+                        const items = JSON.parse(t.items_json);
+                        if (Array.isArray(items)) {
+                            items.forEach(item => {
+                                const q = Math.max(1, parseInt(item.qty || item.jumlah || 1, 10) || 1);
+                                const prod = products.find(p => p.id === item.id);
+                                const kat = (item.kategori || (prod ? prod.kategori : '') || '').toLowerCase();
+                                const isBakery = kat.includes('bakery') || kat.includes('pastry') || (item.catatanCustom || '').toLowerCase().includes('bakery');
+
+                                if (isBakery) {
+                                    bakery += q;
+                                } else {
+                                    const sz = (item.size || 'reg').toLowerCase();
+                                    if (sz === 'large') cupLarge += q;
+                                    else cupReg += q;
+                                }
+                            });
+                        }
+                    } catch (e) {}
+                }
+            });
+            return { cupReg, cupLarge, bakery };
+        }
+
         function renderKeuanganDanRiwayat() {
             const tF = rekapFilter === 'today' ? allTransactions.filter(t => isToday(t.created_at)) : allTransactions;
             const eF = rekapFilter === 'today' ? allExpenses.filter(e => isToday(e.created_at)) : allExpenses;
-            let omzet = 0, tunai = 0, qris = 0, piutang = 0;
+            let omzet = 0, tunai = 0, qris = 0;
             tF.forEach(t => {
-                if (t.metode_bayar === 'Kasbon') {
-                    piutang += t.total_harga;
-                } else {
-                    omzet += t.total_harga;
-                    if (t.metode_bayar === 'Tunai') tunai += t.total_harga;
-                    else qris += t.total_harga;
-                }
+                omzet += t.total_harga;
+                if (t.metode_bayar === 'Tunai') tunai += t.total_harga;
+                else qris += t.total_harga;
             });
             const totalExp = eF.reduce((s, e) => s + e.nominal, 0);
+            const { cupReg, cupLarge, bakery } = hitungStatistikProdukTerjual(tF);
 
             document.getElementById('statOmzet').innerText = 'Rp ' + omzet.toLocaleString('id-ID');
-            document.getElementById('statMetode').innerText = `Tunai: Rp ${tunai.toLocaleString('id-ID')} | QRIS: Rp ${qris.toLocaleString('id-ID')}${piutang > 0 ? ' | Kasbon: Rp ' + piutang.toLocaleString('id-ID') : ''}`;
+            document.getElementById('statMetode').innerText = `Tunai: Rp ${tunai.toLocaleString('id-ID')} | QRIS: Rp ${qris.toLocaleString('id-ID')}`;
             document.getElementById('statPengeluaran').innerText = 'Rp ' + totalExp.toLocaleString('id-ID');
             document.getElementById('statBersih').innerText = 'Rp ' + (omzet - totalExp).toLocaleString('id-ID');
+
+            document.getElementById('statCupReg').innerText = `${cupReg} Cup`;
+            document.getElementById('statCupLarge').innerText = `${cupLarge} Cup`;
+            document.getElementById('statBakery').innerText = `${bakery} Pcs`;
 
             document.getElementById('transaksiList').innerHTML = tF.length === 0 ? '<p class="text-xs text-stone-400 py-2">Kosong</p>' : tF.map(t => `
                 <div class="py-2.5 flex justify-between items-start gap-2 text-xs">
                     <div class="flex-1 min-w-0">
                         <b>${t.rincian_item}</b><br>
-                        <span class="text-stone-400">${new Date(t.created_at).toLocaleString('id-ID')} • <b class="${t.metode_bayar === 'Kasbon' ? 'text-red-600' : 'text-peri'}">${t.metode_bayar}</b> • Rp ${t.total_harga.toLocaleString('id-ID')}</span>
+                        <span class="text-stone-400">${new Date(t.created_at).toLocaleString('id-ID')} • <b class="text-peri">${t.metode_bayar}</b> • Rp ${t.total_harga.toLocaleString('id-ID')}</span>
                     </div>
                     <div class="flex flex-col gap-1 shrink-0">
                         <button onclick="panggilReadyWA(${t.id})" class="text-[10px] bg-peri hover:bg-peri-dark text-white font-bold px-2.5 py-1 rounded-lg transition">🔔 Ready WA</button>
@@ -1819,21 +1712,20 @@
         function kirimRekapShiftWA() {
             const tF = rekapFilter === 'today' ? allTransactions.filter(t => isToday(t.created_at)) : allTransactions;
             const eF = rekapFilter === 'today' ? allExpenses.filter(e => isToday(e.created_at)) : allExpenses;
-            let omzet = 0, tunai = 0, qris = 0, kasbon = 0;
+            let omzet = 0, tunai = 0, qris = 0;
             tF.forEach(t => {
-                if (t.metode_bayar === 'Kasbon') kasbon += t.total_harga;
-                else {
-                    omzet += t.total_harga;
-                    if (t.metode_bayar === 'Tunai') tunai += t.total_harga;
-                    else qris += t.total_harga;
-                }
+                omzet += t.total_harga;
+                if (t.metode_bayar === 'Tunai') tunai += t.total_harga;
+                else qris += t.total_harga;
             });
-            const bersih = omzet - eF.reduce((s, e) => s + e.nominal, 0);
+            const totalExp = eF.reduce((s, e) => s + e.nominal, 0);
+            const bersih = omzet - totalExp;
+            const { cupReg, cupLarge, bakery } = hitungStatistikProdukTerjual(tF);
 
             let noOwner = prompt('Masukkan Nomor WhatsApp Owner (08...):');
             if (!noOwner) return;
             noOwner = noOwner.replace(/[^0-9]/g, ''); if (noOwner.startsWith('0')) noOwner = '62' + noOwner.slice(1);
-            let t = `*REKAP SHIFT GOOZY.CO*\nWaktu: ${new Date().toLocaleString('id-ID')}\nPelapor: ${userRole}\n------------------------\n• Total Omzet Lunas: Rp ${omzet.toLocaleString('id-ID')}\n• Tunai (Laci): Rp ${tunai.toLocaleString('id-ID')}\n• QRIS (Rekening): Rp ${qris.toLocaleString('id-ID')}\n• Piutang Kasbon: Rp ${kasbon.toLocaleString('id-ID')}\n• Pengeluaran/Waste: Rp ${eF.reduce((s, e) => s + e.nominal, 0).toLocaleString('id-ID')}\n------------------------\n*SISA KAS BERSIH: Rp ${bersih.toLocaleString('id-ID')}*\n\nTerima kasih! Laporan shift harian Goozy.co 🚀`;
+            let t = `*REKAP SHIFT GOOZY.CO*\nWaktu: ${new Date().toLocaleString('id-ID')}\nPelapor: ${userRole}\n------------------------\n*PRODUK TERJUAL:*\n• Cup Regular: ${cupReg} cup\n• Cup Large: ${cupLarge} cup\n• Bakery & Pastry: ${bakery} pcs\n------------------------\n*KEUANGAN:*\n• Total Omzet: Rp ${omzet.toLocaleString('id-ID')}\n• Tunai (Laci): Rp ${tunai.toLocaleString('id-ID')}\n• QRIS (Rekening): Rp ${qris.toLocaleString('id-ID')}\n• Pengeluaran/Waste: Rp ${totalExp.toLocaleString('id-ID')}\n------------------------\n*SISA KAS BERSIH: Rp ${bersih.toLocaleString('id-ID')}*\n\nTerima kasih! Laporan shift harian Goozy.co 🚀`;
             window.open(`https://api.whatsapp.com/send?phone=${noOwner}&text=${encodeURIComponent(t)}`, '_blank');
         }
 
@@ -1887,15 +1779,16 @@
             out += formatLine32('Tanggal Transaksi', o.tglStr);
             out += formatLine32('Waktu Transaksi', o.jamStr);
             out += formatLine32('Kasir', (o.kasir || userRole || 'STAFF').toUpperCase());
-            out += formatLine32('Tipe Transaksi', o.metode === 'Kasbon' ? 'KASBON (BELUM BAYAR)' : o.metode.toUpperCase());
+            out += formatLine32('Tipe Transaksi', o.metode.toUpperCase());
             out += SEP;
             out += formatLine32('Pelanggan', o.custNama);
             out += SEP;
             out += BOLD_ON + 'Rincian Transaksi\n' + BOLD_OFF;
 
             o.items.forEach((item, idx) => {
-                const leftItem = `${item.qty} ${(item.namaAsli || 'MENU').toUpperCase()}`;
-                const rightPrice = `Rp${(item.harga * item.qty).toLocaleString('id-ID')}`;
+                const q = Math.max(1, parseInt(item.qty || 1, 10));
+                const leftItem = `${q} ${(item.namaAsli || 'MENU').toUpperCase()}`;
+                const rightPrice = `Rp${(item.harga * q).toLocaleString('id-ID')}`;
                 out += formatLine32(leftItem, rightPrice);
                 const desc = `#${idx + 1} ${(item.size || 'REG').toUpperCase()}, ${(item.catatanCustom || '').toUpperCase()}`;
                 out += formatDescWrap(desc, 3);
@@ -1910,8 +1803,7 @@
             out += formatLine32('Potongan Harga', `Rp${(o.diskon || 0).toLocaleString('id-ID')}`);
             out += formatLine32('Pajak', 'Rp0');
             out += SEP;
-            const labelTotal = o.metode === 'Kasbon' ? 'Total Kasbon' : 'Total Pembayaran';
-            out += BOLD_ON + formatLine32(labelTotal, `Rp${o.total.toLocaleString('id-ID')}`) + BOLD_OFF;
+            out += BOLD_ON + formatLine32('Total Pembayaran', `Rp${o.total.toLocaleString('id-ID')}`) + BOLD_OFF;
             if (o.metode === 'Tunai') {
                 out += formatLine32('Tunai', `Rp${(o.uangDiterima || o.total).toLocaleString('id-ID')}`);
                 out += formatLine32('Kembalian', `Rp${(o.kembalian || 0).toLocaleString('id-ID')}`);
@@ -1921,7 +1813,6 @@
             return out;
         }
 
-        // --- KONEKSI PRINTER BLUETOOTH (DENGAN DUKUNGAN PENUH STIKER TSPL & IPHONE CHUNK 20 BYTE) ---
         async function connectPrinter(type) {
             if (!navigator.bluetooth) {
                 return alert('Browser ini tidak mendukung Web Bluetooth. Di iPhone wajib buka web ini lewat aplikasi "Bluefy" (unduh gratis di App Store). Di Android/Laptop gunakan Google Chrome.');
@@ -1934,25 +1825,35 @@
                         'e7810a71-73ae-499d-8c15-faa9aef0c3f2',
                         '49535343-fe7d-4ae5-8fa9-9fafd205e455',
                         '0000ff00-0000-1000-8000-00805f9b34fb',
-                        '0000ffe0-0000-1000-8000-00805f9b34fb'
+                        '0000ffe0-0000-1000-8000-00805f9b34fb',
+                        '0000ae00-0000-1000-8000-00805f9b34fb'
                     ]
                 });
                 const server = await device.gatt.connect();
-                let writeChar = null;
+                let writeChars = [];
                 const services = await server.getPrimaryServices();
                 for (const s of services) {
                     const chars = await s.getCharacteristics();
                     for (const c of chars) {
                         if (c.properties.writeWithoutResponse || c.properties.write) {
-                            writeChar = c;
-                            break;
+                            writeChars.push(c);
                         }
                     }
-                    if (writeChar) break;
                 }
-                if (!writeChar) return alert('Printer terdeteksi tapi saluran cetak tidak ditemukan. Pastikan printer dalam mode Bluetooth BLE.');
-                btPrinters[type] = { device, characteristic: writeChar };
-                document.getElementById(type === 'receipt' ? 'btnPrinterStruk' : 'btnPrinterLabel').innerHTML = `Terhubung: <span class="text-sage-text font-bold">${device.name || 'Printer'}</span>`;
+                if (writeChars.length === 0) return alert('Printer terdeteksi tapi saluran cetak tidak ditemukan.');
+                
+                btPrinters[type] = { device, characteristic: writeChars[0], allChars: writeChars };
+                const dName = (device.name || 'Printer').toUpperCase();
+                document.getElementById(type === 'receipt' ? 'btnPrinterStruk' : 'btnPrinterLabel').innerHTML = `Terhubung: <span class="text-sage-text font-bold">${dName}</span>`;
+
+                const modeSelect = document.getElementById('labelModeSelect');
+                if (modeSelect) {
+                    if (dName.includes('RPP') || dName.includes('58') || dName.includes('MTP') || dName.includes('BT')) {
+                        modeSelect.value = 'escpos_gap';
+                    } else if (dName.includes('ALGOO') || dName.includes('XP') || dName.includes('LABEL')) {
+                        modeSelect.value = 'tspl';
+                    }
+                }
             } catch (err) {
                 if (err.name === 'NotFoundError') {
                     alert('Batal menyambungkan: Pastikan printer menyala, Bluetooth HP lain sudah diputus dari printer, lalu klik nama printer di daftar pop-up dan tekan Pair.');
@@ -1964,22 +1865,36 @@
 
         async function sendTextToBluetooth(type, textData) {
             const p = btPrinters[type];
-            if (!p || !p.characteristic) return false;
+            if (!p || !p.device) return false;
             try {
+                if (!p.device.gatt.connected) {
+                    const server = await p.device.gatt.connect();
+                    let writeChars = [];
+                    for (const s of await server.getPrimaryServices()) {
+                        for (const c of await s.getCharacteristics()) {
+                            if (c.properties.writeWithoutResponse || c.properties.write) writeChars.push(c);
+                        }
+                    }
+                    if (writeChars.length > 0) p.characteristic = writeChars[0];
+                }
+
+                const char = p.characteristic;
+                if (!char) return false;
+
                 const bytes = new TextEncoder().encode(textData);
                 const chunkSize = 20;
                 for (let i = 0; i < bytes.length; i += chunkSize) {
                     const slice = bytes.slice(i, i + chunkSize);
-                    if (p.characteristic.properties.writeWithoutResponse) {
-                        await p.characteristic.writeValueWithoutResponse(slice);
+                    if (char.properties.writeWithoutResponse) {
+                        await char.writeValueWithoutResponse(slice);
                     } else {
-                        await p.characteristic.writeValue(slice);
+                        await char.writeValue(slice);
                     }
-                    await new Promise(r => setTimeout(r, 15));
+                    await new Promise(r => setTimeout(r, 18));
                 }
                 return true;
             } catch (e) {
-                alert('Koneksi printer terputus saat mencetak. Silakan klik tombol sambungkan printer lagi.');
+                console.error('BT Print Error:', e);
                 return false;
             }
         }
@@ -1993,10 +1908,25 @@
 
         async function cetakStruk() {
             const o = lastOrder;
-            const rawEscPos = buildFormattedReceipt(o, true);
-            if (await sendTextToBluetooth('receipt', rawEscPos)) return;
-            if (await sendTextToBluetooth('label', rawEscPos)) return;
+            if (!o) return;
+            const btn = document.getElementById('btnModalCetakStruk');
+            if (btn) btn.innerText = '⏳ Mencetak Struk...';
 
+            const rawEscPos = buildFormattedReceipt(o, true);
+            const okReceipt = await sendTextToBluetooth('receipt', rawEscPos);
+            if (okReceipt) {
+                if (btn) btn.innerText = '✅ Struk Tercetak!';
+                setTimeout(() => { if (btn) btn.innerText = '🖨️ Cetak Struk'; }, 1500);
+                return;
+            }
+            const okLabel = await sendTextToBluetooth('label', rawEscPos);
+            if (okLabel) {
+                if (btn) btn.innerText = '✅ Struk Tercetak!';
+                setTimeout(() => { if (btn) btn.innerText = '🖨️ Cetak Struk'; }, 1500);
+                return;
+            }
+
+            if (btn) btn.innerText = '🖨️ Cetak Struk';
             const plainReceipt = buildFormattedReceipt(o, false);
             const printArea = document.getElementById('printArea');
             printArea.classList.remove('hidden');
@@ -2007,14 +1937,24 @@
 
         async function cetakLabelCup() {
             const o = lastOrder;
-            if (!o) return;
+            if (!o) return alert('Data pesanan kosong.');
+
+            const btn = document.getElementById('btnModalCetakLabel');
+            if (btn) btn.innerText = '⏳ Mengirim ke Printer...';
+
             let labels = [];
-            o.items.forEach(i => { for (let k = 0; k < i.qty; k++) labels.push(i); });
+            (o.items || []).forEach(i => {
+                const count = Math.max(1, parseInt(i.qty || 1, 10) || 1);
+                for (let k = 0; k < count; k++) labels.push(i);
+            });
+            if (labels.length === 0) {
+                labels.push({ namaAsli: 'PESANAN GOOZY', size: 'REG', catatanCustom: '-' });
+            }
 
-            const modeTSPL = confirm('Klik OK jika memakai Kertas Stiker Label (Algoo / Gap).\nKlik Cancel jika memakai kertas struk biasa.');
-
+            const mode = document.getElementById('labelModeSelect')?.value || 'escpos_gap';
             let payload = '';
-            if (modeTSPL) {
+
+            if (mode === 'tspl') {
                 labels.forEach((item, idx) => {
                     const cleanMenu = (item.namaAsli || 'MENU').replace(/"/g, '');
                     const cleanCust = (o.custNama || 'Pelanggan').replace(/"/g, '').slice(0, 18);
@@ -2026,29 +1966,62 @@
                     payload += `TEXT 15,15,"2",0,1,1,"GOOZY.CO (${idx + 1}/${labels.length})"\r\n`;
                     payload += `TEXT 15,42,"2",0,1,1,"${cleanCust}"\r\n`;
                     payload += `BAR 15,66,280,2\r\n`;
-                    payload += `TEXT 15,78,"2",0,1,1,"${cleanMenu} [${item.size}]"\r\n`;
+                    payload += `TEXT 15,78,"2",0,1,1,"${cleanMenu} [${item.size || 'REG'}]"\r\n`;
                     payload += `TEXT 15,105,"1",0,1,1,"${cleanCustom.slice(0, 28)}"\r\n`;
                     if (cleanCustom.length > 28) {
                         payload += `TEXT 15,125,"1",0,1,1,"${cleanCustom.slice(28, 56)}"\r\n`;
                     }
-                    payload += `TEXT 15,155,"1",0,1,1,"${o.jamStr}"\r\n`;
+                    payload += `TEXT 15,155,"1",0,1,1,"${o.jamStr || ''}"\r\n`;
                     payload += `PRINT 1,1\r\n`;
                 });
             } else {
-                payload = `\x1B\x40`;
+                const INIT = '\x1B\x40';
+                const BOLD_ON = '\x1B\x45\x01';
+                const BOLD_OFF = '\x1B\x45\x00';
+                const CUT_OR_GAP = '\x1D\x56\x42\x00';
+
+                payload = INIT;
                 labels.forEach((item, idx) => {
-                    payload += formatLine32('GOOZY.CO', `Cup ${idx + 1}/${labels.length}`);
-                    payload += `${o.custNama}\n--------------------------------\n`;
-                    payload += `${item.namaAsli} (${item.size})\n`;
-                    payload += `* ${item.catatanCustom}\n`;
-                    if (o.custCatatan !== '-') payload += `Note: ${o.custCatatan}\n`;
-                    payload += `${o.waktu}\n\n\n`;
+                    payload += BOLD_ON + formatLine32('GOOZY.CO', `Cup ${idx + 1}/${labels.length}`) + BOLD_OFF;
+                    payload += `${(o.custNama || 'Pelanggan').toUpperCase()}\n`;
+                    payload += `--------------------------------\n`;
+                    payload += BOLD_ON + `${(item.namaAsli || 'MENU').toUpperCase()} (${(item.size || 'REG').toUpperCase()})\n` + BOLD_OFF;
+                    payload += `* ${(item.catatanCustom || '').toUpperCase()}\n`;
+                    if (o.custCatatan && o.custCatatan !== '-') payload += `Note: ${o.custCatatan}\n`;
+                    payload += `${o.jamStr || o.waktu || ''}\n\n\n`;
+                    payload += CUT_OR_GAP;
                 });
             }
 
-            if (await sendTextToBluetooth('label', payload)) return;
-            if (await sendTextToBluetooth('receipt', payload)) return;
+            const sentLabel = await sendTextToBluetooth('label', payload);
+            if (sentLabel) {
+                if (btn) btn.innerText = '✅ Stiker Tercetak!';
+                setTimeout(() => { if (btn) btn.innerText = '🏷️ Cetak Stiker Cup'; }, 1500);
+                return;
+            }
+
+            const sentReceipt = await sendTextToBluetooth('receipt', payload);
+            if (sentReceipt) {
+                if (btn) btn.innerText = '✅ Stiker Tercetak!';
+                setTimeout(() => { if (btn) btn.innerText = '🏷️ Cetak Stiker Cup'; }, 1500);
+                return;
+            }
+
+            if (btn) btn.innerText = '🏷️ Cetak Stiker Cup';
+            const printArea = document.getElementById('printArea');
+            printArea.classList.remove('hidden');
+            printArea.innerHTML = labels.map((item, idx) => `
+                <div class="page-break" style="font-family:monospace; font-size:11px; line-height:1.25;">
+                    <b>GOOZY.CO (Cup ${idx + 1}/${labels.length})</b><br>
+                    Pelanggan: ${o.custNama}<br>
+                    --------------------------------<br>
+                    <b>${item.namaAsli} (${item.size || 'REG'})</b><br>
+                    * ${item.catatanCustom}<br>
+                    ${o.jamStr || o.waktu || ''}
+                </div>
+            `).join('');
             window.print();
+            printArea.classList.add('hidden');
         }
 
         function kirimStrukWA() {
@@ -2060,7 +2033,7 @@
         }
 
         function renderStok() {
-            document.getElementById('stokList').innerHTML = products.map(p => `<div class="py-3 flex justify-between items-center text-xs"><div><b>${p.nama_produk}</b> (${p.kategori})<br><span class="text-peri font-semibold">Reg: Rp ${p.harga.toLocaleString('id-ID')} | Large: Rp ${(p.harga+5000).toLocaleString('id-ID')}</span></div><button onclick="hapusProduk(${p.id})" class="text-red-500 font-bold bg-red-50 px-3 py-1.5 rounded-xl">Hapus</button></div>`).join('');
+            document.getElementById('stokList').innerHTML = products.map(p => `<div class="py-3 flex justify-between items-center text-xs"><div><b>${p.nama_produk}</b> (${p.kategori})<br><span class="text-peri font-semibold">${p.kategori === 'Bakery & Pastry' ? 'Rp ' + p.harga.toLocaleString('id-ID') : 'Reg: Rp ' + p.harga.toLocaleString('id-ID') + ' | Large: Rp ' + (p.harga+5000).toLocaleString('id-ID')}</span></div><button onclick="hapusProduk(${p.id})" class="text-red-500 font-bold bg-red-50 px-3 py-1.5 rounded-xl">Hapus</button></div>`).join('');
         }
         async function tambahProduk(e) { e.preventDefault(); await db.from('products').insert([{ nama_produk: document.getElementById('prodNama').value, kategori: document.getElementById('prodKategori').value, harga: parseInt(document.getElementById('prodHarga').value), stok: 999 }]); e.target.reset(); loadAllData(); }
         async function hapusProduk(id) { await db.from('products').delete().eq('id', id); loadAllData(); }
