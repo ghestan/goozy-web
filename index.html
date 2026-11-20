@@ -92,6 +92,11 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-peri selection:text-white">
 
+    <!-- Notifikasi Melayang (Toast) untuk Mode Kantin -->
+    <div id="quickToast" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-stone-900 text-white px-5 py-2.5 rounded-full text-xs font-bold shadow-xl border border-white/20 flex items-center gap-2 transition-all">
+        <span id="quickToastText">✅ Tercetak!</span>
+    </div>
+
     <!-- Navbar Editorial Style -->
     <nav class="glass-nav px-4 sm:px-6 py-3.5 flex justify-between items-center sticky top-0 z-30">
         <div class="flex items-center gap-2.5">
@@ -226,7 +231,7 @@
         </div>
 
         <!-- Tab Navigation -->
-        <div class="flex gap-2 mb-6 p-1.5 glass-panel rounded-2xl overflow-x-auto w-fit max-w-full">
+        <div class="flex gap-2 mb-5 p-1.5 glass-panel rounded-2xl overflow-x-auto w-fit max-w-full">
             <button onclick="switchTab('pos')" id="tab-pos" class="px-4 py-2 rounded-xl text-xs font-bold bg-peri text-white shadow-sm shrink-0 transition">🛒 Kasir (POS)</button>
             <button onclick="switchTab('pelanggan')" id="tab-pelanggan" class="px-4 py-2 rounded-xl text-xs font-bold text-stone-700 hover:bg-cream shrink-0 transition">👥 Loyalitas Pelanggan</button>
             <button onclick="switchTab('stok')" id="tab-stok" class="owner-only px-4 py-2 rounded-xl text-xs font-bold text-stone-700 hover:bg-cream shrink-0 transition">📋 Daftar Menu</button>
@@ -236,15 +241,30 @@
         </div>
 
         <!-- 1. TAB KASIR -->
-        <div id="content-pos" class="space-y-6">
+        <div id="content-pos" class="space-y-5">
+            <!-- SAKELAR 2 MODE KASIR (MODE KANTIN 1-KLIK vs MODE NORMAL/EVENT) -->
+            <div class="glass-panel p-3 rounded-2xl flex flex-wrap items-center justify-between gap-3">
+                <div class="flex gap-2 w-full sm:w-auto">
+                    <button onclick="setPosMode('kantin')" id="btnModeKantin" class="flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-extrabold transition bg-white text-stone-600 border border-cream-border">
+                        ⚡ Mode Kantin (1-Klik Auto Print)
+                    </button>
+                    <button onclick="setPosMode('normal')" id="btnModeNormal" class="flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-extrabold transition bg-peri text-white shadow-sm">
+                        📝 Mode Normal (Event / Custom)
+                    </button>
+                </div>
+                <p id="posModeDesc" class="text-[11px] font-semibold text-stone-600 px-1">
+                    Mode Normal aktif: Bisa atur custom es/gula, isi nama, WA, dan keranjang.
+                </p>
+            </div>
+
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2">
+                <div id="posGridWrapper" class="lg:col-span-2">
                     <div class="flex gap-2 mb-3">
                         <div class="relative flex-1">
                             <input type="text" id="posSearchInput" oninput="renderPOS()" placeholder="🔍 Cari nama minuman / menu..." class="w-full pl-3.5 pr-8 py-2.5 rounded-2xl text-xs font-semibold glass-input">
                             <button onclick="resetSearchPOS()" id="btnClearSearch" class="hidden absolute right-2.5 top-2.5 text-stone-400 hover:text-stone-700 text-xs font-bold">✕</button>
                         </div>
-                        <button onclick="scrollToCartSection()" class="lg:hidden bg-peri text-white px-3.5 py-2.5 rounded-2xl text-xs font-bold flex items-center gap-1.5 shadow-sm shrink-0">
+                        <button id="btnScrollCart" onclick="scrollToCartSection()" class="lg:hidden bg-peri text-white px-3.5 py-2.5 rounded-2xl text-xs font-bold flex items-center gap-1.5 shadow-sm shrink-0">
                             ⬇️ Ke Struk
                         </button>
                     </div>
@@ -253,7 +273,7 @@
                     <div id="posMenuGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
                 </div>
 
-                <!-- Panel Keranjang Kasir -->
+                <!-- Panel Keranjang Kasir (Otomatis sembunyi saat Mode Kantin agar menu lebih lebar) -->
                 <div id="cartSection" class="glass-panel p-5 rounded-3xl h-fit lg:sticky lg:top-20 scroll-mt-20">
                     <div class="flex justify-between items-center border-b border-cream-border pb-3 mb-3 gap-2">
                         <div>
@@ -301,7 +321,7 @@
                             </div>
                         </div>
 
-                        <div id="cashCalculator" class="hidden bg-white p-3 rounded-2xl border border-cream-border space-y-2">
+                        <div id="cashCalculator" class="bg-white p-3 rounded-2xl border border-cream-border space-y-2">
                             <div class="flex justify-between items-center">
                                 <label class="text-[11px] font-bold text-stone-700">Uang Tunai Diterima</label>
                                 <button type="button" onclick="setUangCepat('pas')" class="text-[10px] bg-sage-light text-sage-text px-2.5 py-0.5 rounded-full font-bold">Uang Pas</button>
@@ -336,8 +356,8 @@
             <div class="glass-panel p-5 rounded-3xl">
                 <div class="flex justify-between items-center mb-3">
                     <div>
-                        <h3 class="font-extrabold text-sm text-peri">🔔 Antrean Pesanan Terbaru (Panggil Ready via WA)</h3>
-                        <p class="text-[11px] text-stone-500">Klik <b>🔔 Panggil Ready WA</b> begitu minuman selesai dibuat barista agar pelanggan langsung mengambil ke booth.</p>
+                        <h3 class="font-extrabold text-sm text-peri">🔔 Antrean Pesanan Terbaru (Panggil Ready / Cetak Ulang)</h3>
+                        <p class="text-[11px] text-stone-500">Klik <b>🔔 Panggil Ready WA</b> untuk event, atau <b>🖨️ Struk & Stiker</b> untuk cetak ulang.</p>
                     </div>
                 </div>
                 <div id="posRecentOrders" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
@@ -516,7 +536,7 @@
         </div>
     </main>
 
-    <!-- TOMBOL FLOATING SCROLL KE BAWAH / KERANJANG (KHUSUS LAYAR HP) -->
+    <!-- TOMBOL FLOATING SCROLL KE BAWAH / KERANJANG (KHUSUS LAYAR HP & MODE NORMAL) -->
     <button id="floatingCartBtn" onclick="scrollToCartSection()" class="hidden lg:hidden fixed bottom-5 right-5 z-40 bg-peri text-white px-4 py-3 rounded-2xl shadow-xl border border-white/30 flex items-center gap-3">
         <div class="text-left">
             <p class="text-[10px] text-sage-light font-bold uppercase tracking-wider">Lihat Struk / Checkout</p>
@@ -741,10 +761,53 @@
 
         let userRole = null, products = [], ingredients = [], recipes = [], allTransactions = [], allExpenses = [], employees = [], attendances = [], customerOrders = [];
         let cart = [], activeCategory = 'Semua', rekapFilter = 'today', lastOrder = null;
+        let posMode = 'normal'; // 'kantin' atau 'normal'
+        let toastTimer = null;
         let selectedMenuForCustom = null, selectedCustomSize = 'Reg', modalCustomQty = 1;
         let btPrinters = { receipt: { device: null, characteristic: null }, label: { device: null, characteristic: null } };
 
         window.addEventListener('DOMContentLoaded', loadPublicCatalog);
+
+        function showQuickToast(msg) {
+            const toast = document.getElementById('quickToast');
+            const text = document.getElementById('quickToastText');
+            if (!toast || !text) return;
+            text.innerText = msg;
+            toast.classList.remove('hidden');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.add('hidden'), 2200);
+        }
+
+        function setPosMode(mode) {
+            posMode = mode;
+            const btnKantin = document.getElementById('btnModeKantin');
+            const btnNormal = document.getElementById('btnModeNormal');
+            const desc = document.getElementById('posModeDesc');
+            const cartSec = document.getElementById('cartSection');
+            const gridWrap = document.getElementById('posGridWrapper');
+            const btnScroll = document.getElementById('btnScrollCart');
+            const floatBtn = document.getElementById('floatingCartBtn');
+
+            if (mode === 'kantin') {
+                btnKantin.className = 'flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-extrabold transition bg-sage text-sage-text shadow-sm border border-sage-dark';
+                btnNormal.className = 'flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-extrabold transition bg-white text-stone-600 border border-cream-border';
+                desc.innerText = '⚡ Mode Kantin aktif: 1-Klik menu langsung catat Tunai & otomatis cetak stiker!';
+                cartSec.classList.add('hidden');
+                gridWrap.classList.remove('lg:col-span-2');
+                gridWrap.classList.add('lg:col-span-3');
+                if (btnScroll) btnScroll.classList.add('hidden');
+                if (floatBtn) floatBtn.classList.add('hidden');
+            } else {
+                btnNormal.className = 'flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-extrabold transition bg-peri text-white shadow-sm';
+                btnKantin.className = 'flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-extrabold transition bg-white text-stone-600 border border-cream-border';
+                desc.innerText = '📝 Mode Normal aktif: Bisa atur custom es/gula, isi nama, WA, dan keranjang.';
+                cartSec.classList.remove('hidden');
+                gridWrap.classList.remove('lg:col-span-3');
+                gridWrap.classList.add('lg:col-span-2');
+                if (btnScroll) btnScroll.classList.remove('hidden');
+            }
+            renderPOS();
+        }
 
         function deduplicateProducts(rawList) {
             const seen = new Set();
@@ -929,6 +992,93 @@
                 totalHPP += pakai * Number(b.harga_satuan || 0);
             }
             return Math.round(totalHPP);
+        }
+
+        // --- MODE KANTIN: 1-KLIK LANGSUNG CATAT TUNAI & AUTO PRINT STIKER ---
+        async function quickOrderKantin(productId, size = 'Reg') {
+            const p = products.find(x => x.id === productId);
+            if (!p) return;
+
+            const isBakery = p.kategori === 'Bakery & Pastry';
+            const finalSize = isBakery ? 'Reg' : size;
+            const harga = p.harga + (finalSize === 'Large' && !isBakery ? 5000 : 0);
+            const catatanCustom = isBakery ? 'Bakery & Pastry' : 'Normal Ice, Normal Sugar';
+
+            const now = new Date();
+            const bulanIndo = ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES'];
+            const tglStr = `${now.getDate()} ${bulanIndo[now.getMonth()]} ${now.getFullYear()}`;
+            const jamStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+            const waktu = now.toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' });
+            const orderId = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}${String(allTransactions.length + 1).padStart(4,'0')}`;
+
+            const rincianDB = `Kantin (Kasir: ${userRole}): ${p.nama_produk} [${isBakery ? 'Bakery' : finalSize}] (${catatanCustom}) (1x)`;
+            const detailedItems = [{
+                id: p.id,
+                kategori: p.kategori || '',
+                qty: 1,
+                namaAsli: p.nama_produk.replace(/[^\x00-\x7F]/g, '').trim(),
+                size: finalSize,
+                catatanCustom,
+                harga,
+                orderId,
+                custNama: 'Kantin',
+                custCatatan: '-',
+                custWA: '',
+                kasir: (userRole || 'STAFF').toUpperCase(),
+                subtotal: harga,
+                diskon: 0,
+                uangDiterima: harga,
+                kembalian: 0
+            }];
+
+            lastOrder = {
+                orderId, tglStr, jamStr, waktu,
+                custNama: 'Kantin',
+                custCatatan: '-',
+                custWA: '',
+                kasir: (userRole || 'STAFF').toUpperCase(),
+                metode: 'Tunai',
+                subtotal: harga,
+                diskon: 0,
+                total: harga,
+                uangDiterima: harga,
+                kembalian: 0,
+                items: detailedItems
+            };
+
+            showQuickToast(`⚡ Mencetak: ${p.nama_produk} (${isBakery ? 'Bakery' : finalSize})...`);
+
+            // 1. Langsung kirim cetak stiker ke Bluetooth tanpa menunggu database
+            const printed = await cetakLabelCupDirect(lastOrder);
+            if (printed) {
+                showQuickToast(`✅ Stiker Tercetak: ${p.nama_produk} (${isBakery ? 'Bakery' : finalSize})`);
+            } else {
+                showQuickToast(`✅ Tercatat! (Printer stiker belum terhubung)`);
+            }
+
+            // 2. Simpan ke Supabase & potong stok di latar belakang
+            try {
+                await db.from('transactions').insert([{ rincian_item: rincianDB, total_harga: harga, metode_bayar: 'Tunai', items_json: JSON.stringify(detailedItems) }]);
+                const menuRecipes = recipes.filter(r => r.product_id === p.id);
+                for (const r of menuRecipes) {
+                    const b = ingredients.find(i => i.id === r.ingredient_id);
+                    if (!b) continue;
+                    if (finalSize === 'Large' && b.nama_bahan.toLowerCase().includes('cup regular')) {
+                        const cupLarge = ingredients.find(x => x.nama_bahan.toLowerCase().includes('cup large'));
+                        if (cupLarge) {
+                            await db.from('ingredients').update({ stok_bahan: Math.max(0, Number(cupLarge.stok_bahan) - 1) }).eq('id', cupLarge.id);
+                            continue;
+                        }
+                    }
+                    let pakaiPerCup = Number(r.jumlah_pakai);
+                    if (finalSize === 'Large') pakaiPerCup += getExtraDoseForLarge(b.nama_bahan);
+                    const sisaStok = Math.max(0, Number((Number(b.stok_bahan) - pakaiPerCup).toFixed(2)));
+                    await db.from('ingredients').update({ stok_bahan: sisaStok }).eq('id', b.id);
+                }
+                loadAllData();
+            } catch (e) {
+                console.error('Quick order DB error:', e);
+            }
         }
 
         function panggilReadyWA(id) {
@@ -1117,9 +1267,38 @@
                 filtered = filtered.filter(p => p.nama_produk.toLowerCase().includes(keyword) || p.kategori.toLowerCase().includes(keyword));
             }
 
-            document.getElementById('posMenuGrid').innerHTML = filtered.length === 0 ? `<p class="text-xs text-stone-400 col-span-full py-4 text-center">Menu tidak ditemukan.</p>` : filtered.map(p => {
+            const grid = document.getElementById('posMenuGrid');
+            grid.className = posMode === 'kantin'
+                ? 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3'
+                : 'grid grid-cols-2 sm:grid-cols-3 gap-3';
+
+            grid.innerHTML = filtered.length === 0 ? `<p class="text-xs text-stone-400 col-span-full py-4 text-center">Menu tidak ditemukan.</p>` : filtered.map(p => {
                 const sisa = hitungStokPorsi(p.id), habis = sisa !== null && sisa <= 0;
                 const isBakery = p.kategori === 'Bakery & Pastry';
+
+                if (posMode === 'kantin') {
+                    return `
+                        <div class="p-3.5 rounded-2xl glass-card text-left flex flex-col justify-between border-2 border-sage/60 ${habis ? 'opacity-40 pointer-events-none' : ''}">
+                            <div>
+                                <div class="flex justify-between items-center gap-1">
+                                    <span class="text-[9px] font-bold px-2 py-0.5 bg-cream-soft rounded-full text-stone-600 truncate">${p.kategori}</span>
+                                    <span class="text-[9px] font-bold ${sisa !== null && sisa <= 5 ? 'text-red-600' : 'text-sage-text'}">${sisa === null ? 'Ready' : 'Stok:' + sisa}</span>
+                                </div>
+                                <h4 class="font-extrabold text-sm mt-1.5 text-stone-900 leading-snug">${p.nama_produk}</h4>
+                            </div>
+                            <div class="mt-3 pt-2 border-t border-cream-border flex gap-1.5">
+                                <button onclick="quickOrderKantin(${p.id}, 'Reg')" class="flex-1 bg-peri hover:bg-peri-dark active:scale-95 text-white font-extrabold text-[11px] py-2 rounded-xl transition shadow-sm">
+                                    ⚡ ${isBakery ? (p.harga/1000) + 'K' : 'Reg ' + (p.harga/1000) + 'K'}
+                                </button>
+                                ${isBakery ? '' : `
+                                <button onclick="quickOrderKantin(${p.id}, 'Large')" class="flex-1 bg-sage hover:bg-sage-dark active:scale-95 text-sage-text font-extrabold text-[11px] py-2 rounded-xl transition shadow-sm">
+                                    ⚡ Lrg ${(p.harga+5000)/1000}K
+                                </button>`}
+                            </div>
+                        </div>
+                    `;
+                }
+
                 return `
                     <button onclick="bukaModalCustom(${p.id})" ${habis ? 'disabled' : ''} class="p-3.5 rounded-2xl glass-card text-left flex flex-col justify-between ${habis ? 'opacity-40 cursor-not-allowed' : ''}">
                         <div>
@@ -1268,7 +1447,7 @@
                 return;
             }
 
-            if (floatBtn && userRole) {
+            if (floatBtn && userRole && posMode === 'normal') {
                 floatBtn.classList.remove('hidden');
                 floatText.innerText = `${totalQty} Pcs • Rp ${grandTotal.toLocaleString('id-ID')}`;
             }
@@ -1308,7 +1487,14 @@
             el.innerText = terima === 0 ? 'Rp 0' : (kembali < 0 ? 'Kurang Rp ' + Math.abs(kembali).toLocaleString('id-ID') : 'Rp ' + kembali.toLocaleString('id-ID'));
             el.className = terima === 0 ? 'text-stone-400' : (kembali < 0 ? 'text-red-600 font-bold' : 'text-sage-text font-bold');
         }
-        function clearCart() { cart = []; ['custNama', 'custCatatan', 'custWA', 'uangDiterima'].forEach(id => document.getElementById(id).value = ''); document.getElementById('inputDiskon').value = '0'; renderCart(); }
+        function clearCart() {
+            cart = [];
+            ['custNama', 'custCatatan', 'custWA', 'uangDiterima'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('inputDiskon').value = '0';
+            document.getElementById('metodeBayar').value = 'Tunai';
+            toggleCashSection();
+            renderCart();
+        }
 
         async function prosesBayar() {
             if (cart.length === 0) return alert('Pilih menu dulu!');
@@ -1623,7 +1809,6 @@
         }
         function isToday(dStr) { const d = new Date(dStr), now = new Date(); return d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); }
 
-        // Hitung jumlah Cup Reg, Cup Large, dan Bakery & Pastry dari daftar transaksi
         function hitungStatistikProdukTerjual(transList) {
             let cupReg = 0, cupLarge = 0, bakery = 0;
             transList.forEach(t => {
@@ -1813,6 +1998,67 @@
             return out;
         }
 
+        function buildLabelPayload(o) {
+            let labels = [];
+            (o.items || []).forEach(i => {
+                const count = Math.max(1, parseInt(i.qty || 1, 10) || 1);
+                for (let k = 0; k < count; k++) labels.push(i);
+            });
+            if (labels.length === 0) {
+                labels.push({ namaAsli: 'PESANAN GOOZY', size: 'REG', catatanCustom: '-' });
+            }
+
+            const mode = document.getElementById('labelModeSelect')?.value || 'escpos_gap';
+            let payload = '';
+
+            if (mode === 'tspl') {
+                labels.forEach((item, idx) => {
+                    const cleanMenu = (item.namaAsli || 'MENU').replace(/"/g, '');
+                    const cleanCust = (o.custNama || 'Pelanggan').replace(/"/g, '').slice(0, 18);
+                    const cleanCustom = (item.catatanCustom || '').replace(/"/g, '');
+                    payload += `SIZE 40 mm,30 mm\r\n`;
+                    payload += `GAP 2 mm,0 mm\r\n`;
+                    payload += `DIRECTION 1\r\n`;
+                    payload += `CLS\r\n`;
+                    payload += `TEXT 15,15,"2",0,1,1,"GOOZY.CO (${idx + 1}/${labels.length})"\r\n`;
+                    payload += `TEXT 15,42,"2",0,1,1,"${cleanCust}"\r\n`;
+                    payload += `BAR 15,66,280,2\r\n`;
+                    payload += `TEXT 15,78,"2",0,1,1,"${cleanMenu} [${item.size || 'REG'}]"\r\n`;
+                    payload += `TEXT 15,105,"1",0,1,1,"${cleanCustom.slice(0, 28)}"\r\n`;
+                    if (cleanCustom.length > 28) {
+                        payload += `TEXT 15,125,"1",0,1,1,"${cleanCustom.slice(28, 56)}"\r\n`;
+                    }
+                    payload += `TEXT 15,155,"1",0,1,1,"${o.jamStr || ''}"\r\n`;
+                    payload += `PRINT 1,1\r\n`;
+                });
+            } else {
+                const INIT = '\x1B\x40';
+                const BOLD_ON = '\x1B\x45\x01';
+                const BOLD_OFF = '\x1B\x45\x00';
+                const CUT_OR_GAP = '\x1D\x56\x42\x00';
+
+                payload = INIT;
+                labels.forEach((item, idx) => {
+                    payload += BOLD_ON + formatLine32('GOOZY.CO', `Cup ${idx + 1}/${labels.length}`) + BOLD_OFF;
+                    payload += `${(o.custNama || 'Pelanggan').toUpperCase()}\n`;
+                    payload += `--------------------------------\n`;
+                    payload += BOLD_ON + `${(item.namaAsli || 'MENU').toUpperCase()} (${(item.size || 'REG').toUpperCase()})\n` + BOLD_OFF;
+                    payload += `* ${(item.catatanCustom || '').toUpperCase()}\n`;
+                    if (o.custCatatan && o.custCatatan !== '-') payload += `Note: ${o.custCatatan}\n`;
+                    payload += `${o.jamStr || o.waktu || ''}\n\n\n`;
+                    payload += CUT_OR_GAP;
+                });
+            }
+            return { payload, labels };
+        }
+
+        async function cetakLabelCupDirect(o) {
+            const { payload } = buildLabelPayload(o);
+            if (await sendTextToBluetooth('label', payload)) return true;
+            if (await sendTextToBluetooth('receipt', payload)) return true;
+            return false;
+        }
+
         async function connectPrinter(type) {
             if (!navigator.bluetooth) {
                 return alert('Browser ini tidak mendukung Web Bluetooth. Di iPhone wajib buka web ini lewat aplikasi "Bluefy" (unduh gratis di App Store). Di Android/Laptop gunakan Google Chrome.');
@@ -1942,56 +2188,7 @@
             const btn = document.getElementById('btnModalCetakLabel');
             if (btn) btn.innerText = '⏳ Mengirim ke Printer...';
 
-            let labels = [];
-            (o.items || []).forEach(i => {
-                const count = Math.max(1, parseInt(i.qty || 1, 10) || 1);
-                for (let k = 0; k < count; k++) labels.push(i);
-            });
-            if (labels.length === 0) {
-                labels.push({ namaAsli: 'PESANAN GOOZY', size: 'REG', catatanCustom: '-' });
-            }
-
-            const mode = document.getElementById('labelModeSelect')?.value || 'escpos_gap';
-            let payload = '';
-
-            if (mode === 'tspl') {
-                labels.forEach((item, idx) => {
-                    const cleanMenu = (item.namaAsli || 'MENU').replace(/"/g, '');
-                    const cleanCust = (o.custNama || 'Pelanggan').replace(/"/g, '').slice(0, 18);
-                    const cleanCustom = (item.catatanCustom || '').replace(/"/g, '');
-                    payload += `SIZE 40 mm,30 mm\r\n`;
-                    payload += `GAP 2 mm,0 mm\r\n`;
-                    payload += `DIRECTION 1\r\n`;
-                    payload += `CLS\r\n`;
-                    payload += `TEXT 15,15,"2",0,1,1,"GOOZY.CO (${idx + 1}/${labels.length})"\r\n`;
-                    payload += `TEXT 15,42,"2",0,1,1,"${cleanCust}"\r\n`;
-                    payload += `BAR 15,66,280,2\r\n`;
-                    payload += `TEXT 15,78,"2",0,1,1,"${cleanMenu} [${item.size || 'REG'}]"\r\n`;
-                    payload += `TEXT 15,105,"1",0,1,1,"${cleanCustom.slice(0, 28)}"\r\n`;
-                    if (cleanCustom.length > 28) {
-                        payload += `TEXT 15,125,"1",0,1,1,"${cleanCustom.slice(28, 56)}"\r\n`;
-                    }
-                    payload += `TEXT 15,155,"1",0,1,1,"${o.jamStr || ''}"\r\n`;
-                    payload += `PRINT 1,1\r\n`;
-                });
-            } else {
-                const INIT = '\x1B\x40';
-                const BOLD_ON = '\x1B\x45\x01';
-                const BOLD_OFF = '\x1B\x45\x00';
-                const CUT_OR_GAP = '\x1D\x56\x42\x00';
-
-                payload = INIT;
-                labels.forEach((item, idx) => {
-                    payload += BOLD_ON + formatLine32('GOOZY.CO', `Cup ${idx + 1}/${labels.length}`) + BOLD_OFF;
-                    payload += `${(o.custNama || 'Pelanggan').toUpperCase()}\n`;
-                    payload += `--------------------------------\n`;
-                    payload += BOLD_ON + `${(item.namaAsli || 'MENU').toUpperCase()} (${(item.size || 'REG').toUpperCase()})\n` + BOLD_OFF;
-                    payload += `* ${(item.catatanCustom || '').toUpperCase()}\n`;
-                    if (o.custCatatan && o.custCatatan !== '-') payload += `Note: ${o.custCatatan}\n`;
-                    payload += `${o.jamStr || o.waktu || ''}\n\n\n`;
-                    payload += CUT_OR_GAP;
-                });
-            }
+            const { payload, labels } = buildLabelPayload(o);
 
             const sentLabel = await sendTextToBluetooth('label', payload);
             if (sentLabel) {
